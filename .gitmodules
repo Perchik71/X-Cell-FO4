@@ -1,0 +1,3 @@
+[submodule "depends/detours"]
+	path = depends/detours
+	url = https://github.com/Nukem9/detours.git

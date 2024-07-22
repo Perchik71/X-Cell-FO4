@@ -1,0 +1,10 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin\Microsoft.Common.CurrentVersion.targets(1967,5): warning : The referenced project '..\..\common\common\common_vc11.vcxproj' does not exist.
+  BranchTrampoline.cpp
+E:\Projects\Repair-FaceGen-FO4\f4se\f4se\f4se_common\BranchTrampoline.cpp : fatal error C1083: Не удается открыть файл включение: common/IPrefix.h: No such file or directory,
+  Relocation.cpp
+E:\Projects\Repair-FaceGen-FO4\f4se\f4se\f4se_common\Relocation.cpp : fatal error C1083: Не удается открыть файл включение: common/IPrefix.h: No such file or directory,
+  SafeWrite.cpp
+E:\Projects\Repair-FaceGen-FO4\f4se\f4se\f4se_common\SafeWrite.cpp : fatal error C1083: Не удается открыть файл включение: common/IPrefix.h: No such file or directory,
+  Utilities.cpp
+E:\Projects\Repair-FaceGen-FO4\f4se\f4se\f4se_common\Utilities.cpp : fatal error C1083: Не удается открыть файл включение: common/IPrefix.h: No such file or directory,
+  Создание кода...

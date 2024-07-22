@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Исходные файлы">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Файлы заголовков">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Файлы ресурсов">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="f4se">
+      <UniqueIdentifier>{7d8e90d9-0c9f-47d6-b8d4-59f035fba37f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\patches">
+      <UniqueIdentifier>{4d553468-084a-419c-960d-a7caa1de5076}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\patches">
+      <UniqueIdentifier>{6b12e902-4d2e-4d72-b433-b388d963a708}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="version">
+      <UniqueIdentifier>{15097cb5-a4cc-4314-9293-a08009876516}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="typeinfo">
+      <UniqueIdentifier>{d238b62a-94b7-4b54-919f-553704d8e34d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\xc_dllmain.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameEvents.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameExtraData.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameFormComponents.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameForms.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameInput.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameMemory.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameMessages.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameObjects.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameReferences.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameRTTI.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameSettings.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameStreams.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameThreads.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameTypes.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameUtilities.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameAPI.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameCustomization.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameData.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="source\xc_plugin.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="source\xc_patch.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="source\xc_patch_threads.cpp">
+      <Filter>Исходные файлы\patches</Filter>
+    </ClCompile>
+    <ClCompile Include="source\xc_settings.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="source\xc_patch_memory.cpp">
+      <Filter>Исходные файлы\patches</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\typeinfo\ms_rtti.cpp">
+      <Filter>typeinfo</Filter>
+    </ClCompile>
+    <ClCompile Include="include\xc_assertion.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameEvents.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameExtraData.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameFormComponents.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameForms.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameInput.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameMemory.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameMessages.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameObjects.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameReferences.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameRTTI.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameSettings.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameStreams.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameThreads.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameTypes.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameUtilities.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameAPI.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameCustomization.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameData.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xc_common.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xc_version.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xc_plugin.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xc_patch.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xc_patch_threads.h">
+      <Filter>Файлы заголовков\patches</Filter>
+    </ClInclude>
+    <ClInclude Include="version\resource_version2.h">
+      <Filter>version</Filter>
+    </ClInclude>
+    <ClInclude Include="version\resource_version.h">
+      <Filter>version</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xc_settings.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xc_patch_memory.h">
+      <Filter>Файлы заголовков\patches</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\typeinfo\ms_rtti.h">
+      <Filter>typeinfo</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xc_assertion.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="depends\f4se\f4se\f4se\GameRTTI.inl">
+      <Filter>f4se</Filter>
+    </None>
+    <None Include="version\resource_version2.tmp">
+      <Filter>version</Filter>
+    </None>
+    <None Include="version\scripts.ps1">
+      <Filter>version</Filter>
+    </None>
+    <None Include="version\resource_version.aps">
+      <Filter>version</Filter>
+    </None>
+    <None Include="exports.def">
+      <Filter>Файлы ресурсов</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="version\resource_version.rc">
+      <Filter>version</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="version\build_version.txt">
+      <Filter>version</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

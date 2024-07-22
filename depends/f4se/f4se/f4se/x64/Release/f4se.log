@@ -1,0 +1,30 @@
+﻿     Создается библиотека E:\Projects\__RELEASE__\MODExplorer\f4seplugin\f4se\x64\Release\f4se_1_10_163.lib и объект E:\Projects\__RELEASE__\MODExplorer\f4seplugin\f4se\x64\Release\f4se_1_10_163.exp
+f4se.obj : error LNK2001: неразрешенный внешний символ "public: static void __cdecl IDebugLog::Log(enum IDebugLog::LogLevel,char const *,char *)" (?Log@IDebugLog@@SAXW4LogLevel@1@PEBDPEAD@Z).
+f4se.obj : error LNK2001: неразрешенный внешний символ "public: static void __cdecl IDebugLog::OpenRelative(int,char const *)" (?OpenRelative@IDebugLog@@SAXHPEBD@Z).
+f4se.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl IDebugLog::~IDebugLog(void)" (??1IDebugLog@@QEAA@XZ).
+f4se.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl IDebugLog::IDebugLog(void)" (??0IDebugLog@@QEAA@XZ).
+GameInput.obj : error LNK2001: неразрешенный внешний символ "void __cdecl _AssertionFailed(char const *,unsigned long,char const *)" (?_AssertionFailed@@YAXPEBDK0@Z).
+Hooks_Debug.obj : error LNK2001: неразрешенный внешний символ "public: static void __cdecl IFileStream::MakeAllDirs(char const *)" (?MakeAllDirs@IFileStream@@SAXPEBD@Z).
+Hooks_Gameplay.obj : error LNK2001: неразрешенный внешний символ "public: __int64 __cdecl IDataStream::GetLength(void)" (?GetLength@IDataStream@@QEAA_JXZ).
+Hooks_Gameplay.obj : error LNK2001: неразрешенный внешний символ "public: virtual void __cdecl IFileStream::ReadBuf(void *,unsigned long)" (?ReadBuf@IFileStream@@UEAAXPEAXK@Z).
+Hooks_Gameplay.obj : error LNK2001: неразрешенный внешний символ "public: bool __cdecl IFileStream::Open(char const *)" (?Open@IFileStream@@QEAA_NPEBD@Z).
+Hooks_Gameplay.obj : error LNK2001: неразрешенный внешний символ "public: virtual __cdecl IFileStream::~IFileStream(void)" (??1IFileStream@@UEAA@XZ).
+Hooks_Gameplay.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl IFileStream::IFileStream(void)" (??0IFileStream@@QEAA@XZ).
+Hooks_Scaleform.obj : error LNK2001: неразрешенный внешний символ "public: bool __cdecl IDirectoryIterator::Done(void)" (?Done@IDirectoryIterator@@QEAA_NXZ).
+Hooks_Scaleform.obj : error LNK2001: неразрешенный внешний символ "public: void __cdecl IDirectoryIterator::Next(void)" (?Next@IDirectoryIterator@@QEAAXXZ).
+Hooks_Scaleform.obj : error LNK2001: неразрешенный внешний символ "public: class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > __cdecl IDirectoryIterator::GetFullPath(void)" (?GetFullPath@IDirectoryIterator@@QEAA?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ).
+Hooks_Scaleform.obj : error LNK2001: неразрешенный внешний символ "public: virtual __cdecl IDirectoryIterator::~IDirectoryIterator(void)" (??1IDirectoryIterator@@UEAA@XZ).
+Hooks_Scaleform.obj : error LNK2001: неразрешенный внешний символ "public: __cdecl IDirectoryIterator::IDirectoryIterator(char const *,char const *)" (??0IDirectoryIterator@@QEAA@PEBD0@Z).
+ScaleformState.obj : error LNK2001: неразрешенный внешний символ "public: static void __cdecl IDebugLog::LogNNL(enum IDebugLog::LogLevel,char const *,char *)" (?LogNNL@IDebugLog@@SAXW4LogLevel@1@PEBDPEAD@Z).
+Serialization.obj : error LNK2001: неразрешенный внешний символ "public: __int64 __cdecl IDataStream::GetOffset(void)" (?GetOffset@IDataStream@@QEAA_JXZ).
+Serialization.obj : error LNK2001: неразрешенный внешний символ "public: __int64 __cdecl IDataStream::GetRemain(void)" (?GetRemain@IDataStream@@QEAA_JXZ).
+Serialization.obj : error LNK2001: неразрешенный внешний символ "public: virtual void __cdecl IDataStream::Skip(__int64)" (?Skip@IDataStream@@UEAAX_J@Z).
+Serialization.obj : error LNK2001: неразрешенный внешний символ "public: virtual void __cdecl IFileStream::SetOffset(__int64)" (?SetOffset@IFileStream@@UEAAX_J@Z).
+Serialization.obj : error LNK2001: неразрешенный внешний символ "public: virtual void __cdecl IFileStream::WriteBuf(void const *,unsigned long)" (?WriteBuf@IFileStream@@UEAAXPEBXK@Z).
+Serialization.obj : error LNK2001: неразрешенный внешний символ "public: void __cdecl IFileStream::Close(void)" (?Close@IFileStream@@QEAAXXZ).
+Serialization.obj : error LNK2001: неразрешенный внешний символ "public: bool __cdecl IFileStream::Create(char const *)" (?Create@IFileStream@@QEAA_NPEBD@Z).
+Translation.obj : error LNK2001: неразрешенный внешний символ "public: bool __cdecl IDataStream::HitEOF(void)" (?HitEOF@IDataStream@@QEAA_NXZ).
+Translation.obj : error LNK2001: неразрешенный внешний символ "public: virtual unsigned long __cdecl IDataStream::ReadString(char *,unsigned long,char,char)" (?ReadString@IDataStream@@UEAAKPEADKDD@Z).
+f4se_common.lib(Utilities.obj) : error LNK2001: неразрешенный внешний символ "public: static void __cdecl IDebugLog::Outdent(void)" (?Outdent@IDebugLog@@SAXXZ).
+f4se_common.lib(Utilities.obj) : error LNK2001: неразрешенный внешний символ "public: static void __cdecl IDebugLog::Indent(void)" (?Indent@IDebugLog@@SAXXZ).
+E:\Projects\__RELEASE__\MODExplorer\f4seplugin\f4se\x64\Release\f4se_1_10_163.dll : fatal error LNK1120: неразрешенных внешних элементов: 28

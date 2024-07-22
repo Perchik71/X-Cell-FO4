@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameAPI.cpp" />
+    <ClCompile Include="depends\f4se\f4se\f4se\GameCustomization.cpp" />
+    <ClCompile Include="depends\f4se\f4se\f4se\GameData.cpp" />
+    <ClCompile Include="depends\f4se\f4se\f4se\GameEvents.cpp" />
+    <ClCompile Include="depends\f4se\f4se\f4se\GameExtraData.cpp" />
+    <ClCompile Include="depends\f4se\f4se\f4se\GameFormComponents.cpp" />
+    <ClCompile Include="depends\f4se\f4se\f4se\GameForms.cpp" />
+    <ClCompile Include="depends\f4se\f4se\f4se\GameInput.cpp" />
+    <ClCompile Include="depends\f4se\f4se\f4se\GameMemory.cpp" />
+    <ClCompile Include="depends\f4se\f4se\f4se\GameMessages.cpp" />
+    <ClCompile Include="depends\f4se\f4se\f4se\GameObjects.cpp" />
+    <ClCompile Include="depends\f4se\f4se\f4se\GameReferences.cpp" />
+    <ClCompile Include="depends\f4se\f4se\f4se\GameRTTI.cpp" />
+    <ClCompile Include="depends\f4se\f4se\f4se\GameSettings.cpp" />
+    <ClCompile Include="depends\f4se\f4se\f4se\GameStreams.cpp" />
+    <ClCompile Include="depends\f4se\f4se\f4se\GameThreads.cpp" />
+    <ClCompile Include="depends\f4se\f4se\f4se\GameTypes.cpp" />
+    <ClCompile Include="depends\f4se\f4se\f4se\GameUtilities.cpp" />
+    <ClCompile Include="depends\typeinfo\ms_rtti.cpp" />
+    <ClCompile Include="include\xc_assertion.cpp" />
+    <ClCompile Include="source\xc_dllmain.cpp" />
+    <ClCompile Include="source\xc_patch.cpp" />
+    <ClCompile Include="source\xc_patch_memory.cpp" />
+    <ClCompile Include="source\xc_patch_threads.cpp" />
+    <ClCompile Include="source\xc_plugin.cpp" />
+    <ClCompile Include="source\xc_settings.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameAPI.h" />
+    <ClInclude Include="depends\f4se\f4se\f4se\GameCustomization.h" />
+    <ClInclude Include="depends\f4se\f4se\f4se\GameData.h" />
+    <ClInclude Include="depends\f4se\f4se\f4se\GameEvents.h" />
+    <ClInclude Include="depends\f4se\f4se\f4se\GameExtraData.h" />
+    <ClInclude Include="depends\f4se\f4se\f4se\GameFormComponents.h" />
+    <ClInclude Include="depends\f4se\f4se\f4se\GameForms.h" />
+    <ClInclude Include="depends\f4se\f4se\f4se\GameInput.h" />
+    <ClInclude Include="depends\f4se\f4se\f4se\GameMemory.h" />
+    <ClInclude Include="depends\f4se\f4se\f4se\GameMessages.h" />
+    <ClInclude Include="depends\f4se\f4se\f4se\GameObjects.h" />
+    <ClInclude Include="depends\f4se\f4se\f4se\GameReferences.h" />
+    <ClInclude Include="depends\f4se\f4se\f4se\GameRTTI.h" />
+    <ClInclude Include="depends\f4se\f4se\f4se\GameSettings.h" />
+    <ClInclude Include="depends\f4se\f4se\f4se\GameStreams.h" />
+    <ClInclude Include="depends\f4se\f4se\f4se\GameThreads.h" />
+    <ClInclude Include="depends\f4se\f4se\f4se\GameTypes.h" />
+    <ClInclude Include="depends\f4se\f4se\f4se\GameUtilities.h" />
+    <ClInclude Include="depends\typeinfo\ms_rtti.h" />
+    <ClInclude Include="include\xc_assertion.h" />
+    <ClInclude Include="include\xc_common.h" />
+    <ClInclude Include="include\xc_patch.h" />
+    <ClInclude Include="include\xc_patch_memory.h" />
+    <ClInclude Include="include\xc_patch_threads.h" />
+    <ClInclude Include="include\xc_plugin.h" />
+    <ClInclude Include="include\xc_settings.h" />
+    <ClInclude Include="include\xc_version.h" />
+    <ClInclude Include="version\resource_version.h" />
+    <ClInclude Include="version\resource_version2.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="depends\f4se\f4se\f4se\GameRTTI.inl" />
+    <None Include="exports.def" />
+    <None Include="version\resource_version.aps" />
+    <None Include="version\resource_version2.tmp" />
+    <None Include="version\scripts.ps1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="version\resource_version.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="version\build_version.txt" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{ff7af8ba-3391-4ad3-a1c3-2ade034f8856}</ProjectGuid>
+    <RootNamespace>XCellFO4</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)build\</OutDir>
+    <IntDir>$(SolutionDir)linkconf\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>x-cell-fo4</TargetName>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;XCELLFO4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;XCELLFO4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;XCELLFO4_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;XCELLFO4_EXPORTS;_WINDOWS;_USRDLL;XBYAK_NO_OP_NAMES;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;NOMINMAX;VOLTEK_LIB_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)depends\f4se;$(SolutionDir)depends\f4se\f4se;$(SolutionDir)depends\f4se\common;$(SolutionDir)include;$(SolutionDir)depends\detours\;$(SolutionDir)depends\typeinfo\;$(SolutionDir)depends\vmm\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BuildStlModules>false</BuildStlModules>
+      <CallingConvention>StdCall</CallingConvention>
+      <ForcedIncludeFiles>xc_common.h</ForcedIncludeFiles>
+      <DisableSpecificWarnings>4477;4996;26495;28125;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>common_vc22.lib;f4se_common.lib;detours.lib;vmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PreBuildEvent>
+      <Command>powershell -ExecutionPolicy Bypass -File "$(SolutionDir)\version\scripts.ps1"</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

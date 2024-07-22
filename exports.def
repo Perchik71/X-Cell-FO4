@@ -1,0 +1,5 @@
+LIBRARY
+EXPORTS
+F4SEPlugin_Version
+F4SEPlugin_Query
+F4SEPlugin_Load

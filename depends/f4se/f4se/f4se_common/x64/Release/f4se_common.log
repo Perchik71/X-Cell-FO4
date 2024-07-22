@@ -1,0 +1,2 @@
+﻿E:\Microsoft Visual Studio\App\MSBuild\Current\Bin\amd64\Microsoft.Common.CurrentVersion.targets(2165,5): warning : The referenced project '..\..\common\common\common_vc11.vcxproj' does not exist.
+  f4se_common.vcxproj -> E:\Projects\X-Cell-FO4\x64\Release\f4se_common.lib
