@@ -1,4 +1,4 @@
-# X-Cell-FO4
+# X-Cell Fallout 4
  Mod for Fallout 4. Various improvements and optimizations.  
 
 Uses: [F4SE](https://github.com/ianpatt/f4se), [Detours](https://github.com/Nukem9/detours.git)
