@@ -41,6 +41,7 @@
     <ClCompile Include="include\xc_assertion.cpp" />
     <ClCompile Include="source\xc_dllmain.cpp" />
     <ClCompile Include="source\xc_patch.cpp" />
+    <ClCompile Include="source\xc_patch_facegen.cpp" />
     <ClCompile Include="source\xc_patch_memory.cpp" />
     <ClCompile Include="source\xc_patch_threads.cpp" />
     <ClCompile Include="source\xc_plugin.cpp" />
@@ -69,6 +70,7 @@
     <ClInclude Include="include\xc_assertion.h" />
     <ClInclude Include="include\xc_common.h" />
     <ClInclude Include="include\xc_patch.h" />
+    <ClInclude Include="include\xc_patch_facegen.h" />
     <ClInclude Include="include\xc_patch_memory.h" />
     <ClInclude Include="include\xc_patch_threads.h" />
     <ClInclude Include="include\xc_plugin.h" />

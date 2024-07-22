@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <f4se/GameForms.h>
 #include <xc_patch.h>
 
 namespace xc
@@ -21,6 +22,7 @@ namespace xc
 	protected:
 		virtual bool run() const;
 	private:
-		
+		inline static bool (*path_printf_facegen)(TESNPC* npc_form, char* buffer, size_t buffer_size, int index_texture);
+		static bool can_use_preprocessing_head(TESNPC* npc_form);
 	};
 }
