@@ -33,7 +33,7 @@ namespace xc
 			patch_mem_nop(offset + 0x25, 0x37);
 
 			// mov rcx, r13
-			// lea rdx, qword ptr ss:[rbp-0x40]
+			// lea rdx, qword ptr ss:[rbp-0x10]
 			// mov r8d, 0x104
 			// mov r9d, esi
 			// cmp r9d, 0x2
@@ -90,7 +90,7 @@ namespace xc
 		// list them until find the main form.
 		while (npc_form->templateNPC)
 			npc_form = npc_form->templateNPC;	
-		// if the mod has set this option, we prohibit the use of preliminary data.
+		// if the mod has set this option, i prohibit the use of preliminary data.
 		if (npc_form->actorData.flags & TESActorBaseData::kFlagIsPreset)
 			return false;
 		// player form can't have a facegen.

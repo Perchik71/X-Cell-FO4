@@ -216,6 +216,8 @@ namespace xc
 		_MESSAGE("Memory (Total: %.2f Gb, Available: %.2f Gb)", 
 			((double)statex.ullTotalPageFile / MEM_GB), ((double)statex.ullAvailPageFile / MEM_GB));
 		
+		// Replacement of all functions of the standard allocator.
+
 		patch_iat(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "realloc", (uintptr_t)&impl_realloc);
 		patch_iat(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "calloc", (uintptr_t)&impl_calloc);
 		patch_iat(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_malloc", (uintptr_t)&impl_aligned_malloc);
@@ -223,6 +225,8 @@ namespace xc
 		patch_iat(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_free", (uintptr_t)&impl_aligned_free);
 		patch_iat(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "free", (uintptr_t)&impl_free);
 		patch_iat(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_msize", (uintptr_t)&impl_msize);
+
+		// replacing memory manipulation functions with newer and more productive ones.
 
 		if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_163)
 		{
@@ -254,12 +258,13 @@ namespace xc
 			detour_jump((g_plugin->get_base() + 0x1B0E7D0), (uintptr_t)&detail::BGSMemoryManager::msize);
 			detour_jump((g_plugin->get_base() + 0x1B13F70), (uintptr_t)&detail::BGSScrapHeap::alloc);
 			detour_jump((g_plugin->get_base() + 0x1B14580), (uintptr_t)&detail::BGSScrapHeap::dealloc);
-			detour_jump((g_plugin->get_base() + 0x1E21B10), (uintptr_t)&detail::bhkThreadMemorySource::__ctor__);
+			detour_jump((g_plugin->get_base() + 0x1E21B10), (uintptr_t)&detail::bhkThreadMemorySource::__ctor__);	// bhkThreadMemorySource init
 
-			patch_mem((g_plugin->get_base() + 0xD0C160), { 0xC3, 0x90 });
-			patch_mem((g_plugin->get_base() + 0x1B0EDB0), { 0xC3, 0x90 });
-			patch_mem((g_plugin->get_base() + 0x1B13DF0), { 0xC3, 0x90 });
-			patch_mem((g_plugin->get_base() + 0x1B14740), { 0xC3, 0x90 });
+			// So that it is never called
+			patch_mem((g_plugin->get_base() + 0xD0C160), { 0xC3, 0x90 });	// MemoryManager - Default/Static/File heaps init
+			patch_mem((g_plugin->get_base() + 0x1B0EDB0), { 0xC3, 0x90 });	// BSSmallBlockAllocator init
+			patch_mem((g_plugin->get_base() + 0x1B13DF0), { 0xC3, 0x90 });	// ScrapHeap init
+			patch_mem((g_plugin->get_base() + 0x1B14740), { 0xC3, 0x90 });	// ScrapHeap deinit
 
 		}
 		else if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_984)
@@ -270,13 +275,14 @@ namespace xc
 			detour_jump((g_plugin->get_base() + 0x153DA30), (uintptr_t)&detail::BGSMemoryManager::realloc);
 			detour_jump((g_plugin->get_base() + 0x153CFA0), (uintptr_t)&detail::BGSMemoryManager::msize);
 			detour_jump((g_plugin->get_base() + 0x1542010), (uintptr_t)&detail::BGSScrapHeap::alloc);
-			detour_jump((g_plugin->get_base() + 0x15425E0), (uintptr_t)&detail::BGSScrapHeap::dealloc);
-			detour_jump((g_plugin->get_base() + 0x17D9DF0), (uintptr_t)&detail::bhkThreadMemorySource::__ctor__);
+			detour_jump((g_plugin->get_base() + 0x15425E0), (uintptr_t)&detail::BGSScrapHeap::dealloc);	
+			detour_jump((g_plugin->get_base() + 0x17D9DF0), (uintptr_t)&detail::bhkThreadMemorySource::__ctor__);	// bhkThreadMemorySource init
 
-			patch_mem((g_plugin->get_base() + 0xB8DC50), { 0xC3, 0x90 });
-			patch_mem((g_plugin->get_base() + 0x153D5D0), { 0xC3, 0x90 });
-			patch_mem((g_plugin->get_base() + 0x1541E90), { 0xC3, 0x90 });
-			patch_mem((g_plugin->get_base() + 0x15427A0), { 0xC3, 0x90 });
+			// So that it is never called
+			patch_mem((g_plugin->get_base() + 0xB8DC50), { 0xC3, 0x90 });	// MemoryManager - Default/Static/File heaps init
+			patch_mem((g_plugin->get_base() + 0x153D5D0), { 0xC3, 0x90 });	// BSSmallBlockAllocator init
+			patch_mem((g_plugin->get_base() + 0x1541E90), { 0xC3, 0x90 });	// ScrapHeap init
+			patch_mem((g_plugin->get_base() + 0x15427A0), { 0xC3, 0x90 });	// ScrapHeap deinit
 		}
 		else
 			_ERROR("The patch has not been fully installed, as the mod does not know the game");
