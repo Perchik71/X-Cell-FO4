@@ -24,6 +24,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "detours", "depends\detours.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vmm", "depends\vmm\vmm.vcxproj", "{1A04D2B1-EBB3-4569-BD03-915631B4BFB1}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libdeflate", "depends\libdeflate.vcxproj", "{9E771CA4-04D9-4ED8-80F2-FFD379413688}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -72,6 +74,14 @@ Global
 		{1A04D2B1-EBB3-4569-BD03-915631B4BFB1}.Release|x64.Build.0 = Release|x64
 		{1A04D2B1-EBB3-4569-BD03-915631B4BFB1}.Release|x86.ActiveCfg = Release|Win32
 		{1A04D2B1-EBB3-4569-BD03-915631B4BFB1}.Release|x86.Build.0 = Release|Win32
+		{9E771CA4-04D9-4ED8-80F2-FFD379413688}.Debug|x64.ActiveCfg = Debug|x64
+		{9E771CA4-04D9-4ED8-80F2-FFD379413688}.Debug|x64.Build.0 = Debug|x64
+		{9E771CA4-04D9-4ED8-80F2-FFD379413688}.Debug|x86.ActiveCfg = Debug|Win32
+		{9E771CA4-04D9-4ED8-80F2-FFD379413688}.Debug|x86.Build.0 = Debug|Win32
+		{9E771CA4-04D9-4ED8-80F2-FFD379413688}.Release|x64.ActiveCfg = Release|x64
+		{9E771CA4-04D9-4ED8-80F2-FFD379413688}.Release|x64.Build.0 = Release|x64
+		{9E771CA4-04D9-4ED8-80F2-FFD379413688}.Release|x86.ActiveCfg = Release|Win32
+		{9E771CA4-04D9-4ED8-80F2-FFD379413688}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -81,6 +91,7 @@ Global
 		{20C6411C-596F-4B85-BE4E-8BC91F59D8A6} = {481701DC-D90C-45B3-92AB-53636E4D9145}
 		{06E30C65-D79A-4FEC-8A60-B36D907E6601} = {481701DC-D90C-45B3-92AB-53636E4D9145}
 		{1A04D2B1-EBB3-4569-BD03-915631B4BFB1} = {481701DC-D90C-45B3-92AB-53636E4D9145}
+		{9E771CA4-04D9-4ED8-80F2-FFD379413688} = {481701DC-D90C-45B3-92AB-53636E4D9145}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1616039A-ED4A-4669-9DD0-4D8555FBAE20}

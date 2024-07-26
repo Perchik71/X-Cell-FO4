@@ -38,10 +38,12 @@
     <ClCompile Include="depends\f4se\f4se\f4se\GameTypes.cpp" />
     <ClCompile Include="depends\f4se\f4se\f4se\GameUtilities.cpp" />
     <ClCompile Include="depends\typeinfo\ms_rtti.cpp" />
-    <ClCompile Include="include\xc_assertion.cpp" />
+    <ClCompile Include="source\xc_assertion.cpp" />
     <ClCompile Include="source\xc_dllmain.cpp" />
     <ClCompile Include="source\xc_patch.cpp" />
     <ClCompile Include="source\xc_patch_facegen.cpp" />
+    <ClCompile Include="source\xc_patch_io.cpp" />
+    <ClCompile Include="source\xc_patch_loadscreen.cpp" />
     <ClCompile Include="source\xc_patch_memory.cpp" />
     <ClCompile Include="source\xc_patch_threads.cpp" />
     <ClCompile Include="source\xc_plugin.cpp" />
@@ -71,6 +73,8 @@
     <ClInclude Include="include\xc_common.h" />
     <ClInclude Include="include\xc_patch.h" />
     <ClInclude Include="include\xc_patch_facegen.h" />
+    <ClInclude Include="include\xc_patch_io.h" />
+    <ClInclude Include="include\xc_patch_loadscreen.h" />
     <ClInclude Include="include\xc_patch_memory.h" />
     <ClInclude Include="include\xc_patch_threads.h" />
     <ClInclude Include="include\xc_plugin.h" />
@@ -210,14 +214,14 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)depends\f4se;$(SolutionDir)depends\f4se\f4se;$(SolutionDir)depends\f4se\common;$(SolutionDir)include;$(SolutionDir)depends\detours\;$(SolutionDir)depends\typeinfo\;$(SolutionDir)depends\vmm\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)depends\f4se;$(SolutionDir)depends\f4se\f4se;$(SolutionDir)depends\f4se\common;$(SolutionDir)include;$(SolutionDir)depends\detours\;$(SolutionDir)depends\typeinfo\;$(SolutionDir)depends\vmm\include\;$(SolutionDir)depends\mini\src;$(SolutionDir)depends\libdeflate;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BuildStlModules>false</BuildStlModules>
       <CallingConvention>StdCall</CallingConvention>
       <ForcedIncludeFiles>xc_common.h</ForcedIncludeFiles>
-      <DisableSpecificWarnings>4477;4996;26495;28125;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4477;4996;6001;26495;28125;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -226,7 +230,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>common_vc22.lib;f4se_common.lib;detours.lib;vmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>common_vc22.lib;f4se_common.lib;detours.lib;vmm.lib;libdeflate.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>powershell -ExecutionPolicy Bypass -File "$(SolutionDir)\version\scripts.ps1"</Command>

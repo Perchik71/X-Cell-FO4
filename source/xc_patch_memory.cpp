@@ -265,7 +265,6 @@ namespace xc
 			patch_mem((g_plugin->get_base() + 0x1B0EDB0), { 0xC3, 0x90 });	// BSSmallBlockAllocator init
 			patch_mem((g_plugin->get_base() + 0x1B13DF0), { 0xC3, 0x90 });	// ScrapHeap init
 			patch_mem((g_plugin->get_base() + 0x1B14740), { 0xC3, 0x90 });	// ScrapHeap deinit
-
 		}
 		else if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_984)
 		{

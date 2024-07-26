@@ -12,6 +12,7 @@ namespace xc
 		settings();
 		settings(const char* file_name);
 		settings(const settings& s);
+		~settings();
 
 		settings& operator=(const settings& p);
 
@@ -24,5 +25,6 @@ namespace xc
 		bool read_bool(const char* section, const char* name, bool default_value) const noexcept;
 	private:
 		string _file_name;
+		void* _handle;
 	};
 }

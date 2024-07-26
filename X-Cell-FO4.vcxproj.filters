@@ -105,10 +105,16 @@
     <ClCompile Include="depends\typeinfo\ms_rtti.cpp">
       <Filter>typeinfo</Filter>
     </ClCompile>
-    <ClCompile Include="include\xc_assertion.cpp">
+    <ClCompile Include="source\xc_patch_facegen.cpp">
+      <Filter>Исходные файлы\patches</Filter>
+    </ClCompile>
+    <ClCompile Include="source\xc_patch_io.cpp">
+      <Filter>Исходные файлы\patches</Filter>
+    </ClCompile>
+    <ClCompile Include="source\xc_assertion.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="source\xc_patch_facegen.cpp">
+    <ClCompile Include="source\xc_patch_loadscreen.cpp">
       <Filter>Исходные файлы\patches</Filter>
     </ClCompile>
   </ItemGroup>
@@ -201,6 +207,12 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\xc_patch_facegen.h">
+      <Filter>Файлы заголовков\patches</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xc_patch_io.h">
+      <Filter>Файлы заголовков\patches</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xc_patch_loadscreen.h">
       <Filter>Файлы заголовков\patches</Filter>
     </ClInclude>
   </ItemGroup>
