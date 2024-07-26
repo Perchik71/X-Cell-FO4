@@ -15,8 +15,13 @@ namespace xc
 	{
 		auto base = GetModuleHandleA(NULL);
 
+#if 0
+		// friezy
+
 		patch_iat(base, "kernel32.dll", "Sleep", (uintptr_t)&sleep);
 		patch_iat(base, "kernel32.dll", "SleepEx", (uintptr_t)&sleep_ex);
+#endif
+
 		patch_iat(base, "kernel32.dll", "SetThreadPriority", (uintptr_t)&set_thread_priority);
 		patch_iat(base, "kernel32.dll", "SetThreadAffinityMask", (uintptr_t)&set_thread_affinity_mask);
 
