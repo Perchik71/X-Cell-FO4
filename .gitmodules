@@ -1,9 +1,9 @@
 [submodule "depends/detours"]
 	path = depends/detours
 	url = https://github.com/Nukem9/detours.git
-[submodule "depends/mini"]
-	path = depends/mini
-	url = https://github.com/Perchik71/mINI.git
 [submodule "depends/libdeflate"]
 	path = depends/libdeflate
 	url = https://github.com/ebiggers/libdeflate.git
+[submodule "depends/mini"]
+	path = depends/mini
+	url = https://github.com/metayeti/mINI.git

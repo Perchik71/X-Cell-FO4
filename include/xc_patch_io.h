@@ -43,5 +43,11 @@ namespace xc
 		static HANDLE impl_find_first_file(const char* file_name, LPWIN32_FIND_DATAA pdata);
 		static int impl_inflate_init(z_stream_s* stream, const char* version, int mode);
 		static int impl_inflate(z_stream_s* stream, int flush);
+		static HANDLE impl_create_file(const char* file_name, unsigned int desired_access, unsigned int share_mode,
+			LPSECURITY_ATTRIBUTES security_attributes, unsigned int creation_disposition, unsigned int flags_and_attributes,
+			HANDLE template_file);
+		static HANDLE impl_create_file_w(const wchar_t* file_name, unsigned int desired_access, unsigned int share_mode,
+			LPSECURITY_ATTRIBUTES security_attributes, unsigned int creation_disposition, unsigned int flags_and_attributes,
+			HANDLE template_file);
 	};
 }

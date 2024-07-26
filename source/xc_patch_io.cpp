@@ -30,6 +30,7 @@ namespace xc
 		// - Replacing functions WritePrivateProfileStringA, GetPrivateProfileStringA, GetPrivateProfileIntA
 		//   They are outdated and constantly open and parsing the ini file.
 		// - Replacing FindFirstNextA with a more optimized function FindFirstFileExA.
+		// - Use OS file cache for less disk access.
 
 		if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_163)
 		{
@@ -48,6 +49,8 @@ namespace xc
 		patch_iat(base, "kernel32.dll", "GetPrivateProfileStringA", (uintptr_t)&impl_get_private_profile_string);
 		patch_iat(base, "kernel32.dll", "GetPrivateProfileIntA", (uintptr_t)&impl_get_private_profile_int);
 		patch_iat(base, "kernel32.dll", "FindFirstFileA", (uintptr_t)&impl_find_first_file);
+		patch_iat(base, "kernel32.dll", "CreateFileA", (uintptr_t)&impl_create_file);
+		patch_iat(base, "kernel32.dll", "CreateFileW", (uintptr_t)&impl_create_file_w);
 
 		return true;
 	}
@@ -131,6 +134,13 @@ namespace xc
 				s = default_value ? default_value : "";
 			else
 				s = ip.get(key_name);
+
+			static const char* whitespace_delimiters = " \t\n\r\f\v";
+			s.erase(s.find_last_not_of(whitespace_delimiters) + 1);
+			s.erase(0, s.find_first_not_of(whitespace_delimiters));
+
+			if (s[0] == '"') s.erase(0, 1);
+			if (s[s.length() - 1] == '"') s.resize(s.length() - 1);
 
 			l = min((size_t)size, s.length());
 			memcpy(returned_string, (const void*)s.c_str(), l);
@@ -229,5 +239,21 @@ namespace xc
 			return -5;
 
 		return -2;
+	}
+
+	HANDLE patch_io::impl_create_file(const char* file_name, unsigned int desired_access, unsigned int share_mode,
+		LPSECURITY_ATTRIBUTES security_attributes, unsigned int creation_disposition, unsigned int flags_and_attributes,
+		HANDLE template_file)
+	{
+		return CreateFileA(file_name, desired_access, share_mode, security_attributes, creation_disposition,
+			flags_and_attributes & ~FILE_FLAG_NO_BUFFERING, template_file);
+	}
+
+	HANDLE patch_io::impl_create_file_w(const wchar_t* file_name, unsigned int desired_access, unsigned int share_mode,
+		LPSECURITY_ATTRIBUTES security_attributes, unsigned int creation_disposition, unsigned int flags_and_attributes,
+		HANDLE template_file)
+	{
+		return CreateFileW(file_name, desired_access, share_mode, security_attributes, creation_disposition,
+			flags_and_attributes & ~FILE_FLAG_NO_BUFFERING, template_file);
 	}
 }
