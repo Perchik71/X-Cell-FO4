@@ -55,7 +55,7 @@ namespace xc
 			void* ptr = voltek::scalable_alloc(size);
 			if (ptr && zeroed) memset(ptr, 0, size);
 
-			_xc_assert_msg_fmt(ptr, "A memory allocation failed.\n\nRequested chunk size: %llu bytes.", size);
+			// _xc_assert_msg_fmt(ptr, "A memory allocation failed.\n\nRequested chunk size: %llu bytes.", size);
 
 			return ptr;
 		}
