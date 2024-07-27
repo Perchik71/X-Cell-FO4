@@ -5,12 +5,15 @@
 #define XC_NO_ORIG_SKIP_FACEGEN
 
 #include <f4se/GameObjects.h>
+#include <f4se/GameForms.h>
 #include <xc_patch_facegen.h>
 #include <xc_version.h>
 #include <xc_plugin.h>
 
 namespace xc
 {
+	BGSKeyword** g_keyword_is_child_player = nullptr;
+
 	const char* patch_facegen::get_name() const noexcept
 	{
 		return "facegen";
@@ -44,6 +47,8 @@ namespace xc
 
 			detour_call(offset + 0x4D, (uintptr_t)path_printf_facegen);
 
+			// added for check player npc
+			g_keyword_is_child_player = (BGSKeyword**)(g_plugin->get_base() + 0x59DADD0);
 #if defined(XC_NO_ORIG_SKIP_FACEGEN)
 			detour_jump((g_plugin->get_base() + 0x679B20), (uintptr_t)&can_use_preprocessing_head);
 #else
@@ -74,6 +79,8 @@ namespace xc
 			
 			detour_call(offset + 0x4A, (uintptr_t)path_printf_facegen);	
 
+			// added for check player npc
+			g_keyword_is_child_player = (BGSKeyword**)(g_plugin->get_base() + 0x2F6ED50);
 #if defined(XC_NO_ORIG_SKIP_FACEGEN)
 			detour_jump((g_plugin->get_base() + 0x68B900), (uintptr_t)&can_use_preprocessing_head);
 #else
@@ -93,6 +100,11 @@ namespace xc
 		// if the mod has set this option, i prohibit the use of preliminary data.
 		if (npc_form->actorData.flags & TESActorBaseData::kFlagIsPreset)
 			return false;
+		// check if the NPC is a relative or a template for the player.
+		auto size = npc_form->keywords.numKeywords;
+		for (size_t i = 0; i < size; i++)
+			if (npc_form->keywords.keywords[i] == *g_keyword_is_child_player)
+				return false;
 		// player form can't have a facegen.
 		return npc_form->formID != 0x7;
 	}
