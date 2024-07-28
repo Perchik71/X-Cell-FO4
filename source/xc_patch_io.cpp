@@ -174,8 +174,21 @@ namespace xc
 		else
 			s = ip.get(key_name);
 
+		static const char* whitespace_delimiters = " \t\n\r\f\v";
+		s.erase(s.find_last_not_of(whitespace_delimiters) + 1);
+		s.erase(0, s.find_first_not_of(whitespace_delimiters));
+
+		if (s[0] == '"') s.erase(0, 1);
+		if (s[s.length() - 1] == '"') s.resize(s.length() - 1);
+
 		char* end_ptr = nullptr;
-		return strtoul(s.c_str(), &end_ptr, 10);
+
+		if (s.find_first_of("0x") == 0)
+			// hex
+			return strtoul(s.c_str() + 2, &end_ptr, 16);
+		else
+			// dec
+			return strtoul(s.c_str(), &end_ptr, 10);
 	}
 
 	bool patch_io::impl_write_private_profile_string(const char* app_name, const char* key_name, const char* string,
