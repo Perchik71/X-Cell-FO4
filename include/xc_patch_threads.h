@@ -21,8 +21,10 @@ namespace xc
 	protected:
 		virtual bool run() const;
 	private:
+#if 0
 		static uint32_t sleep(uint32_t ms);
 		static uint32_t sleep_ex(uint32_t ms, bool alterable);
+#endif
 		static bool set_thread_priority(HANDLE thread_handle, int priority);
 		static uintptr_t set_thread_affinity_mask(HANDLE thread_handle, uintptr_t affinity_mask);
 	};

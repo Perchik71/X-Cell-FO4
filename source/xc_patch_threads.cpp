@@ -16,7 +16,7 @@ namespace xc
 		auto base = GetModuleHandleA(NULL);
 
 #if 0
-		// friezy
+		// freezing
 
 		patch_iat(base, "kernel32.dll", "Sleep", (uintptr_t)&sleep);
 		patch_iat(base, "kernel32.dll", "SleepEx", (uintptr_t)&sleep_ex);
@@ -40,6 +40,7 @@ namespace xc
 		return true;
 	}
 
+#if 0
 	uint32_t patch_threads::sleep(uint32_t ms)
 	{
 		// Bethesda's spinlock calls Sleep(0) every iteration until 10,000. Then it
@@ -57,6 +58,7 @@ namespace xc
 
 		return SleepEx(ms, alterable);
 	}
+#endif
 
 	bool patch_threads::set_thread_priority(HANDLE thread_handle, int priority)
 	{

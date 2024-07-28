@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <unordered_map>
 #include <xc_patch.h>
 
 namespace xc
@@ -34,13 +33,8 @@ namespace xc
 	protected:
 		virtual bool run() const;
 	private:
-		static unsigned int impl_get_private_profile_string(const char* app_name, const char* key_name, const char* default_value,
-			char* returned_string, unsigned int size, const char* file_name);
-		static unsigned int impl_get_private_profile_int(const char* app_name, const char* key_name, int default_value,
-			const char* file_name);
-		static bool impl_write_private_profile_string(const char* app_name, const char* key_name, const char* string,
-			const char* file_name);
 		static HANDLE impl_find_first_file(const char* file_name, LPWIN32_FIND_DATAA pdata);
+		static HANDLE impl_find_first_file_w(const wchar_t* file_name, LPWIN32_FIND_DATAA pdata);
 		static int impl_inflate_init(z_stream_s* stream, const char* version, int mode);
 		static int impl_inflate(z_stream_s* stream, int flush);
 		static HANDLE impl_create_file(const char* file_name, unsigned int desired_access, unsigned int share_mode,

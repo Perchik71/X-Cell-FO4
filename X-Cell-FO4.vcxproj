@@ -45,6 +45,7 @@
     <ClCompile Include="source\xc_patch_io.cpp" />
     <ClCompile Include="source\xc_patch_loadscreen.cpp" />
     <ClCompile Include="source\xc_patch_memory.cpp" />
+    <ClCompile Include="source\xc_patch_profile.cpp" />
     <ClCompile Include="source\xc_patch_threads.cpp" />
     <ClCompile Include="source\xc_plugin.cpp" />
     <ClCompile Include="source\xc_settings.cpp" />
@@ -76,6 +77,7 @@
     <ClInclude Include="include\xc_patch_io.h" />
     <ClInclude Include="include\xc_patch_loadscreen.h" />
     <ClInclude Include="include\xc_patch_memory.h" />
+    <ClInclude Include="include\xc_patch_profile.h" />
     <ClInclude Include="include\xc_patch_threads.h" />
     <ClInclude Include="include\xc_plugin.h" />
     <ClInclude Include="include\xc_settings.h" />
