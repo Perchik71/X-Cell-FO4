@@ -8,7 +8,15 @@
 
 namespace xc
 {
-	unordered_map<string_view, mINI::INIStructure*> _cache;
+	struct string_equal_to 
+	{
+		inline bool operator()(const std::string_view& lhs, const std::string_view& rhs) const 
+		{
+			return !_stricmp(lhs.data(), rhs.data());
+		}
+	};
+
+	unordered_map<string_view, mINI::INIStructure*, std::hash<std::string_view>, string_equal_to> _cache;
 
 	const char* patch_profile::get_name() const noexcept
 	{
