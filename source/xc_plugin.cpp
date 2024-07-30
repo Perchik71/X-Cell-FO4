@@ -117,7 +117,10 @@ namespace xc
 		_patches.push_back(new patch_facegen());
 		_patches.push_back(new patch_io());
 		_patches.push_back(new patch_profile());
+#if 0
+		// There is an option "bOnlyBlack" in mod "LongLoadingTimesFix"
 		_patches.push_back(new patch_loadscreen());
+#endif
 
 		//////////////////
 
