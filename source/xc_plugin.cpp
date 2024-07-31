@@ -11,7 +11,11 @@
 #include <xc_patch_facegen.h>
 #include <xc_patch_io.h>
 #include <xc_patch_profile.h>
-#include <xc_patch_loadscreen.h>
+#include <xc_patch_archive_limit.h>
+
+#if 0
+#	include <xc_patch_loadscreen.h>
+#endif 
 
 namespace xc
 {
@@ -117,10 +121,10 @@ namespace xc
 		_patches.push_back(new patch_facegen());
 		_patches.push_back(new patch_io());
 		_patches.push_back(new patch_profile());
+		_patches.push_back(new patch_archive_limit());
 #if 0
-		// There is an option "bOnlyBlack" in mod "LongLoadingTimesFix"
 		_patches.push_back(new patch_loadscreen());
-#endif
+#endif 
 
 		//////////////////
 

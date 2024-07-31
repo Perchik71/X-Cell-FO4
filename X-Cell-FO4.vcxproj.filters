@@ -120,6 +120,9 @@
     <ClCompile Include="source\xc_patch_profile.cpp">
       <Filter>Исходные файлы\patches</Filter>
     </ClCompile>
+    <ClCompile Include="source\xc_patch_archive_limit.cpp">
+      <Filter>Исходные файлы\patches</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="depends\f4se\f4se\f4se\GameEvents.h">
@@ -219,6 +222,9 @@
       <Filter>Файлы заголовков\patches</Filter>
     </ClInclude>
     <ClInclude Include="include\xc_patch_profile.h">
+      <Filter>Файлы заголовков\patches</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xc_patch_archive_limit.h">
       <Filter>Файлы заголовков\patches</Filter>
     </ClInclude>
   </ItemGroup>

@@ -194,9 +194,9 @@ namespace xc
 		else if (!string)
 			// A null - terminated string to be written to the file.
 			// If this parameter is NULL, the key pointed to by the key_name parameter is deleted.
-			ini_data->get(app_name).remove(key_name);
+			(*ini_data)[app_name].remove(key_name);
 		else
-			ini_data->get(app_name).set(key_name, string ? string : "");
+			(*ini_data)[app_name][key_name] = string;
 
 		mINI::INIFile file(file_name);
 		return file.write(*ini_data);

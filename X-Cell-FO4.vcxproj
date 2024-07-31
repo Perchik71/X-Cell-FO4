@@ -41,6 +41,7 @@
     <ClCompile Include="source\xc_assertion.cpp" />
     <ClCompile Include="source\xc_dllmain.cpp" />
     <ClCompile Include="source\xc_patch.cpp" />
+    <ClCompile Include="source\xc_patch_archive_limit.cpp" />
     <ClCompile Include="source\xc_patch_facegen.cpp" />
     <ClCompile Include="source\xc_patch_io.cpp" />
     <ClCompile Include="source\xc_patch_loadscreen.cpp" />
@@ -73,6 +74,7 @@
     <ClInclude Include="include\xc_assertion.h" />
     <ClInclude Include="include\xc_common.h" />
     <ClInclude Include="include\xc_patch.h" />
+    <ClInclude Include="include\xc_patch_archive_limit.h" />
     <ClInclude Include="include\xc_patch_facegen.h" />
     <ClInclude Include="include\xc_patch_io.h" />
     <ClInclude Include="include\xc_patch_loadscreen.h" />
