@@ -12,10 +12,7 @@
 #include <xc_patch_io.h>
 #include <xc_patch_profile.h>
 #include <xc_patch_archive_limit.h>
-
-#if 0
-#	include <xc_patch_loadscreen.h>
-#endif 
+#include <xc_patch_loadscreen.h>
 
 namespace xc
 {
@@ -122,9 +119,7 @@ namespace xc
 		_patches.push_back(new patch_io());
 		_patches.push_back(new patch_profile());
 		_patches.push_back(new patch_archive_limit());
-#if 0
 		_patches.push_back(new patch_loadscreen());
-#endif 
 
 		//////////////////
 

@@ -33,6 +33,7 @@ namespace xc
 		virtual uintptr_t patch_vtable_func(uintptr_t target, uintptr_t func, uint32_t index) const noexcept;
 		virtual uintptr_t detour_jump(uintptr_t target, uintptr_t func) const noexcept;
 		virtual uintptr_t detour_call(uintptr_t target, uintptr_t func) const noexcept;
+		virtual uint32_t calc_rva(uintptr_t from, uintptr_t target, uint32_t opcode_offset) const noexcept;
 	private:
 		bool start_impl() const;
 	};

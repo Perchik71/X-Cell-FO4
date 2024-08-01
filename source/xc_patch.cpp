@@ -90,6 +90,13 @@ namespace xc
 		return Detours::X64::DetourFunction(target, func, Detours::X64Option::USE_REL32_CALL);
 	}
 
+	uint32_t patch::calc_rva(uintptr_t from, uintptr_t target, uint32_t opcode_offset) const noexcept
+	{
+		ptrdiff_t delta = target - (from + sizeof(opcode_offset));
+		if ((delta < INT_MIN) || (delta > INT_MAX)) return 0;
+		return (uint32_t)delta;
+	}
+
 	bool patch::start_impl() const
 	{
 		auto name_patch = get_name();

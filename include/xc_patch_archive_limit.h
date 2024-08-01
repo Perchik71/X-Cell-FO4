@@ -48,6 +48,8 @@ namespace xc
 	protected:
 		virtual bool run() const;
 	private:
+		void* allocate_memory_within_limits_of_2GB(uintptr_t start_address, uint32_t size) const noexcept;
+
 		static uint32_t impl_memcpy_hash_from_archive_table(void* archive, void* archive_hash, file_hash_t* hash, size_t read_size);
 		static void impl_set_index_archive_to_hash();
 	};
