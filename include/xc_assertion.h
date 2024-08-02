@@ -11,4 +11,4 @@ namespace xc
 
 #define _xc_assert(Cond)					xc::_assert(Cond, __FILE__, __LINE__, #Cond)
 #define _xc_assert_msg_fmt(Cond, Msg, ...)	xc::_assert(Cond, __FILE__, __LINE__, "%s\n\n" Msg, #Cond, ##__VA_ARGS__)
-#define _xc_assert_msg(Cond, Msg)			_xc_assert_msg_va(Cond, Msg)
+#define _xc_assert_msg(Cond, Msg)			_xc_assert_msg_fmt(Cond, Msg)

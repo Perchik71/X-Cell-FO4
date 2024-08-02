@@ -2,6 +2,7 @@
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
+#include <vmm.h>
 #include <xc_patch_archive_limit.h>
 #include <xc_assertion.h>
 #include <xc_version.h>
@@ -30,7 +31,7 @@ namespace xc
 		char data_2[0x300];
 	};
 
-	static tree_db_general_t* tree_db_general;
+	tree_db_general_t g_tree_db_general;
 
 	class scope_relocate_al
 	{
@@ -69,18 +70,18 @@ namespace xc
 
 			auto offset = g_plugin->get_base() + 0x1581C61;
 			// Allocate new pointer for db  
-			tree_db_general = (tree_db_general_t*)
-				allocate_memory_within_limits_of_2GB(offset, sizeof(tree_db_general_t));
-			if (!tree_db_general)
+			
 			{
-				_ERROR("ARCHIVE_LIMIT: It was not possible to allocate memory for a new structure in a suitable place for the process");
-				return false;
-			}
-			else
-				_MESSAGE("ARCHIVE_LIMIT: new db address %p", (uintptr_t)tree_db_general);
+				auto offset_op = g_plugin->get_base() + 0x1581C5C;
 
-			auto rva_to_newdb = calc_rva(offset, (uintptr_t)tree_db_general, 7);
-			patch_mem(offset, (uint8_t*)&rva_to_newdb, 4);
+				patch_mem(offset_op, { 0x75, 0x16, 0x48, 0xB9, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+					0xE8, 0x03, 0x37, 0x00, 0x00, 0x48, 0x89, 0x05, 0x74, 0xD7, 0xC0, 0x01, 0x48, 0x83, 0xC4,
+					0x28, 0xC3 });
+
+				auto ptr = (uint8_t*)&g_tree_db_general;
+				patch_mem(offset_op + 4, (uint8_t*)&ptr, 8);
+				_MESSAGE("ARCHIVE_LIMIT: new db address %p.", (uintptr_t)&g_tree_db_general);
+			}
 
 			patch_mem(g_plugin->get_base() + 0x15853A6, (uint8_t*)&max_limit, 4);
 			patch_mem(g_plugin->get_base() + 0x15853F9, (uint8_t*)&max_limit, 4);
@@ -572,33 +573,6 @@ namespace xc
 		}
 
 		return true;
-	}
-
-	void* patch_archive_limit::allocate_memory_within_limits_of_2GB(uintptr_t start_address, uint32_t size) const noexcept
-	{
-		MEMORY_BASIC_INFORMATION memInfo = { 0 };
-		PVOID result = NULL;
-
-		auto end_address = start_address + 0x80000000 - 0x20000;
-
-		if (start_address >= 0x80001000)
-			start_address -= (uintptr_t)0x80000000 - 0x20000;
-		else
-			start_address = 0x1000;
-
-		while (VirtualQuery((LPVOID)start_address, &memInfo, sizeof(memInfo)))
-		{
-			if (start_address >= end_address) break;
-
-			start_address += memInfo.RegionSize;
-			if (memInfo.State != MEM_FREE) continue;
-
-			if (memInfo.RegionSize >= size)
-				if (result = VirtualAlloc((LPVOID)memInfo.BaseAddress, size,
-					MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE)) break;
-		}
-
-		return result;
 	}
 
 	uint32_t patch_archive_limit::impl_memcpy_hash_from_archive_table(void* archive, void* archive_hash, file_hash_t* hash, size_t read_size)
