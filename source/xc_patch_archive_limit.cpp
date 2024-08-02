@@ -70,7 +70,7 @@ namespace xc
 			auto offset = g_plugin->get_base() + 0x1581C61;
 			// Allocate new pointer for db  
 			tree_db_general = (tree_db_general_t*)
-				allocate_memory_within_limits_of_2GB(offset + 0x1000, sizeof(tree_db_general_t));
+				allocate_memory_within_limits_of_2GB(offset, sizeof(tree_db_general_t));
 			if (!tree_db_general)
 			{
 				_ERROR("ARCHIVE_LIMIT: It was not possible to allocate memory for a new structure in a suitable place for the process");
@@ -579,21 +579,23 @@ namespace xc
 		MEMORY_BASIC_INFORMATION memInfo = { 0 };
 		PVOID result = NULL;
 
-		auto end_address = start_address + 0x80000000;
+		auto end_address = start_address + 0x80000000 - 0x20000;
 
 		if (start_address >= 0x80001000)
-			start_address -= 0x80000000;
+			start_address -= (uintptr_t)0x80000000 - 0x20000;
 		else
 			start_address = 0x1000;
 
 		while (VirtualQuery((LPVOID)start_address, &memInfo, sizeof(memInfo)))
 		{
-			if ((memInfo.State == MEM_FREE) || (start_address >= end_address)) break;
+			if (start_address >= end_address) break;
+
 			start_address += memInfo.RegionSize;
+			if (memInfo.State != MEM_FREE) continue;
 
 			if (memInfo.RegionSize >= size)
 				if (result = VirtualAlloc((LPVOID)memInfo.BaseAddress, size,
-					MEM_COMMIT, PAGE_READWRITE)) break;
+					MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE)) break;
 		}
 
 		return result;
