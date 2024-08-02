@@ -63,7 +63,7 @@ namespace xc
 				if (!GlobalMemoryStatusEx(&statex))
 					return ptr;
 
-				_xc_assert_msg_fmt(ptr, "A memory allocation failed.\n\nRequested chunk size: %llu bytes.\n\nAvail memory: %llu bytes, load (%%u).", 
+				_xc_assert_msg_fmt(ptr, "A memory allocation failed.\n\nRequested chunk size: %llu bytes.\n\nAvail memory: %llu bytes, load (%u%%).", 
 					size, statex.ullAvailPageFile, statex.dwMemoryLoad);
 			}
 
