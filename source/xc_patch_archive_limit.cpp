@@ -1,4 +1,4 @@
-// Copyright � 2024 aka perchik71. All rights reserved.
+﻿// Copyright © 2024 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -78,13 +78,13 @@ namespace xc
 			}
 			else
 				_MESSAGE("ARCHIVE_LIMIT: new db address %p", (uintptr_t)tree_db_general);
-			
+
 			auto rva_to_newdb = calc_rva(offset, (uintptr_t)tree_db_general, 7);
 			patch_mem(offset, (uint8_t*)&rva_to_newdb, 4);
 
 			patch_mem(g_plugin->get_base() + 0x15853A6, (uint8_t*)&max_limit, 4);
 			patch_mem(g_plugin->get_base() + 0x15853F9, (uint8_t*)&max_limit, 4);
-			patch_mem(g_plugin->get_base() + 0x15854A1, (uint8_t*)&max_limit, 4);	
+			patch_mem(g_plugin->get_base() + 0x15854A1, (uint8_t*)&max_limit, 4);
 
 			offset = (max_limit * sizeof(void*)) + 0x30;
 			patch_mem(g_plugin->get_base() + 0x158546C, (uint8_t*)&offset, 4);
@@ -463,7 +463,7 @@ namespace xc
 			//// STEP 3
 
 			// Correcting all offsets in function stuffs (get / search / set)
-			
+
 			{
 				offset = g_plugin->get_base() + 0x15862C0;
 				scope_relocate_al lock((LPVOID)(offset), 0xF6);
@@ -569,21 +569,6 @@ namespace xc
 			// mov eax, dword ptr ds:[rsi+0xC]
 			// mov dword ptr ds:[rdi+0xC], eax
 			patch_mem(offset, { 0x8B, 0x46, 0x0C, 0x89, 0x47, 0x0C });
-
-
-
-
-			//patch_mem(g_plugin->get_base() + 0x1588F14, { 0xE9, 0xEF, 0x00, 0x00, 0x00, 0x90 });
-		
-			// Set 0x4000 for init array
-		//	
-		//	
-
-			//memset(array_3.data(), -1, max_limit * sizeof(int64_t));
-			
-			//append_to_archive_1_orig = g_plugin->get_base() + 0x29CBD0;
-			//detour_call(g_plugin->get_base() + 0x15862E6, (uintptr_t)&impl_append_to_archive_1);
-			//detour_call(g_plugin->get_base() + 0x15862FC, (uintptr_t)&impl_append_to_archive_2);
 		}
 
 		return true;
@@ -632,6 +617,6 @@ namespace xc
 		// It is necessary to get the stack of the calling function.
 		auto rsp = (uintptr_t)_AddressOfReturnAddress() + 8;
 		// Set archive index from stack
-		*((uint16_t*)(rsp + 0x3C)) = *((uint16_t*)(rsp + 0x1E8));
+		*((uint16_t*)(rsp + 0x3C)) = *((uint16_t*)(rsp + 0x1E8));//min(, (uint16_t)255);
 	}
 }

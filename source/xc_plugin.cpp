@@ -10,6 +10,7 @@
 #include <xc_patch_memory.h>
 #include <xc_patch_facegen.h>
 #include <xc_patch_io.h>
+#include <xc_patch_libdeflate.h>
 #include <xc_patch_profile.h>
 #include <xc_patch_archive_limit.h>
 #include <xc_patch_loadscreen.h>
@@ -117,6 +118,7 @@ namespace xc
 		_patches.push_back(new patch_memory());
 		_patches.push_back(new patch_facegen());
 		_patches.push_back(new patch_io());
+		_patches.push_back(new patch_libdeflate());
 		_patches.push_back(new patch_profile());
 		_patches.push_back(new patch_archive_limit());
 		_patches.push_back(new patch_loadscreen());

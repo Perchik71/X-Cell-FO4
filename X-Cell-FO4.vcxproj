@@ -44,6 +44,7 @@
     <ClCompile Include="source\xc_patch_archive_limit.cpp" />
     <ClCompile Include="source\xc_patch_facegen.cpp" />
     <ClCompile Include="source\xc_patch_io.cpp" />
+    <ClCompile Include="source\xc_patch_libdeflate.cpp" />
     <ClCompile Include="source\xc_patch_loadscreen.cpp" />
     <ClCompile Include="source\xc_patch_memory.cpp" />
     <ClCompile Include="source\xc_patch_profile.cpp" />
@@ -77,6 +78,7 @@
     <ClInclude Include="include\xc_patch_archive_limit.h" />
     <ClInclude Include="include\xc_patch_facegen.h" />
     <ClInclude Include="include\xc_patch_io.h" />
+    <ClInclude Include="include\xc_patch_libdeflate.h" />
     <ClInclude Include="include\xc_patch_loadscreen.h" />
     <ClInclude Include="include\xc_patch_memory.h" />
     <ClInclude Include="include\xc_patch_profile.h" />
