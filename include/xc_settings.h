@@ -17,7 +17,8 @@ namespace xc
 		settings& operator=(const settings& p);
 
 		bool set_filename(const char* file_name) noexcept;
-		inline string get_filename(const char* file_name) const noexcept { return _file_name; }
+		inline string get_filename() const noexcept { return _file_name; }
+		inline void* get_handle() const noexcept { return _handle; }
 
 		string read_str(const char* section, const char* name, const char* default_value) const noexcept;
 		int32_t read_int(const char* section, const char* name, int32_t default_value) const noexcept;

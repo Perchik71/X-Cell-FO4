@@ -69,9 +69,10 @@ namespace xc
 			//// STEP 0
 
 			auto offset = g_plugin->get_base() + 0x1581C61;
-			// Allocate new pointer for db  
-			
+
 			{
+				// Rewrites the code to work with distance further than 2GB.
+
 				auto offset_op = g_plugin->get_base() + 0x1581C5C;
 
 				patch_mem(offset_op, { 0x75, 0x16, 0x48, 0xB9, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,

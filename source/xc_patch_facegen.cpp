@@ -4,15 +4,18 @@
 
 #define XC_NO_ORIG_SKIP_FACEGEN
 
+#include <mini/ini.h>
 #include <f4se/GameObjects.h>
 #include <f4se/GameForms.h>
 #include <xc_patch_facegen.h>
 #include <xc_version.h>
 #include <xc_plugin.h>
+#include <vector>
 
 namespace xc
 {
 	BGSKeyword** g_keyword_is_child_player = nullptr;
+	vector<UInt32> g_facegen_exception_formids;
 
 	const char* patch_facegen::get_name() const noexcept
 	{
@@ -22,6 +25,30 @@ namespace xc
 	bool patch_facegen::run() const
 	{
 		// The problem is, the game uses facegen, which lies only in fallout4.esm.
+
+		// Accessing the plugin memory for some reason leads to an exception, so let's open it in a new object.
+		{
+			mINI::INIFile settings_file(g_plugin->get_settings().get_filename());
+			mINI::INIStructure settings_data;
+			if (settings_file.read(settings_data) && settings_data.has("facegen_exception"))
+			{
+				char* end_ptr = nullptr;
+				UInt32 formid = 0;
+				auto section = settings_data.get("facegen_exception");
+
+				for (auto it = section.begin(); it != section.end(); it++)
+				{
+					if (it->second.empty()) continue;
+					if (it->second.find_first_of("0x") == 0)
+						formid = strtoul(it->second.c_str() + 2, &end_ptr, 16);
+					else
+						formid = strtoul(it->second.c_str(), &end_ptr, 10);
+
+					_MESSAGE("Skip NPC added \"%s\" (%08X)", it->first.c_str(), formid);
+					g_facegen_exception_formids.push_back(formid);
+				}
+			}
+		}
 
 		if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_163)
 		{
@@ -105,6 +132,9 @@ namespace xc
 		for (size_t i = 0; i < size; i++)
 			if (npc_form->keywords.keywords[i] == *g_keyword_is_child_player)
 				return false;
+		// optionally exclude some NPCs.
+		for (auto it_except : g_facegen_exception_formids)
+			if (npc_form->formID == it_except) return false;
 		// player form can't have a facegen.
 		return npc_form->formID != 0x7;
 	}
