@@ -44,7 +44,7 @@ namespace xc
 					else
 						formid = strtoul(it->second.c_str(), &end_ptr, 10);
 
-					_MESSAGE("Skip NPC added \"%s\" (%08X)", it->first.c_str(), formid);
+					// _MESSAGE("Skip NPC added \"%s\" (%08X)", it->first.c_str(), formid);
 					g_facegen_exception_formids.push_back(formid);
 				}
 			}
