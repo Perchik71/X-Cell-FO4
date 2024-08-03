@@ -8,6 +8,7 @@
 //#pragma comment(linker, "/BASE:0x13140000")
 
 #include <common/IPrefix.h>
+#include <shlwapi.h>
 #include <algorithm>
 #include <intrin.h>
 

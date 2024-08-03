@@ -44,6 +44,8 @@ namespace xc
 
 	mINI::INIStructure* impl_get_file(const char* lpFileName)
 	{
+		if(PathIsRelativeA(lpFileName)) return nullptr;
+
 		mINI::INIStructure* ini_data = nullptr;
 
 		auto iterator_find = _cache.find(lpFileName);
@@ -68,19 +70,14 @@ namespace xc
 	unsigned int patch_profile::impl_get_private_profile_string(const char* app_name, const char* key_name, const char* default_value,
 		char* returned_string, unsigned int size, const char* file_name)
 	{
+		//errno = 0;
+
 		if (!returned_string || !size)
 			return 0;
 
 		auto ini_data = impl_get_file(file_name);
 		if (!ini_data)
-		{
-			// In the event the initialization file specified by file_name is not found, or contains invalid values, 
-			// this function will set errorno with a value of '0x2' (File Not Found). 
-			// To retrieve extended error information, call GetLastError.
-			_set_errno(0x2);
-
-			return 0;
-		}
+			return GetPrivateProfileStringA(app_name, key_name, default_value, returned_string, size, file_name);
 
 		string s;
 		size_t l = 0;
@@ -145,14 +142,7 @@ namespace xc
 
 		auto ini_data = impl_get_file(file_name);
 		if (!ini_data)
-		{
-			// In the event the initialization file specified by file_name is not found, or contains invalid values, 
-			// this function will set errorno with a value of '0x2' (File Not Found). 
-			// To retrieve extended error information, call GetLastError.
-			_set_errno(0x2);
-
-			return default_value;
-		}
+			return GetPrivateProfileIntA(app_name, key_name, default_value, file_name);
 
 		string s;
 		auto ip = ini_data->get(app_name);
