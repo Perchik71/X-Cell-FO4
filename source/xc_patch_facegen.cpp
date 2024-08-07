@@ -19,6 +19,8 @@ namespace xc
 	{
 		// Since it has no protection in the game
 
+		0x26F0A,	// MQ102PlayerSpouseCorpseMale
+		0x26F36,	// MQ102PlayerSpouseCorpseFemale
 		0xA7D34,	// MQ101PlayerSpouseMale
 		0xA7D35,	// MQ101PlayerSpouseFemale
 		0x246BF0,	// MQ101PlayerSpouseMale_NameOnly
