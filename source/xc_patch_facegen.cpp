@@ -15,7 +15,15 @@
 namespace xc
 {
 	BGSKeyword** g_keyword_is_child_player = nullptr;
-	vector<UInt32> g_facegen_exception_formids;
+	vector<UInt32> g_facegen_exception_formids = 
+	{
+		// Since it has no protection in the game
+
+		0xA7D34,	// MQ101PlayerSpouseMale
+		0xA7D35,	// MQ101PlayerSpouseFemale
+		0x246BF0,	// MQ101PlayerSpouseMale_NameOnly
+		0x246BF1,	// MQ101PlayerSpouseFemale_NameOnly
+	};
 
 	const char* patch_facegen::get_name() const noexcept
 	{
