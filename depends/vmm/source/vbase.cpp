@@ -8,8 +8,6 @@
 #include <intrin.h>
 #include <string>
 
-#include <Windows.h>
-
 namespace voltek
 {
 	namespace core
@@ -85,7 +83,7 @@ namespace voltek
 					get_cpu(name);
 
 					// Отключение использования AVX2 на процессорах Intel и других
-					if (name.find_first_of("amd") == std::string::npos)
+					if (name.find_first_of("amd ") == std::string::npos)
 						avx2_supported = false;
 				}
 			}
