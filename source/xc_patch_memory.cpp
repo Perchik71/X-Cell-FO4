@@ -207,6 +207,38 @@ namespace xc
 				return nullptr;
 			}
 		};
+
+		class BSScaleformSysMemMapper
+		{
+		public:
+			constexpr static UInt32 PAGE_SIZE = (size_t)256 * 1024;				// 256 Kb
+			constexpr static UInt32 HEAP_SIZE = (size_t)512 * 1024 * 1024;		// 512 Mb
+
+			static uint32_t get_page_size(BSScaleformSysMemMapper* _this)
+			{
+				return (uint32_t)PAGE_SIZE;
+			}
+
+			static void* init(BSScaleformSysMemMapper* _this, size_t size)
+			{
+				return VirtualAlloc(NULL, (SIZE_T)size, MEM_RESERVE, PAGE_READWRITE);
+			}
+
+			static bool release(BSScaleformSysMemMapper* _this, void* address)
+			{
+				return VirtualFree((LPVOID)address, (SIZE_T)HEAP_SIZE, MEM_RELEASE);
+			}
+
+			static void* alloc(BSScaleformSysMemMapper* _this, void* address, size_t size)
+			{
+				return VirtualAlloc((LPVOID)address, (SIZE_T)size, MEM_COMMIT, PAGE_READWRITE);
+			}
+
+			static bool free(BSScaleformSysMemMapper* _this, void* address, size_t size)
+			{
+				return VirtualFree((LPVOID)address, (SIZE_T)size, MEM_DECOMMIT);
+			}
+		};
 	}
 
 	const char* patch_memory::get_name() const noexcept
@@ -269,6 +301,20 @@ namespace xc
 			detour_jump((g_plugin->get_base() + 0x1B13F70), (uintptr_t)&detail::BGSScrapHeap::alloc);
 			detour_jump((g_plugin->get_base() + 0x1B14580), (uintptr_t)&detail::BGSScrapHeap::dealloc);
 			detour_jump((g_plugin->get_base() + 0x1E21B10), (uintptr_t)&detail::bhkThreadMemorySource::__ctor__);	// bhkThreadMemorySource init
+			
+			// BSScaleformSysMemMapper
+			{	
+				auto vtable = (uintptr_t*)(g_plugin->get_base() + 0x2EB92C8);
+				scope_relocate_al lock((LPVOID)vtable, 0x40);
+				vtable[0] = (uintptr_t)detail::BSScaleformSysMemMapper::get_page_size;
+				vtable[1] = (uintptr_t)detail::BSScaleformSysMemMapper::init;
+				vtable[2] = (uintptr_t)detail::BSScaleformSysMemMapper::release;
+				vtable[3] = (uintptr_t)detail::BSScaleformSysMemMapper::alloc;
+				vtable[4] = (uintptr_t)detail::BSScaleformSysMemMapper::free;
+
+				patch_mem((g_plugin->get_base() + 0x211214B), (UInt8*)&detail::BSScaleformSysMemMapper::PAGE_SIZE, 4);
+				patch_mem((g_plugin->get_base() + 0x2112151), (UInt8*)&detail::BSScaleformSysMemMapper::HEAP_SIZE, 4);
+			}
 
 			// So that it is never called
 			patch_mem((g_plugin->get_base() + 0xD0C160), { 0xC3, 0x90 });	// MemoryManager - Default/Static/File heaps init
@@ -287,6 +333,20 @@ namespace xc
 			detour_jump((g_plugin->get_base() + 0x15425E0), (uintptr_t)&detail::BGSScrapHeap::dealloc);	
 			detour_jump((g_plugin->get_base() + 0x17D9DF0), (uintptr_t)&detail::bhkThreadMemorySource::__ctor__);	// bhkThreadMemorySource init
 
+			// BSScaleformSysMemMapper
+			{
+				auto vtable = (uintptr_t*)(g_plugin->get_base() + 0x25131D8);
+				scope_relocate_al lock((LPVOID)vtable, 0x40);
+				vtable[0] = (uintptr_t)detail::BSScaleformSysMemMapper::get_page_size;
+				vtable[1] = (uintptr_t)detail::BSScaleformSysMemMapper::init;
+				vtable[2] = (uintptr_t)detail::BSScaleformSysMemMapper::release;
+				vtable[3] = (uintptr_t)detail::BSScaleformSysMemMapper::alloc;
+				vtable[4] = (uintptr_t)detail::BSScaleformSysMemMapper::free;
+
+				patch_mem((g_plugin->get_base() + 0x19FF5D9), (UInt8*)&detail::BSScaleformSysMemMapper::PAGE_SIZE, 4);
+				patch_mem((g_plugin->get_base() + 0x19FF5E4), (UInt8*)&detail::BSScaleformSysMemMapper::HEAP_SIZE, 4);
+			}
+
 			// So that it is never called
 			patch_mem((g_plugin->get_base() + 0xB8DC50), { 0xC3, 0x90 });	// MemoryManager - Default/Static/File heaps init
 			patch_mem((g_plugin->get_base() + 0x153D5D0), { 0xC3, 0x90 });	// BSSmallBlockAllocator init
@@ -295,7 +355,7 @@ namespace xc
 		}
 		else
 			_ERROR("The patch has not been fully installed, as the mod does not know the game");
-		
+
 		return true;
 	}
 

@@ -4,7 +4,6 @@
 
 #include <vmm.h>
 #include <xc_patch_archive_limit.h>
-#include <xc_assertion.h>
 #include <xc_version.h>
 #include <xc_plugin.h>
 
@@ -33,26 +32,6 @@ namespace xc
 	};
 
 	tree_db_general_t g_tree_db_general;
-
-	class scope_relocate_al
-	{
-	public:
-		scope_relocate_al(LPVOID address, SIZE_T size) : _protected(0), _address(address), _size(size)
-		{
-			_xc_assert_msg_fmt(VirtualProtect(_address, _size, PAGE_EXECUTE_READWRITE, &_protected), 
-				"Address: %p Size: %X", _address, _size);
-		}
-
-		~scope_relocate_al()
-		{
-			// Ignore if this fails, the memory was copied either way
-			VirtualProtect(_address, _size, _protected, &_protected);
-		}
-	private:
-		LPVOID _address;
-		SIZE_T _size;
-		DWORD _protected;
-	};
 
 	const char* patch_archive_limit::get_name() const noexcept
 	{
@@ -646,22 +625,12 @@ namespace xc
 			// supported 8 version archive
 			patch_mem_nop(g_plugin->get_base() + 0x1B6FA9F, { 0x8 });
 
-			
+#if 0
+			detour_call(g_plugin->get_base() + 0x1B76AC9, (uintptr_t)&impl_memcpy_hash_from_archive_table);
+			memcpy_hash_from_archive_table_orig = g_plugin->get_base() + 0x1B78970;
 
-				
-			//detour_call(g_plugin->get_base() + 0x1B76AC9, (uintptr_t)&impl_memcpy_hash_from_archive_table);
-			//memcpy_hash_from_archive_table_orig = g_plugin->get_base() + 0x1B78970;
-
-			//detour_call(g_plugin->get_base() + 0x15864B5, (uintptr_t)&impl_set_index_archive_to_hash);
-
-			//offset = g_plugin->get_base() + 1587095;
-			//// Remove useless stuff.	
-			//
-			//// mov eax, dword ptr ds:[rsi+0xC]
-			//// mov dword ptr ds:[rdi+0xC], eax
-			//patch_mem(offset, { 0x8B, 0x46, 0x0C, 0x89, 0x47, 0x0C });
-
-			Sleep(20000);
+			detour_call(g_plugin->get_base() + 0x1B76AF7, (uintptr_t)&impl_set_index_archive_to_hash_og);
+#endif
 		}
 		else if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_984)
 		{
@@ -1160,7 +1129,7 @@ namespace xc
 			detour_call(g_plugin->get_base() + 0x158646F, (uintptr_t)&impl_memcpy_hash_from_archive_table);
 			memcpy_hash_from_archive_table_orig = g_plugin->get_base() + 0x1587BA0;
 
-			detour_call(g_plugin->get_base() + 0x15864B5, (uintptr_t)&impl_set_index_archive_to_hash);
+			detour_call(g_plugin->get_base() + 0x15864B5, (uintptr_t)&impl_set_index_archive_to_hash_ng);
 
 			offset = g_plugin->get_base() + 1587095;
 			// Remove useless stuff.	
@@ -1186,11 +1155,19 @@ namespace xc
 		return result;	// 0 - OK
 	}
 
-	void patch_archive_limit::impl_set_index_archive_to_hash()
+	void patch_archive_limit::impl_set_index_archive_to_hash_og()
 	{
 		// It is necessary to get the stack of the calling function.
 		auto rsp = (uintptr_t)_AddressOfReturnAddress() + 8;
 		// Set archive index from stack
-		*((uint16_t*)(rsp + 0x3C)) = *((uint16_t*)(rsp + 0x1E8));//min(, (uint16_t)255);
+		*((uint16_t*)(rsp + 0x4C)) = *((uint16_t*)(rsp + 0x250));
+	}
+
+	void patch_archive_limit::impl_set_index_archive_to_hash_ng()
+	{
+		// It is necessary to get the stack of the calling function.
+		auto rsp = (uintptr_t)_AddressOfReturnAddress() + 8;
+		// Set archive index from stack
+		*((uint16_t*)(rsp + 0x3C)) = *((uint16_t*)(rsp + 0x1E8));
 	}
 }

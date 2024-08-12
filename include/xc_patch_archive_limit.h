@@ -49,6 +49,7 @@ namespace xc
 		virtual bool run() const;
 	private:
 		static uint32_t impl_memcpy_hash_from_archive_table(void* archive, void* archive_hash, file_hash_t* hash, size_t read_size);
-		static void impl_set_index_archive_to_hash();
+		static void impl_set_index_archive_to_hash_og();
+		static void impl_set_index_archive_to_hash_ng();
 	};
 }

@@ -4,10 +4,32 @@
 
 #pragma once
 
+#include <vector>
+#include <xc_assertion.h>
 #include <initializer_list>
 
 namespace xc
 {
+	class scope_relocate_al
+	{
+	public:
+		inline scope_relocate_al(LPVOID address, SIZE_T size) : _protected(0), _address(address), _size(size)
+		{
+			_xc_assert_msg_fmt(VirtualProtect(_address, _size, PAGE_EXECUTE_READWRITE, &_protected),
+				"Address: %p Size: %X", _address, _size);
+		}
+
+		inline ~scope_relocate_al()
+		{
+			// Ignore if this fails, the memory was copied either way
+			VirtualProtect(_address, _size, _protected, &_protected);
+		}
+	private:
+		LPVOID _address;
+		SIZE_T _size;
+		DWORD _protected;
+	};
+
 	class patch
 	{
 	public:
@@ -34,6 +56,8 @@ namespace xc
 		virtual uintptr_t detour_jump(uintptr_t target, uintptr_t func) const noexcept;
 		virtual uintptr_t detour_call(uintptr_t target, uintptr_t func) const noexcept;
 		virtual uint32_t calc_rva(uintptr_t from, uintptr_t target, uint32_t opcode_offset) const noexcept;
+		virtual uintptr_t find_pattern(uintptr_t start_address, uintptr_t max_size, const char* mask) const noexcept;
+		virtual std::vector<uintptr_t> find_patterns(uintptr_t start_address, uintptr_t max_size, const char* mask) const noexcept;
 	private:
 		bool start_impl() const;
 	};

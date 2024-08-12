@@ -227,7 +227,7 @@
       <BuildStlModules>false</BuildStlModules>
       <CallingConvention>StdCall</CallingConvention>
       <ForcedIncludeFiles>xc_common.h</ForcedIncludeFiles>
-      <DisableSpecificWarnings>4477;4996;6001;26495;28125;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4477;4996;6001;6250;6333;26495;28125;28160;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

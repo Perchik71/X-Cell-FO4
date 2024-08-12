@@ -97,6 +97,79 @@ namespace xc
 		return (uint32_t)delta;
 	}
 
+	uintptr_t patch::find_pattern(uintptr_t start_address, uintptr_t max_size, const char* mask) const noexcept
+	{
+		std::vector<std::pair<uint8_t, bool>> pattern;
+
+		for (size_t i = 0; i < strlen(mask);)
+		{
+			if (mask[i] != '?')
+			{
+				pattern.emplace_back((uint8_t)strtoul(&mask[i], nullptr, 16), false);
+				i += 3;
+			}
+			else
+			{
+				pattern.emplace_back(0x00, true);
+				i += 2;
+			}
+		}
+
+		const uint8_t* dataStart = (uint8_t*)start_address;
+		const uint8_t* dataEnd = (uint8_t*)start_address + max_size + 1;
+
+		auto ret = std::search(dataStart, dataEnd, pattern.begin(), pattern.end(),
+			[](uint8_t CurrentByte, std::pair<uint8_t, bool>& Pattern) {
+				return Pattern.second || (CurrentByte == Pattern.first);
+			});
+
+		if (ret == dataEnd)
+			return 0;
+
+		return std::distance(dataStart, ret) + start_address;
+	}
+
+	std::vector<uintptr_t> patch::find_patterns(uintptr_t start_address, uintptr_t max_size, const char* mask) const noexcept
+	{
+		std::vector<uintptr_t> results;
+		std::vector<std::pair<uint8_t, bool>> pattern;
+
+		for (size_t i = 0; i < strlen(mask);)
+		{
+			if (mask[i] != '?')
+			{
+				pattern.emplace_back((uint8_t)strtoul(&mask[i], nullptr, 16), false);
+				i += 3;
+			}
+			else
+			{
+				pattern.emplace_back(0x00, true);
+				i += 2;
+			}
+		}
+
+		const uint8_t* dataStart = (uint8_t*)start_address;
+		const uint8_t* dataEnd = (uint8_t*)start_address + max_size + 1;
+
+		for (const uint8_t* i = dataStart;;)
+		{
+			auto ret = std::search(i, dataEnd, pattern.begin(), pattern.end(),
+				[](uint8_t CurrentByte, std::pair<uint8_t, bool>& Pattern) {
+					return Pattern.second || (CurrentByte == Pattern.first);
+				});
+
+			if (ret == dataEnd)
+				break;
+
+			uintptr_t addr = std::distance(dataStart, ret) + start_address;
+			results.push_back(addr);
+
+			i = (uint8_t*)(addr + 1);
+		}
+
+		return results;
+	}
+
 	bool patch::start_impl() const
 	{
 		auto name_patch = get_name();
