@@ -70,14 +70,30 @@ namespace xc
 	unsigned int patch_profile::impl_get_private_profile_string(const char* app_name, const char* key_name, const char* default_value,
 		char* returned_string, unsigned int size, const char* file_name)
 	{
-		//errno = 0;
+		SetLastError(0);
 
 		if (!returned_string || !size)
 			return 0;
 
 		auto ini_data = impl_get_file(file_name);
 		if (!ini_data)
-			return GetPrivateProfileStringA(app_name, key_name, default_value, returned_string, size, file_name);
+		{
+			// set File Not Found
+			SetLastError(2);
+			
+			unsigned int length = 0;
+			if (default_value)
+			{
+				unsigned int length = strlen(default_value);
+				length = min(length, size - 1);
+				strncpy(returned_string, default_value, length);
+				returned_string[length] = 0;
+			}
+			else
+				returned_string[0] = 0;
+			
+			return length;
+		}
 
 		string s;
 		size_t l = 0;
@@ -137,12 +153,17 @@ namespace xc
 	unsigned int patch_profile::impl_get_private_profile_int(const char* app_name, const char* key_name, int default_value,
 		const char* file_name)
 	{
+		SetLastError(0);
+
 		if (!key_name || !app_name)
 			return default_value;
 
 		auto ini_data = impl_get_file(file_name);
 		if (!ini_data)
-			return GetPrivateProfileIntA(app_name, key_name, default_value, file_name);
+		{
+			SetLastError(2);
+			return default_value;
+		}
 
 		string s;
 		auto ip = ini_data->get(app_name);
@@ -171,10 +192,16 @@ namespace xc
 	bool patch_profile::impl_write_private_profile_string(const char* app_name, const char* key_name, const char* string,
 		const char* file_name)
 	{
+		SetLastError(0);
+
 		if (!app_name || !file_name) return false;
 
 		auto ini_data = impl_get_file(file_name);
-		if (!ini_data) return false;
+		if (!ini_data)
+		{
+			SetLastError(2);
+			return false;
+		}
 
 		if (!key_name)
 			// The name of the key to be associated with a string.
