@@ -31,7 +31,7 @@ namespace xc
 		// profile optimizations:
 		//
 		// - Replacing functions WritePrivateProfileStringA, GetPrivateProfileStringA, GetPrivateProfileIntA
-		//   They are outdated and constantly open and parsing the ini file.Complements Buffout 4, Buffout 4 NG.
+		//   They are outdated and constantly open and parsing the ini file. Complements Buffout 4, Buffout 4 NG.
 		//   Incompatible with the mod https://www.nexusmods.com/fallout4/mods/33947 PrivateProfileRedirector.
 		//   If that mod is installed, it needs to be disabled.
 
@@ -161,7 +161,9 @@ namespace xc
 		auto ini_data = impl_get_file(file_name);
 		if (!ini_data)
 		{
+			// set File Not Found
 			SetLastError(2);
+
 			return default_value;
 		}
 

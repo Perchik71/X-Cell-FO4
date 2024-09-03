@@ -38,7 +38,7 @@ namespace xc
 
 		// Accessing the plugin memory for some reason leads to an exception, so let's open it in a new object.
 		{
-			mINI::INIFile settings_file(g_plugin->get_settings().get_filename());
+			mINI::INIFile settings_file(g_plugin->get_settings()->get_filename());
 			mINI::INIStructure settings_data;
 			if (settings_file.read(settings_data) && settings_data.has("facegen_exception"))
 			{

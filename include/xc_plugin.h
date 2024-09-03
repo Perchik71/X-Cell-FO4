@@ -23,7 +23,7 @@ namespace xc
 		inline PluginHandle get_handle() const noexcept { return _handle; }
 		inline UInt32 get_f4se_version() const noexcept { return _f4se_version; }
 		inline UInt32 get_runtime_version() const noexcept { return _runtime_version; }
-		inline settings get_settings() const noexcept { return _settings; }
+		inline settings* get_settings() noexcept { return &_settings; }
 		inline uintptr_t get_base() const noexcept { return _base; }
 
 		bool init();

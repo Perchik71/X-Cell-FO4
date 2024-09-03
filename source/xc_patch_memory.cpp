@@ -211,8 +211,8 @@ namespace xc
 		class BSScaleformSysMemMapper
 		{
 		public:
-			constexpr static UInt32 PAGE_SIZE = (size_t)256 * 1024;				// 256 Kb
-			constexpr static UInt32 HEAP_SIZE = (size_t)512 * 1024 * 1024;		// 512 Mb
+			inline static UInt32 PAGE_SIZE;
+			inline static UInt32 HEAP_SIZE;
 
 			static uint32_t get_page_size(BSScaleformSysMemMapper* _this)
 			{
@@ -252,12 +252,26 @@ namespace xc
 
 		MEMORYSTATUSEX statex = { 0 };
 		statex.dwLength = sizeof(MEMORYSTATUSEX);
-		if (!GlobalMemoryStatusEx(&statex)) 
+		if (!GlobalMemoryStatusEx(&statex))
 			return false;
-	
-		_MESSAGE("Memory (Total: %.2f Gb, Available: %.2f Gb)", 
+
+		_MESSAGE("Memory (Total: %.2f Gb, Available: %.2f Gb)",
 			((double)statex.ullTotalPageFile / MEM_GB), ((double)statex.ullAvailPageFile / MEM_GB));
-		
+
+		detail::BSScaleformSysMemMapper::PAGE_SIZE = g_plugin->get_settings()->read_uint("additional", "scaleform_page_size", 256 /* 256 Kb */);
+		detail::BSScaleformSysMemMapper::HEAP_SIZE = g_plugin->get_settings()->read_uint("additional", "scaleform_heap_size", 512 /* 512 Mb */);
+
+		detail::BSScaleformSysMemMapper::PAGE_SIZE = min(detail::BSScaleformSysMemMapper::PAGE_SIZE, (UInt32)2 * 1024);
+		detail::BSScaleformSysMemMapper::PAGE_SIZE = (detail::BSScaleformSysMemMapper::PAGE_SIZE + 7) & ~7;
+		detail::BSScaleformSysMemMapper::HEAP_SIZE = min(detail::BSScaleformSysMemMapper::HEAP_SIZE, (UInt32)2 * 1024);
+		detail::BSScaleformSysMemMapper::HEAP_SIZE = (detail::BSScaleformSysMemMapper::HEAP_SIZE + 7) & ~7;
+
+		_MESSAGE("BSScaleformSysMemMapper (Page: %u Kb, Heap: %u Mb)",
+			detail::BSScaleformSysMemMapper::PAGE_SIZE, detail::BSScaleformSysMemMapper::HEAP_SIZE);
+
+		detail::BSScaleformSysMemMapper::PAGE_SIZE *= 1024;
+		detail::BSScaleformSysMemMapper::HEAP_SIZE *= 1024 * 1024;
+
 		// Replacement of all functions of the standard allocator.
 
 		patch_iat(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "realloc", (uintptr_t)&impl_realloc);

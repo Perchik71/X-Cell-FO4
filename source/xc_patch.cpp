@@ -10,7 +10,7 @@ namespace xc
 {
 	bool patch::start()
 	{
-		if (g_plugin->get_settings().read_bool("patches", get_name(), false))
+		if (g_plugin->get_settings()->read_bool("patches", get_name(), false))
 			return start_impl();
 		return false;
 	}
