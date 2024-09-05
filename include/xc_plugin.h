@@ -26,10 +26,13 @@ namespace xc
 		inline settings* get_settings() noexcept { return &_settings; }
 		inline uintptr_t get_base() const noexcept { return _base; }
 
+		static void f4se_messages_handler(F4SEMessagingInterface::Message* msg);
+
 		bool init();
 		void output_info();
 		void run();
 	private:
+		void send_massages_game_data_ready();
 		bool get_pe_section_range(uintptr_t module_base, const char* section, uintptr_t* start, uintptr_t* end);
 
 		PluginHandle _handle;
@@ -39,6 +42,8 @@ namespace xc
 		vector<patch*> _patches;
 		uintptr_t _base;
 		msrtti::section _section[3];
+		F4SEMessagingInterface* _messages;
+		const F4SEInterface* _f4se;
 	};
 }
 

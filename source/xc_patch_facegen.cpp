@@ -7,6 +7,7 @@
 #include <mini/ini.h>
 #include <f4se/GameObjects.h>
 #include <f4se/GameForms.h>
+#include <f4se/GameData.h>
 #include <xc_patch_facegen.h>
 #include <xc_version.h>
 #include <xc_plugin.h>
@@ -32,33 +33,71 @@ namespace xc
 		return "facegen";
 	}
 
+	bool patch_facegen::game_data_ready_handler() const noexcept
+	{
+		auto dataHandler = *(g_dataHandler.GetPtr());
+		constexpr static UInt16 INVALID_INDEX = (UInt16)-1;
+
+		if (g_facegen_exception_formids.size() > 6)
+		{
+			// Clear the list except for important ones 
+			auto it = g_facegen_exception_formids.begin();
+			std::advance(it, 6);
+			g_facegen_exception_formids.erase(it);
+		}
+
+		// Read the file again to get faster access to the desired section
+		mINI::INIFile settings_file(g_plugin->get_settings()->get_filename());
+		mINI::INIStructure settings_data;
+		if (settings_file.read(settings_data) && settings_data.has("facegen_exception"))
+		{
+			char* end_ptr = nullptr;
+			UInt32 formid = 0;
+			auto section = settings_data.get("facegen_exception");
+
+			for (auto it = section.begin(); it != section.end(); it++)
+			{
+				if (it->second.empty()) continue;
+
+				std::string value, plugin_name;
+				auto it_sep = it->second.find_first_of(':');
+				if (it_sep != std::string::npos)
+				{
+					plugin_name = it->second.substr(it_sep + 1);
+					value = it->second.substr(0, it_sep);
+				}
+				else
+					value = it->second;
+
+				if (value.find_first_of("0x") == 0)
+					formid = strtoul(it->second.c_str() + 2, &end_ptr, 16);
+				else
+					formid = strtoul(it->second.c_str(), &end_ptr, 10);
+
+				if (!plugin_name.empty())
+				{
+					UInt16 index_plugin = INVALID_INDEX;
+					// Search among master, default plugins
+					if ((index_plugin = dataHandler->GetLoadedModIndex(plugin_name.c_str())) != INVALID_INDEX)
+						formid = (formid & (0x00FFFFFF)) | (index_plugin << 24);
+					// Search among light master plugins
+					else if ((index_plugin = dataHandler->GetLoadedLightModIndex(plugin_name.c_str())) != INVALID_INDEX)
+						formid = (formid & (0x00000FFF)) | (index_plugin << 12) | 0xFE000000;
+					// If there is no such thing, then it is a waste of a stupid user's time
+					else continue;
+				}					
+
+				//_MESSAGE("Skip NPC added \"%s\" (%08X)", it->first.c_str(), formid);
+				g_facegen_exception_formids.push_back(formid);
+			}
+		}
+
+		return true;
+	}
+
 	bool patch_facegen::run() const
 	{
 		// The problem is, the game uses facegen, which lies only in fallout4.esm.
-
-		// Accessing the plugin memory for some reason leads to an exception, so let's open it in a new object.
-		{
-			mINI::INIFile settings_file(g_plugin->get_settings()->get_filename());
-			mINI::INIStructure settings_data;
-			if (settings_file.read(settings_data) && settings_data.has("facegen_exception"))
-			{
-				char* end_ptr = nullptr;
-				UInt32 formid = 0;
-				auto section = settings_data.get("facegen_exception");
-
-				for (auto it = section.begin(); it != section.end(); it++)
-				{
-					if (it->second.empty()) continue;
-					if (it->second.find_first_of("0x") == 0)
-						formid = strtoul(it->second.c_str() + 2, &end_ptr, 16);
-					else
-						formid = strtoul(it->second.c_str(), &end_ptr, 10);
-					
-					// _MESSAGE("Skip NPC added \"%s\" (%08X)", it->first.c_str(), formid);
-					g_facegen_exception_formids.push_back(formid);
-				}
-			}
-		}
 
 		if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_163)
 		{

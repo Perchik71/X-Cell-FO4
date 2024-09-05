@@ -40,7 +40,7 @@ extern "C"
 	{
 		if (f4se->isEditor)
 			return false;
-		
+
 		g_plugin = new xc::plugin(f4se);
 		if (g_plugin)
 		{

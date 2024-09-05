@@ -18,6 +18,7 @@ namespace xc
 		patch_memory& operator=(const patch_memory&) = default;
 
 		virtual const char* get_name() const noexcept;
+		virtual bool game_data_ready_handler() const noexcept;
 	protected:
 		virtual bool run() const;
 	private:

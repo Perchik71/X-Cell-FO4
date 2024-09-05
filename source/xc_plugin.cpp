@@ -17,7 +17,7 @@
 
 namespace xc
 {
-	plugin::plugin(const F4SEInterface* f4se)
+	plugin::plugin(const F4SEInterface* f4se) : _messages(nullptr), _f4se(f4se)
 	{
 		_handle = f4se->GetPluginHandle();
 		_f4se_version = f4se->f4seVersion;
@@ -25,7 +25,8 @@ namespace xc
 	}
 
 	plugin::plugin(const plugin& p) : _handle(p._handle), _f4se_version(p._f4se_version),
-		_runtime_version(p._runtime_version), _settings(p._settings)
+		_runtime_version(p._runtime_version), _settings(p._settings), _messages(p._messages),
+		_f4se(p._f4se)
 	{}
 
 	plugin& plugin::operator=(const plugin& p)
@@ -36,6 +37,15 @@ namespace xc
 		_settings = p._settings;
 
 		return *this;
+	}
+
+	void plugin::f4se_messages_handler(F4SEMessagingInterface::Message* msg)
+	{
+		if (msg->type == F4SEMessagingInterface::kMessage_GameDataReady)
+		{
+			_MESSAGE("The game passed the data");
+			g_plugin->send_massages_game_data_ready();
+		}
 	}
 
 	bool plugin::init()
@@ -112,6 +122,28 @@ namespace xc
 			}
 		}
 
+		// get the serialization interface and query its version
+		if (!(_messages = (F4SEMessagingInterface*)_f4se->QueryInterface(kInterface_Messaging)))
+		{
+			_FATALERROR("Couldn't get messaging interface");
+			return false;
+		}
+		else
+		{
+			if (_messages->interfaceVersion < F4SEMessagingInterface::kInterfaceVersion)
+			{
+				_FATALERROR("F4SEMessagingInterface interface too old (%d expected %d)",
+					_messages->interfaceVersion, F4SEMessagingInterface::kInterfaceVersion);
+				return false;
+			}
+
+			if (!_messages->RegisterListener(_handle, "F4SE", f4se_messages_handler))
+			{
+				_FATALERROR("Failed to register a message handler");
+				return false;
+			}
+		}
+
 		//////////////////
 
 		_patches.push_back(new patch_threads());
@@ -140,8 +172,28 @@ namespace xc
 
 	void plugin::run()
 	{
-		for (auto i : _patches)
-			if (i) i->start();
+		__try
+		{
+			for (auto i : _patches)
+				if (i) i->start();
+		}
+		__except (1)
+		{
+			_FATALERROR("Error: Errors occurred during patch initialization");
+		}
+	}
+
+	void plugin::send_massages_game_data_ready()
+	{
+		__try
+		{
+			for (auto i : _patches)
+				if (i) i->game_data_ready_handler();
+		}
+		__except (1)
+		{
+			_ERROR("Error: Sending the message \"Game Data Ready\" failed");
+		}
 	}
 
 	bool plugin::get_pe_section_range(uintptr_t module_base, const char* section, uintptr_t* start, uintptr_t* end)

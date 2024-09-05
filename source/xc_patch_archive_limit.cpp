@@ -38,6 +38,11 @@ namespace xc
 		return "archive_limit";
 	}
 
+	bool patch_archive_limit::game_data_ready_handler() const noexcept
+	{
+		return true;
+	}
+
 	bool patch_archive_limit::run() const
 	{
 		if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_163)

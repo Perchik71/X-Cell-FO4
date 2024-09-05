@@ -16,6 +16,11 @@ namespace xc
 		return "libdeflate";
 	}
 
+	bool patch_libdeflate::game_data_ready_handler() const noexcept
+	{
+		return true;
+	}
+
 	bool patch_libdeflate::run() const
 	{
 		auto base = GetModuleHandleA(NULL);

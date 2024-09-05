@@ -246,6 +246,11 @@ namespace xc
 		return "memory";
 	}
 
+	bool patch_memory::game_data_ready_handler() const noexcept
+	{
+		return true;
+	}
+
 	bool patch_memory::run() const
 	{
 		auto base = GetModuleHandleA(NULL);

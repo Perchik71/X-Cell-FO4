@@ -11,6 +11,11 @@ namespace xc
 		return "threads";
 	}
 
+	bool patch_threads::game_data_ready_handler() const noexcept
+	{
+		return true;
+	}
+
 	bool patch_threads::run() const
 	{
 		auto base = GetModuleHandleA(NULL);

@@ -23,6 +23,11 @@ namespace xc
 		return "profile";
 	}
 
+	bool patch_profile::game_data_ready_handler() const noexcept
+	{
+		return true;
+	}
+
 	bool patch_profile::run() const
 	{
 		auto base = GetModuleHandleA(NULL);

@@ -19,6 +19,7 @@ namespace xc
 		patch_facegen& operator=(const patch_facegen&) = default;
 
 		virtual const char* get_name() const noexcept;
+		virtual bool game_data_ready_handler() const noexcept;
 	protected:
 		virtual bool run() const;
 	private:

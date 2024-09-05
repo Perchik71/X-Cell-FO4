@@ -11,6 +11,11 @@ namespace xc
 		return "io";
 	}
 
+	bool patch_io::game_data_ready_handler() const noexcept
+	{
+		return true;
+	}
+
 	bool patch_io::run() const
 	{
 		auto base = GetModuleHandleA(NULL);

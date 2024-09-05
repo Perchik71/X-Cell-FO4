@@ -15,6 +15,11 @@ namespace xc
 		return "loadscreen";
 	}
 
+	bool patch_loadscreen::game_data_ready_handler() const noexcept
+	{
+		return true;
+	}
+
 	bool patch_loadscreen::run() const
 	{
 		auto base = GetModuleHandleA(NULL);
