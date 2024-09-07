@@ -16,7 +16,7 @@
 namespace xc
 {
 	BGSKeyword** g_keyword_is_child_player = nullptr;
-	vector<UInt32> g_facegen_exception_formids = 
+	vector<UInt32> g_facegen_primary_exception_formids =
 	{
 		// Since it has no protection in the game
 
@@ -27,6 +27,7 @@ namespace xc
 		0x246BF0,	// MQ101PlayerSpouseMale_NameOnly
 		0x246BF1,	// MQ101PlayerSpouseFemale_NameOnly
 	};
+	vector<UInt32> g_facegen_exception_formids;
 
 	const char* patch_facegen::get_name() const noexcept
 	{
@@ -38,14 +39,7 @@ namespace xc
 		auto dataHandler = *(g_dataHandler.GetPtr());
 		constexpr static UInt16 INVALID_INDEX = (UInt16)-1;
 
-		if (g_facegen_exception_formids.size() > 6)
-		{
-			// Clear the list except for important ones 
-			auto it = g_facegen_exception_formids.begin();
-			std::advance(it, 6);
-			g_facegen_exception_formids.erase(it);
-		}
-
+		g_facegen_exception_formids = g_facegen_primary_exception_formids;
 		// Read the file again to get faster access to the desired section
 		mINI::INIFile settings_file(g_plugin->get_settings()->get_filename());
 		mINI::INIStructure settings_data;
