@@ -28,12 +28,6 @@
     <Filter Include="typeinfo">
       <UniqueIdentifier>{d238b62a-94b7-4b54-919f-553704d8e34d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\internal">
-      <UniqueIdentifier>{98ae0439-36d9-4517-80ec-fbcc92ab975e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы заголовков\internal">
-      <UniqueIdentifier>{6eb9fd18-275f-4a38-a50e-08007c4345d4}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\xc_dllmain.cpp">
@@ -131,9 +125,6 @@
     </ClCompile>
     <ClCompile Include="source\xc_patch_libdeflate.cpp">
       <Filter>Исходные файлы\patches</Filter>
-    </ClCompile>
-    <ClCompile Include="depends\vmm\source\valloc.cpp">
-      <Filter>Исходные файлы\internal</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -241,9 +232,6 @@
     </ClInclude>
     <ClInclude Include="include\xc_patch_libdeflate.h">
       <Filter>Файлы заголовков\patches</Filter>
-    </ClInclude>
-    <ClInclude Include="depends\vmm\source\valloc.h">
-      <Filter>Файлы заголовков\internal</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

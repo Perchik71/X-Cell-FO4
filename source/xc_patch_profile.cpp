@@ -89,8 +89,7 @@ namespace xc
 			unsigned int length = 0;
 			if (default_value)
 			{
-				unsigned int length = strlen(default_value);
-				length = min(length, size - 1);
+				length = min((unsigned int)strlen(default_value), size - 1);
 				strncpy(returned_string, default_value, length);
 				returned_string[length] = 0;
 			}
