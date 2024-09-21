@@ -64,7 +64,7 @@ namespace xc
 
 			ini_data = new mINI::INIStructure();
 			if (!ini_data) return nullptr;
-			file->read(*ini_data);
+			file->read(*ini_data, false);
 
 			_cache.insert(std::pair<string_view, mINI::INIStructure*>(lpFileName, ini_data));
 		}
