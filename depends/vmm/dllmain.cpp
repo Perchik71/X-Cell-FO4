@@ -3,7 +3,7 @@
 // License: https://www.gnu.org/licenses/lgpl-3.0.html
 
 #include <windows.h>
-#include "vmm.h"
+#include "Voltek.MemoryManager.h"
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,

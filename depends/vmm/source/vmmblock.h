@@ -11,17 +11,32 @@ namespace voltek
 {
 	namespace memory_manager
 	{
+#pragma pack(push, 1)
 		// Заголовок блока
 		struct block_base
 		{
 			// Для проверки на валидность блока, от иной памяти выделенной, чем-то иным.
 			uint32_t prologue;
-			// Размер полезных данных.
-			uint32_t size;
-			// Номер страницы.
-			uint16_t page_id;
-			// Номер блока в странице.
-			uint16_t block_id;
+
+			union
+			{
+				struct
+				{
+					// Размер полезных данных.
+					uint32_t size;
+					// Номер страницы.
+					uint16_t page_id;
+					// Номер блока в странице.
+					uint16_t block_id;
+				};
+
+				struct ssize_union
+				{
+					// Размер полезных данных.
+					uint64_t size;
+				} default_block;
+			};
+
 			// Флаги (состояния, доп. инфа).
 			uint16_t flags;
 
@@ -39,6 +54,7 @@ namespace voltek
 				} super;
 			};
 		};
+#pragma pack(pop)
 
 		static_assert(sizeof(block_base) == 0x10, "sizeof(block_base) == 0x10");
 
@@ -72,6 +88,14 @@ namespace voltek
 		typedef block_base_t<4096> block4096_t;
 		// Фиксируемый блок на 8192 байт.
 		typedef block_base_t<8192> block8192_t;
+		// Фиксируемый блок на 16384 байт.
+		typedef block_base_t<16384> block16384_t;
+		// Фиксируемый блок на 32768 байт.
+		typedef block_base_t<32768> block32768_t;
+		// Фиксируемый блок на 65536 байт.
+		typedef block_base_t<65536> block65536_t;
+		// Фиксируемый блок на 131072 байт.
+		typedef block_base_t<131072> block131072_t;
 
 		static_assert(sizeof(block8_t) == 0x20, "sizeof(block8_t) == 0x20");
 		static_assert(sizeof(block16_t) == 0x20, "sizeof(block16_t) == 0x20");
@@ -83,6 +107,10 @@ namespace voltek
 		static_assert(sizeof(block1024_t) == 0x410, "sizeof(block1024_t) == 0x410");
 		static_assert(sizeof(block4096_t) == 0x1010, "sizeof(block4096_t) == 0x1010");
 		static_assert(sizeof(block8192_t) == 0x2010, "sizeof(block8192_t) == 0x2010");
+		static_assert(sizeof(block16384_t) == 0x4010, "sizeof(block16384_t) == 0x4010");
+		static_assert(sizeof(block32768_t) == 0x8010, "sizeof(block32768_t) == 0x8010");
+		static_assert(sizeof(block65536_t) == 0x10010, "sizeof(block65536_t) == 0x10010");
+		static_assert(sizeof(block131072_t) == 0x20010, "sizeof(block131072_t) == 0x20010");
 
 		// Для проверки на валидность блока, от иной памяти выделенной, чем-то иным.
 		static constexpr uint32_t prologue_block = 0xdadafead;
@@ -143,16 +171,22 @@ namespace voltek
 		}
 
 		// Возвращает размер памяти указанный в блоке или 0, если он неправильный.
-		inline static uint32_t get_size_from_block(const block_base* block)
+		inline static size_t get_size_from_block(const block_base* block)
 		{
-			return is_valid_block(block) ? block->size: 0;
+			return is_valid_block(block) ? (is_used_default_block(block) ? block->default_block.size : block->size) : 0;
 		}
 
 		// Изменяет размер памяти указанном в блоке.
-		inline static bool set_size_from_block(block_base* block, uint32_t new_size)
+		inline static bool set_size_from_block(block_base* block, size_t new_size)
 		{
 			bool ret = is_valid_block(block);
-			if (ret) block->size = new_size;
+			if (ret)
+			{
+				if (is_used_default_block(block))
+					block->default_block.size = new_size;
+				else
+					block->size = (uint32_t)new_size;
+			}
 			return ret;
 		}
 
@@ -228,13 +262,13 @@ namespace voltek
 		}
 
 		// Возвращает размер памяти указанный в указателе или 0, если он неправильный.
-		inline static uint32_t get_size_from_ptr(const void* ptr)
+		inline static size_t get_size_from_ptr(const void* ptr)
 		{
 			return get_size_from_block(get_block_handle_from_ptr(ptr));
 		}
 
 		// Изменяет размер памяти указанном в указателе.
-		inline static bool set_size_from_ptr(void* ptr, uint32_t new_size)
+		inline static bool set_size_from_ptr(void* ptr, size_t new_size)
 		{
 			return set_size_from_block(get_block_handle_from_ptr(ptr), new_size);
 		}
@@ -287,10 +321,10 @@ namespace voltek
 		}
 
 		// Функция инициализации блока в качестве обычного не пуловского
-		inline static block_base* create_default_block(block_base* dst, uint32_t size)
+		inline static block_base* create_default_block(block_base* dst, size_t size)
 		{
 			dst->prologue = prologue_block;
-			dst->size = size;
+			dst->default_block.size = size;
 			dst->flags = flag_block_default_used;
 			return dst;
 		}

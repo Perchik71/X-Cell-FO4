@@ -10,10 +10,9 @@
     <ClCompile Include="source\vassert.cpp" />
     <ClCompile Include="source\vbase.cpp" />
     <ClCompile Include="source\vbits.cpp" />
+    <ClCompile Include="source\vmapper.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="version.h" />
     <ClInclude Include="source\vintrin.h" />
     <ClInclude Include="source\vio.h" />
     <ClInclude Include="source\vmmblock.h" />
@@ -26,9 +25,39 @@
     <ClInclude Include="source\vbase.h" />
     <ClInclude Include="source\vbits.h" />
     <ClInclude Include="include\vmmconfig.h" />
-    <ClInclude Include="include\vmm.h" />
+    <ClInclude Include="include\Voltek.MemoryManager.h" />
+    <ClInclude Include="source\vmapper.h" />
+    <ClInclude Include="version\resource_version2.h">
+      <Filter>version</Filter>
+    </ClInclude>
+    <ClInclude Include="version\resource_version.h">
+      <Filter>version</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="resource.rc" />
+    <Filter Include="version">
+      <UniqueIdentifier>{5b1be333-3cf1-4fc3-bac4-d0a06804c8de}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="version\resource_version2.tmp">
+      <Filter>version</Filter>
+    </None>
+    <None Include="version\scripts.ps1">
+      <Filter>version</Filter>
+    </None>
+    <None Include="version\resource_version.aps">
+      <Filter>version</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="version\build_version.txt">
+      <Filter>version</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="version\resource_version.rc">
+      <Filter>version</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

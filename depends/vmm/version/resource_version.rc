@@ -1,6 +1,12 @@
+п»ї// Copyright В© 2023-2024 aka perchik71. All rights reserved.
+// Contacts: <email:timencevaleksej@gmail.com>
+// License: https://www.gnu.org/licenses/gpl-3.0.html
+
 // Microsoft Visual C++ generated resource script.
 //
-#include "resource.h"
+#pragma code_page(65001)
+
+#include "resource_version2.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -13,11 +19,10 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Русский (Россия) resources
+// Р СѓСЃСЃРєРёР№ (Р РѕСЃСЃРёСЏ) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
 LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
-#pragma code_page(1251)
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -27,7 +32,7 @@ LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
 
 1 TEXTINCLUDE 
 BEGIN
-    "resource.h\0"
+    "resource_version.h\0"
 END
 
 2 TEXTINCLUDE 
@@ -51,8 +56,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,365
- PRODUCTVERSION 1,0,0,0
+ FILEVERSION VER_FILE_VERSION
+ PRODUCTVERSION VER_PRODUCT_VERSION
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -69,9 +74,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "aka perchik71"
             VALUE "FileDescription", "Scalable Allocator library"
-            VALUE "FileVersion", "1.0.0.365"
+            VALUE "FileVersion", VER_FILE_VERSION_STR
+            VALUE "InternalName", "Voltek.MemoryManager"
             VALUE "LegalCopyright", "Copyright (C) aka perchik71 2023-2024"
-            VALUE "ProductVersion", "1.0.0.0"
+            VALUE "OriginalFilename", "Voltek.MemoryManager.dll"
+            VALUE "ProductName", "Memory manager"
+            VALUE "ProductVersion", VER_PRODUCT_VERSION_STR
         END
     END
     BLOCK "VarFileInfo"
@@ -80,7 +88,7 @@ BEGIN
     END
 END
 
-#endif    // Русский (Россия) resources
+#endif    // Р СѓСЃСЃРєРёР№ (Р РѕСЃСЃРёСЏ) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

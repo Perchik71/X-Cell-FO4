@@ -2,7 +2,7 @@
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
-#include <vmm.h>
+#include <Voltek.MemoryManager.h>
 #include <xc_patch_archive_limit.h>
 #include <xc_version.h>
 #include <xc_plugin.h>

@@ -6,7 +6,7 @@
 
 #include "valloc.h"
 #include "vassert.h"
-#include "vbits.h"
+#include "vmapper.h"
 #include "vio.h"
 
 namespace voltek
@@ -17,7 +17,7 @@ namespace voltek
 		// Является хранилищем блоков, но при этом нет жёсткой зависимости от каких блоков.
 		// Служит только в качестве помечания свободный или занятый блок, а также быстрого
 		// нахождения свободного блока, при помощи битовой карты.
-		template<typename _type>
+		template<typename _type, typename _map = voltek::core::bits_regions, size_t _blocks_in_page = 64ull * 1024>
 		class page_t : public voltek::core::base
 		{
 		public:
@@ -26,7 +26,11 @@ namespace voltek
 			{}
 			// Конструктор.
 			// Внимание размер будет округлён до кратности 256.
+#ifdef MAPPER_USE
+			page_t(size_t new_size, voltek::core::mapper* mapper) : _blocks(nullptr), _size(0), _user_data(0), _mapper(mapper)
+#else
 			page_t(size_t new_size) : _blocks(nullptr), _size(0), _user_data(0)
+#endif
 			{
 				set_size(new_size);
 			}
@@ -36,7 +40,13 @@ namespace voltek
 				map.clear();
 				if (_blocks)
 				{
+#ifdef MAPPER_USE
+					if (!_mapper->block_free(_blocks))
+						voltek::core::_internal::aligned_free(_blocks);
+#else
 					voltek::core::_internal::aligned_free(_blocks);
+#endif
+
 					_blocks = nullptr;
 					_size = 0;
 				}
@@ -55,7 +65,13 @@ namespace voltek
 				map.clear();
 				map.resize(new_size);
 
+#ifdef MAPPER_USE
+				_blocks = (_type*)_mapper->block_alloc();
+				if (!_blocks) _blocks = voltek::core::_internal::aligned_talloc<_type>(new_size, 0x10);
+#else
 				_blocks = voltek::core::_internal::aligned_talloc<_type>(new_size, 0x10);
+#endif
+
 				if (!_blocks)
 				{
 					map.clear();
@@ -112,7 +128,7 @@ namespace voltek
 			{ 
 #ifndef VMMDLL_EXPORTS
 				voltek::core::_internal::memory_to_file(filename, (void*)_blocks, 
-					voltek::core::_internal::aligned_msize(_blocks), 8192); 
+					voltek::core::_internal::aligned_msize(_blocks), _blocks_in_page >> 3);
 #endif // !VMMDLL_EXPORTS
 			}
 		private:
@@ -132,7 +148,11 @@ namespace voltek
 			// Дополнительная информация.
 			uintptr_t _user_data;
 			// Битовая карта.
-			voltek::core::bits_regions map;
+			_map map;
+#ifdef MAPPER_USE
+			// Карта памяти.
+			voltek::core::mapper* _mapper;
+#endif
 		};
 	}
 }

@@ -32,5 +32,9 @@
 *.app
 /build
 /.vs
+/depends/vmm/.vs
+/depends/vmm/x64
+/depends/f4se/f4se/f4se/x64
+/depends/f4se/f4se/f4se_common/x64
 /lib
 /linkconf

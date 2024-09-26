@@ -236,7 +236,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>common_vc22.lib;f4se_common.lib;detours.lib;vmm.lib;libdeflate.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>common_vc22.lib;f4se_common.lib;detours.lib;VoltekLib.MemoryManager.lib;libdeflate.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>powershell -ExecutionPolicy Bypass -File "$(SolutionDir)\version\scripts.ps1"</Command>

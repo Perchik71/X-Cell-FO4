@@ -2,12 +2,16 @@
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/lgpl-3.0.html
 
+#pragma warning(disable : 6333)
 #pragma warning(disable : 26819)
+#pragma warning(disable : 28160)
 
+#include "vmapper.h"
 #include "vmmmain.h"
 #include "vmmpool.h"
 #include <limits.h>
 #include <string.h>
+#include <windows.h>
 
 //#pragma warning(disable : 4996)
 //#include <stdio.h>
@@ -24,6 +28,8 @@ namespace voltek
 	{
 		memory_manager* global_memory_manager = nullptr;
 
+		constexpr size_t MAX_BLOCK_SIZE = 128ull * 1024 * 1024;
+
 		typedef pool_t<block8_t> pool8_t;
 		typedef pool_t<block16_t> pool16_t;
 		typedef pool_t<block32_t> pool32_t;
@@ -34,16 +40,24 @@ namespace voltek
 		typedef pool_t<block1024_t> pool1024_t;
 		typedef pool_t<block4096_t> pool4096_t;
 		typedef pool_t<block8192_t> pool8192_t;
-		typedef page_t<block8_t> page8_t;
-		typedef page_t<block16_t> page16_t;
-		typedef page_t<block32_t> page32_t;
-		typedef page_t<block64_t> page64_t;
-		typedef page_t<block128_t> page128_t;
-		typedef page_t<block256_t> page256_t;
-		typedef page_t<block512_t> page512_t;
-		typedef page_t<block1024_t> page1024_t;
-		typedef page_t<block4096_t> page4096_t;
-		typedef page_t<block8192_t> page8192_t;
+		typedef small_pool_t<block16384_t> pool16384_t;
+		typedef small_pool_t<block32768_t> pool32768_t;
+		typedef low_pool_t<block65536_t> pool65536_t;
+		typedef low_pool_t<block131072_t> pool131072_t;
+		typedef pool8_t::pageobj_t page8_t;
+		typedef pool16_t::pageobj_t page16_t;
+		typedef pool32_t::pageobj_t page32_t;
+		typedef pool64_t::pageobj_t page64_t;
+		typedef pool128_t::pageobj_t page128_t;
+		typedef pool256_t::pageobj_t page256_t;
+		typedef pool512_t::pageobj_t page512_t;
+		typedef pool1024_t::pageobj_t page1024_t;
+		typedef pool4096_t::pageobj_t page4096_t;
+		typedef pool8192_t::pageobj_t page8192_t;
+		typedef pool16384_t::pageobj_t page16384_t;
+		typedef pool32768_t::pageobj_t page32768_t;
+		typedef pool65536_t::pageobj_t page65536_t;
+		typedef pool131072_t::pageobj_t page131072_t;
 
 		// Проверка на допустимость памяти
 		// Только Windows: Если произошло исключение, то вернёт false, иначе true.
@@ -79,8 +93,8 @@ namespace voltek
 		memory_manager::memory_manager() : pools(nullptr)
 		{
 			core::initialize();
-
 			create_default_block(&zero_size_request_block, 0);
+			
 			//file_dbg_sniffer = fopen("vmm.log", "w+");
 
 			// Вся технология ускорения зависит от новых инструкций, если их нет, незачем
@@ -109,6 +123,10 @@ namespace voltek
 				if (pools[POOL_1024]) delete ((pool1024_t*)pools[POOL_1024]);
 				if (pools[POOL_4096]) delete ((pool4096_t*)pools[POOL_4096]);
 				if (pools[POOL_8192]) delete ((pool8192_t*)pools[POOL_8192]);
+				if (pools[POOL_16384]) delete ((pool16384_t*)pools[POOL_16384]);
+				if (pools[POOL_32768]) delete ((pool32768_t*)pools[POOL_32768]);
+				if (pools[POOL_65536]) delete ((pool65536_t*)pools[POOL_65536]);
+				if (pools[POOL_131072]) delete ((pool131072_t*)pools[POOL_131072]);
 
 				voltek::core::_internal::aligned_free(pools);
 				pools = nullptr;
@@ -119,8 +137,8 @@ namespace voltek
 
 		void* memory_manager::alloc(size_t size)
 		{
-			if (ULONG_MAX < size)
-				return nullptr;
+			//if (ULONG_MAX < size)
+			//	return nullptr;
 
 			if (!size)
 				return get_ptr_from_block_handle(&zero_size_request_block);
@@ -132,16 +150,21 @@ namespace voltek
 
 			// Проблемы с пулами? или размер больше фиксируемых блоков?
 			// Тогда выделим память простым способом.
-			if (!pools || (size > 8192))
+			if (!pools || (size > 131072))
 			{
 			alloc_default_ptr_label:
-				block_base* new_block = 
-					(block_base*)voltek::core::_internal::aligned_malloc(size + sizeof(block_base), 0x10);
+				block_base* new_block;
+				
+				if (size >= MAX_BLOCK_SIZE)
+					new_block = (block_base*)VirtualAlloc(NULL, size + sizeof(block_base), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+				else
+					new_block = (block_base*)voltek::core::_internal::aligned_malloc(size + sizeof(block_base), 0x10);
+	
 				if (new_block)
 				{
 					//_fsniff("Default block allocated: %p", new_block);
 
-					create_default_block(new_block, (uint32_t)size);
+					create_default_block(new_block, size);
 					return get_ptr_from_block_handle(new_block);
 				}
 
@@ -153,7 +176,79 @@ namespace voltek
 			// Блокируем. Снятие блокировки будет заботить компилятор.
 			voltek::core::_internal::simple_scope_lock scope_lock(lock);
 	
-			if (size > 4096)
+			if (size > 65536)
+			{
+				if (!pools[POOL_131072])
+					pools[POOL_131072] = (void*)(new pool131072_t(POOL_SIZE));
+
+				pool131072_t* pool = (pool131072_t*)pools[POOL_131072];
+				page131072_t* page = nullptr;
+				block131072_t* block = nullptr;
+				size_t index_block = 0;
+
+				if (pool->get_free_block(block, page, index_block))
+				{
+					create_pool_block(block, (uint32_t)size, (uint16_t)page->get_user_data(),
+						(uint16_t)index_block, (uint16_t)POOL_131072);
+					new_ptr = get_ptr_from_block_handle(block);
+					//_fsniff("Pool block allocated <131072>: %p %llu", new_ptr, size);
+				}
+			}
+			else if (size > 32768)
+			{
+				if (!pools[POOL_65536])
+					pools[POOL_65536] = (void*)(new pool65536_t(POOL_SIZE));
+
+				pool65536_t* pool = (pool65536_t*)pools[POOL_65536];
+				page65536_t* page = nullptr;
+				block65536_t* block = nullptr;
+				size_t index_block = 0;
+
+				if (pool->get_free_block(block, page, index_block))
+				{
+					create_pool_block(block, (uint32_t)size, (uint16_t)page->get_user_data(),
+						(uint16_t)index_block, (uint16_t)POOL_65536);
+					new_ptr = get_ptr_from_block_handle(block);
+					//_fsniff("Pool block allocated <65536>: %p %llu", new_ptr, size);
+				}
+			}
+			else if (size > 16384)
+			{
+				if (!pools[POOL_32768])
+					pools[POOL_32768] = (void*)(new pool32768_t(POOL_SIZE));
+
+				pool32768_t* pool = (pool32768_t*)pools[POOL_32768];
+				page32768_t* page = nullptr;
+				block32768_t* block = nullptr;
+				size_t index_block = 0;
+
+				if (pool->get_free_block(block, page, index_block))
+				{
+					create_pool_block(block, (uint32_t)size, (uint16_t)page->get_user_data(),
+						(uint16_t)index_block, (uint16_t)POOL_32768);
+					new_ptr = get_ptr_from_block_handle(block);
+					//_fsniff("Pool block allocated <32768>: %p %llu", new_ptr, size);
+				}
+			}
+			else if (size > 8192)
+			{
+				if (!pools[POOL_16384])
+					pools[POOL_16384] = (void*)(new pool16384_t(POOL_SIZE));
+
+				pool16384_t* pool = (pool16384_t*)pools[POOL_16384];
+				page16384_t* page = nullptr;
+				block16384_t* block = nullptr;
+				size_t index_block = 0;
+
+				if (pool->get_free_block(block, page, index_block))
+				{
+					create_pool_block(block, (uint32_t)size, (uint16_t)page->get_user_data(),
+						(uint16_t)index_block, (uint16_t)POOL_16384);
+					new_ptr = get_ptr_from_block_handle(block);
+					//_fsniff("Pool block allocated <16384>: %p %llu", new_ptr, size);
+				}
+			}
+			else if (size > 4096)
 			{
 				if (!pools[POOL_8192])
 					pools[POOL_8192] = (void*)(new pool8192_t(POOL_SIZE));
@@ -331,7 +426,7 @@ namespace voltek
 
 		void* memory_manager::realloc(const void* ptr, size_t size)
 		{
-			if (!ptr || !is_valid_ptr(ptr) || !is_valid_pointer(ptr) || !size || (ULONG_MAX < size))
+			if (!ptr || !is_valid_ptr(ptr) || !is_valid_pointer(ptr) || !size /*|| (ULONG_MAX < size)*/)
 				return nullptr;
 
 			void* new_ptr = nullptr;	
@@ -355,6 +450,46 @@ namespace voltek
 
 				switch (pool_id)
 				{
+				case POOL_131072:
+				{
+					// Если требуемая память больше, чем может позволить блок,
+					// то выделение новой памяти неизбежно.
+					if (size > 131072)
+						goto realloc_def_label;
+					// Новый размер для памяти.
+					block->size = (uint32_t)size;
+				}
+				break;
+				case POOL_65536:
+				{
+					// Если требуемая память больше, чем может позволить блок,
+					// то выделение новой памяти неизбежно.
+					if (size > 65536)
+						goto realloc_def_label;
+					// Новый размер для памяти.
+					block->size = (uint32_t)size;
+				}
+				break;
+				case POOL_32768:
+				{
+					// Если требуемая память больше, чем может позволить блок,
+					// то выделение новой памяти неизбежно.
+					if (size > 32768)
+						goto realloc_def_label;
+					// Новый размер для памяти.
+					block->size = (uint32_t)size;
+				}
+				break;
+				case POOL_16384:
+				{
+					// Если требуемая память больше, чем может позволить блок,
+					// то выделение новой памяти неизбежно.
+					if (size > 16384)
+						goto realloc_def_label;
+					// Новый размер для памяти.
+					block->size = (uint32_t)size;
+				}
+				break;
 				case POOL_8192:
 				{
 					// Если требуемая память больше, чем может позволить блок,
@@ -474,7 +609,13 @@ namespace voltek
 			if (is_used_default_ptr(ptr))
 			{
 				auto block = get_block_handle_from_ptr(ptr);
-				if (block->size > 0) voltek::core::_internal::aligned_free(block);
+				if (block->size > 0)
+				{
+					if (block->size >= MAX_BLOCK_SIZE)
+						VirtualFree((LPVOID)block, (SIZE_T)block->size, MEM_RELEASE);
+					else 
+						voltek::core::_internal::aligned_free(block);
+				}
 				//_fsniff("Default memory block released");
 			}
 			else
@@ -486,6 +627,34 @@ namespace voltek
 
 				switch (pool_id)
 				{
+				case POOL_131072:
+				{
+					pool131072_t* pool = (pool131072_t*)(pools[POOL_131072]);
+					ret = pool->release_block((*pool)[page_id], block_id);
+					//_fsniff("Pool memory block <131072> released [%s]", (ret ? "SUCCESS" : "FAILED"));
+				}
+				break;
+				case POOL_65536:
+				{
+					pool65536_t* pool = (pool65536_t*)(pools[POOL_65536]);
+					ret = pool->release_block((*pool)[page_id], block_id);
+					//_fsniff("Pool memory block <65536> released [%s]", (ret ? "SUCCESS" : "FAILED"));
+				}
+				break;
+				case POOL_32768:
+				{
+					pool32768_t* pool = (pool32768_t*)(pools[POOL_32768]);
+					ret = pool->release_block((*pool)[page_id], block_id);
+					//_fsniff("Pool memory block <32768> released [%s]", (ret ? "SUCCESS" : "FAILED"));
+				}
+				break;
+				case POOL_16384:
+				{
+					pool16384_t* pool = (pool16384_t*)(pools[POOL_16384]);
+					ret = pool->release_block((*pool)[page_id], block_id);
+					//_fsniff("Pool memory block <16384> released [%s]", (ret ? "SUCCESS" : "FAILED"));
+				}
+				break;
 				case POOL_8192:
 				{
 					pool8192_t* pool = (pool8192_t*)(pools[POOL_8192]);
@@ -574,7 +743,7 @@ namespace voltek
 		void memory_manager::dump_map(size_t pool_id, const char* filename) const
 		{
 #ifndef VMMDLL_EXPORTS
-			if ((POOL_512 < pool_id) || !filename)
+			if ((POOL_MAX >= pool_id) || !filename)
 				return;
 
 			// Блокируем. Снятие блокировки будет заботить компилятор.
@@ -582,6 +751,36 @@ namespace voltek
 
 			switch (pool_id)
 			{
+			case POOL_131072:
+			{
+				pool131072_t* pool = (pool131072_t*)(pools[POOL_131072]);
+				pool->dump_map(filename);
+			}
+			break;
+			case POOL_65536:
+			{
+				pool65536_t* pool = (pool65536_t*)(pools[POOL_65536]);
+				pool->dump_map(filename);
+			}
+			break;
+			case POOL_32768:
+			{
+				pool32768_t* pool = (pool32768_t*)(pools[POOL_32768]);
+				pool->dump_map(filename);
+			}
+			break;
+			case POOL_16384:
+			{
+				pool16384_t* pool = (pool16384_t*)(pools[POOL_16384]);
+				pool->dump_map(filename);
+			}
+			break;
+			case POOL_8192:
+			{
+				pool8192_t* pool = (pool8192_t*)(pools[POOL_8192]);
+				pool->dump_map(filename);
+			}
+			break;
 			case POOL_4096:
 			{
 				pool4096_t* pool = (pool4096_t*)(pools[POOL_4096]);
@@ -643,7 +842,7 @@ namespace voltek
 		void memory_manager::dump(size_t pool_id, const char* filename) const
 		{
 #ifndef VMMDLL_EXPORTS
-			if ((POOL_512 < pool_id) || !filename)
+			if ((POOL_MAX >= pool_id) || !filename)
 				return;
 
 			// Блокируем. Снятие блокировки будет заботить компилятор.
@@ -651,6 +850,36 @@ namespace voltek
 
 			switch (pool_id)
 			{
+			case POOL_131072:
+			{
+				pool131072_t* pool = (pool131072_t*)(pools[POOL_131072]);
+				pool->dump(filename);
+			}
+			break;
+			case POOL_65536:
+			{
+				pool65536_t* pool = (pool65536_t*)(pools[POOL_65536]);
+				pool->dump(filename);
+			}
+			break;
+			case POOL_32768:
+			{
+				pool32768_t* pool = (pool32768_t*)(pools[POOL_32768]);
+				pool->dump(filename);
+			}
+			break;
+			case POOL_16384:
+			{
+				pool16384_t* pool = (pool16384_t*)(pools[POOL_16384]);
+				pool->dump(filename);
+			}
+			break;
+			case POOL_8192:
+			{
+				pool8192_t* pool = (pool8192_t*)(pools[POOL_8192]);
+				pool->dump(filename);
+			}
+			break;
 			case POOL_4096:
 			{
 				pool4096_t* pool = (pool4096_t*)(pools[POOL_4096]);
@@ -710,7 +939,9 @@ namespace voltek
 		}
 
 		memory_manager::memory_manager(const memory_manager& ob) : pools(nullptr)
-		{}
+		{
+			memset(&zero_size_request_block, 0, sizeof(zero_size_request_block));
+		}
 
 		memory_manager& memory_manager::operator=(const memory_manager& ob)
 		{

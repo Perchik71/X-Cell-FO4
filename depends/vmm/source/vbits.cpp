@@ -184,7 +184,7 @@ namespace voltek
 			if (is_all_unsets())
 				return false;
 
-			if (_count >= 100)
+			if (_count >= 32)
 			{
 				if (_count >= 2048)
 				{
@@ -243,6 +243,7 @@ namespace voltek
 			uint64_t* u64p = (uint64_t*)_mem;
 			size_t cnt = (_count >> 6) << 6;
 			size_t end_cnt = cnt >> 6;
+
 			int mask = 0;
 
 			__m256i zero = { 0 };	// Всратая студия хочет инициализации локальной переменной, окей
@@ -256,7 +257,7 @@ namespace voltek
 				__m256i mask3 = _mm256_cmpeq_epi64(_mm256_loadu_si256((__m256i*)&u64p[i + 8]), zero);
 				__m256i mask4 = _mm256_cmpeq_epi64(_mm256_loadu_si256((__m256i*)&u64p[i + 12]), zero);
 
-				mask = _mm256_movemask_pd(*(reinterpret_cast<__m256d*>(&mask1)));
+				mask  = _mm256_movemask_pd(*(reinterpret_cast<__m256d*>(&mask1)));
 				mask |= _mm256_movemask_pd(*(reinterpret_cast<__m256d*>(&mask2))) << 4;
 				mask |= _mm256_movemask_pd(*(reinterpret_cast<__m256d*>(&mask3))) << 8;
 				mask |= _mm256_movemask_pd(*(reinterpret_cast<__m256d*>(&mask4))) << 12;

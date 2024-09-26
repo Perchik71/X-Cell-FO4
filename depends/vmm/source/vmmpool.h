@@ -11,12 +11,14 @@ namespace voltek
 	namespace memory_manager
 	{
 		// Шаблонный класс пула страниц памяти.
-		template<typename _type>
+		template<typename _type, typename _blocks_map = voltek::core::bits_regions, size_t _blocks_in_page = 64ull * 1024>
 		class pool_t : public voltek::core::base
 		{
 		public:
+			// Тип страницы.
+			using pageobj_t = page_t<_type, _blocks_map, _blocks_in_page>;
 			// Тип указателя на страницу.
-			typedef page_t<_type>* pageptr_t;
+			using pageptr_t = pageobj_t*;
 			// Конструктор по умолчанию.
 			pool_t() : _pages(nullptr), _current(nullptr), _count(0)
 			{}
@@ -35,6 +37,10 @@ namespace voltek
 					voltek::core::_internal::aligned_free(_pages);
 					_pages = nullptr;
 					_count = 0;
+
+#ifdef MAPPER_USE
+					delete _mapper;
+#endif
 				}
 			}
 			// Задаёт кол-во допустимых страниц для пула.
@@ -62,6 +68,12 @@ namespace voltek
 					_count = count;
 					// Размещаем везде единицы, 1 - свободная страница, 0 - занят.
 					map.all_set();
+
+#ifdef MAPPER_USE
+					size_t blocksize = sizeof(_type) * _blocks_in_page;
+					_mapper = new voltek::core::mapper(blocksize << 4, blocksize);
+					_vassert(!_mapper);
+#endif
 				}
 			}
 			// Возвращает допольнительную информацию, что привязана к пулу.
@@ -108,7 +120,7 @@ namespace voltek
 			{
 #ifndef VMMDLL_EXPORTS
 				voltek::core::_internal::memory_to_file(filename, (void*)_pages,
-					voltek::core::_internal::aligned_msize(_pages), 8192);
+					voltek::core::_internal::aligned_msize(_pages), _blocks_in_page >> 3);
 #endif // !VMMDLL_EXPORTS
 			}
 			// Возвращает истину в случаи нахождения свободного блока.
@@ -132,8 +144,12 @@ namespace voltek
 					// Если страницы за таким индексом не существует, надо создать.
 					if (!_pages[index])
 					{
-						// Объём одной страницы 64 * 1024
-						_current = new page_t<_type>(64 * 1024);
+						// Объём одной страницы _blocks_in_page
+#ifdef MAPPER_USE
+						_current = new pageobj_t(_blocks_in_page, _mapper);
+#else
+						_current = new pageobj_t(_blocks_in_page);
+#endif
 						if (!_current)
 						{
 							_vassert_msg(true, "Failed new free page");
@@ -171,7 +187,7 @@ namespace voltek
 			// Освобождает блок. Возвращает истину, если всё успешно освободилось.
 			bool release_block(pageptr_t page, size_t index_block)
 			{
-				if (!page || (index_block >= (64 * 1024)))
+				if (!page || (index_block >= _blocks_in_page))
 					return false;
 
 				// Попытка освободить в этой странице блок.
@@ -218,6 +234,15 @@ namespace voltek
 			uintptr_t _user_data;
 			// Битовая карта.
 			voltek::core::bits_regions map;
+#ifdef MAPPER_USE
+			// Карта памяти.
+			voltek::core::mapper* _mapper;
+#endif
 		};
+
+		template<typename _type, typename _blocks_map = voltek::core::bits, size_t _blocks_in_page = 4ull * 1024>
+		using small_pool_t = pool_t<_type, _blocks_map, _blocks_in_page>;
+		template<typename _type, typename _blocks_map = voltek::core::bits, size_t _blocks_in_page = 2ull * 1024>
+		using low_pool_t = pool_t<_type, _blocks_map, _blocks_in_page>;
 	}
 }

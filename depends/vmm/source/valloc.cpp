@@ -3,18 +3,9 @@
 // License: https://www.gnu.org/licenses/lgpl-3.0.html
 
 #include "valloc.h"
+#include "vmapper.h"
 #include <malloc.h>
 #include <string.h>
-
-#ifdef VOLTEK_VIRTUAL_ALLOC_WIN
-#	if (defined(_WIN32) || defined(_WIN64))	
-#		pragma warning (disable : 6333)
-#		pragma warning (disable : 28160)
-#		define WIN32_LEAN_AND_MEAN
-#		define VOLTEK_VIRTUAL_ALLOC_WIN_ENABLE
-#		include <windows.h>
-#	endif
-#endif
 
 namespace voltek
 {
@@ -30,41 +21,11 @@ namespace voltek
 			{
 				void* original;
 				size_t alloc_size;
-#if VOLTEK_VIRTUAL_ALLOC_WIN_ENABLE
-				size_t real_size;
-#endif
 			};
 
-#if VOLTEK_VIRTUAL_ALLOC_WIN_ENABLE
-			void* _malloc(size_t size)
-			{
-				return (void*)VirtualAlloc(NULL, (SIZE_T)size, 
-					MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-			}
-
-			void* _realloc(void* ptr, size_t new_size)
-			{
-				pointer_handle* handle = (pointer_handle*)ptr;
-				if (new_size == handle->real_size) return ptr;
-				void* new_ptr = (void*)VirtualAlloc(NULL, (SIZE_T)new_size,
-					MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-				if (new_ptr)
-					memcpy(new_ptr, handle->original,
-						(handle->real_size > new_size) ? new_size : handle->real_size);
-				VirtualFree(handle->original, handle->real_size, MEM_RELEASE);
-				return new_ptr;
-			}
-
-			void _free(void* ptr)
-			{
-				pointer_handle* handle = (pointer_handle*)ptr;
-				VirtualFree(handle->original, handle->real_size, MEM_RELEASE);
-			}
-#else
-			inline void* _malloc(size_t size) { return malloc(size); }
-			inline void* _realloc(void* ptr, size_t new_size) { return realloc(ptr, new_size); }
-			inline void _free(void* ptr) { free(ptr); }
-#endif
+			inline static void* _malloc(size_t size) { return malloc(size); }
+			inline static void* _realloc(void* ptr, size_t new_size) { return realloc(ptr, new_size); }
+			inline static void _free(void* ptr) { free(ptr); }
 
 			void* aligned_malloc(size_t size, size_t alignment)
 			{
@@ -87,9 +48,6 @@ namespace voltek
 					
 				handle->original = original_ptr;
 				handle->alloc_size = size;
-#if VOLTEK_VIRTUAL_ALLOC_WIN_ENABLE
-				handle->real_size = size + offset;
-#endif
 
 				return (void*)real;
 			}
@@ -127,9 +85,6 @@ namespace voltek
 
 				handle->original = original_ptr;
 				handle->alloc_size = size;
-#if VOLTEK_VIRTUAL_ALLOC_WIN_ENABLE
-				handle->real_size = size + offset;
-#endif
 
 				return (void*)real;
 			}
