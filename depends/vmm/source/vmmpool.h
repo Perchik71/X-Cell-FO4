@@ -6,17 +6,21 @@
 
 #include "vmmpage.h"
 
+#define __VMM_POOL_CONFIG_NORMAL_SIZE 64ull * 1024
+#define __VMM_POOL_CONFIG_SMALL_SIZE 4ull * 1024
+#define __VMM_POOL_CONFIG_LOW_SIZE 2ull * 1024
+
 namespace voltek
 {
 	namespace memory_manager
 	{
 		// Шаблонный класс пула страниц памяти.
-		template<typename _type, typename _blocks_map = voltek::core::bits_regions, size_t _blocks_in_page = 64ull * 1024>
+		template<typename _type, typename _page, size_t _blocks_in_page = __VMM_POOL_CONFIG_NORMAL_SIZE>
 		class pool_t : public voltek::core::base
 		{
 		public:
 			// Тип страницы.
-			using pageobj_t = page_t<_type, _blocks_map, _blocks_in_page>;
+			using pageobj_t = _page;
 			// Тип указателя на страницу.
 			using pageptr_t = pageobj_t*;
 			// Конструктор по умолчанию.
@@ -239,10 +243,5 @@ namespace voltek
 			voltek::core::mapper* _mapper;
 #endif
 		};
-
-		template<typename _type, typename _blocks_map = voltek::core::bits, size_t _blocks_in_page = 4ull * 1024>
-		using small_pool_t = pool_t<_type, _blocks_map, _blocks_in_page>;
-		template<typename _type, typename _blocks_map = voltek::core::bits, size_t _blocks_in_page = 2ull * 1024>
-		using low_pool_t = pool_t<_type, _blocks_map, _blocks_in_page>;
 	}
 }

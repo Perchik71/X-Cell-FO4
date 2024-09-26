@@ -45,6 +45,7 @@
     <ClInclude Include="source\vmmpage.h" />
     <ClInclude Include="source\vmmpool.h" />
     <ClInclude Include="source\vsimplelock.h" />
+    <ClInclude Include="source\vstack.h" />
     <ClInclude Include="version\resource_version.h" />
     <ClInclude Include="version\resource_version2.h" />
   </ItemGroup>

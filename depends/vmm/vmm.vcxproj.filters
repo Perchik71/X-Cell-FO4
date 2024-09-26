@@ -33,6 +33,7 @@
     <ClInclude Include="version\resource_version.h">
       <Filter>version</Filter>
     </ClInclude>
+    <ClInclude Include="source\vstack.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="version">
