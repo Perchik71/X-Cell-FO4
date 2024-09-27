@@ -28,7 +28,7 @@ namespace voltek
 	{
 		memory_manager* global_memory_manager = nullptr;
 
-		constexpr size_t MAX_BLOCK_SIZE = 128ull * 1024 * 1024;
+		constexpr size_t MAX_BLOCK_SIZE = 1ull * 1024 * 1024 * 1024;
 
 		typedef page_t<block8_t> page8_t;
 		typedef page_t<block16_t> page16_t;
