@@ -82,22 +82,7 @@ namespace xc
 
 		auto ini_data = impl_get_file(file_name);
 		if (!ini_data)
-		{
-			// set File Not Found
-			SetLastError(2);
-			
-			unsigned int length = 0;
-			if (default_value)
-			{
-				length = min((unsigned int)strlen(default_value), size - 1);
-				strncpy(returned_string, default_value, length);
-				returned_string[length] = 0;
-			}
-			else
-				returned_string[0] = 0;
-			
-			return length;
-		}
+			return GetPrivateProfileStringA(app_name, key_name, default_value, returned_string, size, file_name);
 
 		string s;
 		size_t l = 0;
@@ -164,12 +149,7 @@ namespace xc
 
 		auto ini_data = impl_get_file(file_name);
 		if (!ini_data)
-		{
-			// set File Not Found
-			SetLastError(2);
-
-			return default_value;
-		}
+			return GetPrivateProfileIntA(app_name, key_name, default_value, file_name);
 
 		string s;
 		auto ip = ini_data->get(app_name);
