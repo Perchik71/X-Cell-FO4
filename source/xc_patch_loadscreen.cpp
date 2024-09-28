@@ -31,7 +31,7 @@ namespace xc
 			patch_mem((g_plugin->get_base() + 0xFE23C0), { 0xC3, 0x90 });	// Removing an item from the load logo, any
 		else
 		{
-			_ERROR("The patch has not been installed, as the mod does not know the game");
+			_ERROR("The patch \"%s\" has not been installed, as the mod does not know the game", get_name());
 			return false;
 		}
 

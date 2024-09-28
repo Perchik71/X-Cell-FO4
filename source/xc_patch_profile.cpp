@@ -30,6 +30,12 @@ namespace xc
 
 	bool patch_profile::run() const
 	{
+		if (GetModuleHandleA("PrivateProfileRedirector.dll"))
+		{
+			_WARNING("Mod \"PrivateProfileRedirector F4\" has been detected, disabling redundant patch \"%s\"", get_name());
+			return false;
+		}
+
 		auto base = GetModuleHandleA(NULL);
 
 		//

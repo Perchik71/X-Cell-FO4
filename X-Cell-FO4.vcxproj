@@ -43,6 +43,7 @@
     <ClCompile Include="depends\typeinfo\ms_rtti.cpp" />
     <ClCompile Include="source\xc_assertion.cpp" />
     <ClCompile Include="source\xc_dllmain.cpp" />
+    <ClCompile Include="source\xc_fix_packageallocatelocation.cpp" />
     <ClCompile Include="source\xc_patch.cpp" />
     <ClCompile Include="source\xc_patch_archive_limit.cpp" />
     <ClCompile Include="source\xc_patch_facegen.cpp" />
@@ -81,6 +82,7 @@
     <ClInclude Include="depends\typeinfo\ms_rtti.h" />
     <ClInclude Include="include\xc_assertion.h" />
     <ClInclude Include="include\xc_common.h" />
+    <ClInclude Include="include\xc_fix_packageallocatelocation.h" />
     <ClInclude Include="include\xc_patch.h" />
     <ClInclude Include="include\xc_patch_archive_limit.h" />
     <ClInclude Include="include\xc_patch_facegen.h" />

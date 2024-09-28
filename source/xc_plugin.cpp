@@ -17,6 +17,7 @@
 
 // fixes
 #include <xc_fix_greymovies.h>
+#include <xc_fix_packageallocatelocation.h>
 
 namespace xc
 {
@@ -161,6 +162,7 @@ namespace xc
 		//////////////////
 
 		_fixes.push_back(new fix_greymovies());
+		_fixes.push_back(new fix_package_allocate_location());
 
 		//////////////////
 

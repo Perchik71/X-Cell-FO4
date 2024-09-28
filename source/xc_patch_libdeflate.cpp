@@ -42,6 +42,11 @@ namespace xc
 			detour_call((g_plugin->get_base() + 0x2A5352), (uintptr_t)&impl_inflate_init);
 			detour_call((g_plugin->get_base() + 0x2A5384), (uintptr_t)&impl_inflate);
 		}
+		else
+		{
+			_ERROR("The patch \"%s\" has not been installed, as the mod does not know the game", get_name());
+			return false;
+		}
 
 		return true;
 	}

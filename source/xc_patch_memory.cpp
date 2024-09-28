@@ -253,6 +253,12 @@ namespace xc
 
 	bool patch_memory::run() const
 	{
+		if (GetModuleHandleA("BakaScrapHeap.dll"))
+		{
+			_WARNING("Mod \"Baka ScrapHeap\" has been detected, X-Cell patch \"%s\" is incompatible and will not be enabled.", get_name());
+			return false;
+		}
+
 		auto base = GetModuleHandleA(NULL);
 
 		MEMORYSTATUSEX statex = { 0 };

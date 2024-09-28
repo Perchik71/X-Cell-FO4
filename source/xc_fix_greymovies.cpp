@@ -53,7 +53,7 @@ namespace xc
 		}
 		else
 		{
-			_ERROR("The patch \"%s\" has not been installed, as the mod does not know the game", get_name());
+			_ERROR("The fix \"%s\" has not been installed, as the mod does not know the game", get_name());
 			return false;
 		}
 
