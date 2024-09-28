@@ -40,6 +40,7 @@ namespace xc
 		UInt32 _runtime_version;
 		settings _settings;
 		vector<patch*> _patches;
+		vector<patch*> _fixes;
 		uintptr_t _base;
 		msrtti::section _section[3];
 		F4SEMessagingInterface* _messages;

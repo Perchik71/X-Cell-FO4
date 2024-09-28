@@ -39,7 +39,7 @@ namespace xc
 
 		patch& operator=(const patch&) = default;
 
-		bool start();
+		bool start(const char* section);
 
 		virtual const char* get_name() const noexcept = 0;
 		virtual bool game_data_ready_handler() const noexcept = 0;

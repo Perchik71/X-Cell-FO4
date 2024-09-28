@@ -15,6 +15,9 @@
 #include <xc_patch_archive_limit.h>
 #include <xc_patch_loadscreen.h>
 
+// fixes
+#include <xc_fix_greymovies.h>
+
 namespace xc
 {
 	plugin::plugin(const F4SEInterface* f4se) : _messages(nullptr), _f4se(f4se)
@@ -157,6 +160,10 @@ namespace xc
 
 		//////////////////
 
+		_fixes.push_back(new fix_greymovies());
+
+		//////////////////
+
 		return true;
 	}
 
@@ -175,7 +182,10 @@ namespace xc
 		__try
 		{
 			for (auto i : _patches)
-				if (i) i->start();
+				if (i) i->start("patches");
+
+			for (auto i : _fixes)
+				if (i) i->start("fixes");
 		}
 		__except (1)
 		{

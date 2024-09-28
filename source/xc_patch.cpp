@@ -8,9 +8,9 @@
 
 namespace xc
 {
-	bool patch::start()
+	bool patch::start(const char* section)
 	{
-		if (g_plugin->get_settings()->read_bool("patches", get_name(), false))
+		if (g_plugin->get_settings()->read_bool(section, get_name(), false))
 			return start_impl();
 		return false;
 	}
