@@ -15,6 +15,16 @@
 
 namespace xc
 {
+	inline static const string& trim(const string& str)
+	{
+		static const char* whitespaceDelimiters = " \t\n\r\f\v";
+
+		const_cast<string&>(str).erase(str.find_last_not_of(whitespaceDelimiters) + 1);
+		const_cast<string&>(str).erase(0, str.find_first_not_of(whitespaceDelimiters));
+
+		return str;
+	}
+
 	BGSKeyword** g_keyword_is_child_player = nullptr;
 	vector<UInt32> g_facegen_primary_exception_formids =
 	{
@@ -57,11 +67,11 @@ namespace xc
 				auto it_sep = it->second.find_first_of(':');
 				if (it_sep != std::string::npos)
 				{
-					plugin_name = it->second.substr(it_sep + 1);
-					value = it->second.substr(0, it_sep);
+					plugin_name = trim(it->second.substr(it_sep + 1));
+					value = trim(it->second.substr(0, it_sep));
 				}
 				else
-					value = it->second;
+					value = trim(it->second);
 
 				if (value.find_first_of("0x") == 0)
 					formid = strtoul(it->second.c_str() + 2, &end_ptr, 16);
@@ -78,10 +88,14 @@ namespace xc
 					else if ((index_plugin = dataHandler->GetLoadedLightModIndex(plugin_name.c_str())) != INVALID_INDEX)
 						formid = (formid & (0x00000FFF)) | (index_plugin << 12) | 0xFE000000;
 					// If there is no such thing, then it is a waste of a stupid user's time
-					else continue;
+					else
+					{
+						_MESSAGE("Failed NPC added (no found plugin) \"%s\" (%08X)", plugin_name, formid);
+						continue;
+					}
 				}					
 
-				//_MESSAGE("Skip NPC added \"%s\" (%08X)", it->first.c_str(), formid);
+				_MESSAGE("Skip NPC added \"%s\" (%08X)", it->first.c_str(), formid);
 				g_facegen_exception_formids.push_back(formid);
 			}
 		}
