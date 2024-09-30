@@ -13,6 +13,10 @@
 #include <xc_plugin.h>
 #include <vector>
 
+// take from f4se 6.23
+// 856197F11173AF60E35EBF54A88E7BF43AFC3588+305
+RelocPtr<DataHandler*> g_dataHandler_OG(0x058CF080);
+
 namespace xc
 {
 	inline static const string& trim(const string& str)
@@ -38,6 +42,40 @@ namespace xc
 		0x246BF1,	// MQ101PlayerSpouseFemale_NameOnly
 	};
 	vector<UInt32> g_facegen_exception_formids;
+	DataHandler** dataHandler = nullptr;
+
+	static bool detect_load_order_formid(const string& plugin_name, UInt32& formid)
+	{
+		constexpr static UInt16 INVALID_INDEX = (UInt16)-1;
+
+		__try
+		{
+			UInt16 index_plugin = INVALID_INDEX;
+
+			if (!plugin_name.empty())
+			{
+				// Search among master, default plugins
+				if ((index_plugin = (*dataHandler)->GetLoadedModIndex(plugin_name.c_str())) != INVALID_INDEX)
+					formid = (formid & (0x00FFFFFF)) | (index_plugin << 24);
+				// Search among light master plugins
+				else if ((index_plugin = (*dataHandler)->GetLoadedLightModIndex(plugin_name.c_str())) != INVALID_INDEX)
+					formid = (formid & (0x00000FFF)) | (index_plugin << 12) | 0xFE000000;
+				// If there is no such thing, then it is a waste of a stupid user's time
+				else
+				{
+					_ERROR("Failed NPC added (no found plugin) \"%s\" (%08X)", plugin_name, formid);
+					return false;
+				}
+			}
+			
+			return true;
+		}
+		__except (1)
+		{
+			_ERROR("Failed NPC added (fatal error) \"%s\" (%08X)", plugin_name, formid);
+			return false;
+		}
+	}
 
 	const char* patch_facegen::get_name() const noexcept
 	{
@@ -46,9 +84,6 @@ namespace xc
 
 	bool patch_facegen::game_data_ready_handler() const noexcept
 	{
-		auto dataHandler = *(g_dataHandler.GetPtr());
-		constexpr static UInt16 INVALID_INDEX = (UInt16)-1;
-
 		g_facegen_exception_formids = g_facegen_primary_exception_formids;
 		// Read the file again to get faster access to the desired section
 		mINI::INIFile settings_file(g_plugin->get_settings()->get_filename());
@@ -78,25 +113,11 @@ namespace xc
 				else
 					formid = strtoul(it->second.c_str(), &end_ptr, 10);
 
-				if (!plugin_name.empty())
+				if (detect_load_order_formid(plugin_name, formid))
 				{
-					UInt16 index_plugin = INVALID_INDEX;
-					// Search among master, default plugins
-					if ((index_plugin = dataHandler->GetLoadedModIndex(plugin_name.c_str())) != INVALID_INDEX)
-						formid = (formid & (0x00FFFFFF)) | (index_plugin << 24);
-					// Search among light master plugins
-					else if ((index_plugin = dataHandler->GetLoadedLightModIndex(plugin_name.c_str())) != INVALID_INDEX)
-						formid = (formid & (0x00000FFF)) | (index_plugin << 12) | 0xFE000000;
-					// If there is no such thing, then it is a waste of a stupid user's time
-					else
-					{
-						_MESSAGE("Failed NPC added (no found plugin) \"%s\" (%08X)", plugin_name, formid);
-						continue;
-					}
-				}					
-
-				_MESSAGE("Skip NPC added \"%s\" (%08X)", it->first.c_str(), formid);
-				g_facegen_exception_formids.push_back(formid);
+					_MESSAGE("Skip NPC added \"%s\" (%08X)", it->first.c_str(), formid);
+					g_facegen_exception_formids.push_back(formid);					
+				}
 			}
 		}
 
@@ -110,6 +131,7 @@ namespace xc
 		if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_163)
 		{
 			// 163
+			dataHandler = g_dataHandler_OG.GetPtr();
 
 			// Working buried function.
 			*(uintptr_t*)&path_printf_facegen = g_plugin->get_base() + 0x5B57F0;
@@ -142,6 +164,7 @@ namespace xc
 		else if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_984)
 		{
 			// 984
+			dataHandler = g_dataHandler.GetPtr();
 
 			// Working buried function.
 			*(uintptr_t*)&path_printf_facegen = g_plugin->get_base() + 0x601B50;
