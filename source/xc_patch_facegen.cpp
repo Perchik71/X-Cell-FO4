@@ -44,6 +44,11 @@ namespace xc
 	vector<UInt32> g_facegen_exception_formids;
 	DataHandler** dataHandler = nullptr;
 
+	enum TESActorFlags_XCELL
+	{
+		kFlagSimpleActor = 0x100000
+	};
+
 	static bool detect_load_order_formid(const string& plugin_name, UInt32& formid)
 	{
 		constexpr static UInt16 INVALID_INDEX = (UInt16)-1;
@@ -205,7 +210,8 @@ namespace xc
 		while (npc_form->templateNPC)
 			npc_form = npc_form->templateNPC;	
 		// if the mod has set this option, i prohibit the use of preliminary data.
-		if (npc_form->actorData.flags & TESActorBaseData::kFlagIsPreset)
+		if ((npc_form->actorData.flags & TESActorBaseData::kFlagIsPreset) ||
+			(npc_form->actorData.flags & TESActorFlags_XCELL::kFlagSimpleActor))
 			return false;
 		// check if the NPC is a relative or a template for the player.
 		auto size = npc_form->keywords.numKeywords;
