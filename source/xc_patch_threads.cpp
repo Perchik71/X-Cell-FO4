@@ -2,6 +2,7 @@
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
+#include <detours/Detours.h>
 #include <xc_patch_threads.h>
 
 namespace xc
@@ -32,6 +33,20 @@ namespace xc
 
 		if (!SetPriorityClass(GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS))
 			_ERROR("SetPriorityClass returned failed (0x%x)", GetLastError());
+
+		if (!SetProcessAffinityMask(GetCurrentProcess(), (DWORD_PTR)(-1)))
+			_ERROR("SetProcessAffinityMask returned failed (0x%x)", GetLastError());
+
+		auto kernel_32 = GetModuleHandle("kernel32.dll");
+		if (kernel_32)
+		{
+			auto SetPriorityClass_addr = GetProcAddress(kernel_32, "SetPriorityClass");
+			auto SetProcessAffinityMask_addr = GetProcAddress(kernel_32, "SetProcessAffinityMask");
+			patch_mem((uintptr_t)SetPriorityClass_addr, { 0x31, 0xC0, 0xC3, 0x90, });
+			patch_mem((uintptr_t)SetProcessAffinityMask_addr, { 0x31, 0xC0, 0xC3, 0x90, });
+		}
+
+		patch_iat(base, "kernel32.dll", "SetThreadAffinityMask", (uintptr_t)&set_thread_affinity_mask);
 
 		// The system does not display the critical-error-handler message box. 
 		// Instead, the system sends the error to the calling process.
