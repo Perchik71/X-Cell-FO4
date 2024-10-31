@@ -32,11 +32,21 @@ namespace xc
 		patch_iat(base, "kernel32.dll", "SetThreadAffinityMask", (uintptr_t)&set_thread_affinity_mask);
 
 		auto ProcessHandle = GetCurrentProcess();
-		if (!SetPriorityClass(ProcessHandle, ABOVE_NORMAL_PRIORITY_CLASS))
+		if (!SetPriorityClass(ProcessHandle, /*ABOVE_NORMAL_PRIORITY_CLASS*/ HIGH_PRIORITY_CLASS))
 		{
 			auto ErrorLast = GetLastError();
 			_ERROR("SetPriorityClass returned failed (0x%x): %s", ErrorLast, _com_error(ErrorLast).ErrorMessage());
 		}
+		else
+			_MESSAGE("Set high priority has been set for process");
+
+		if (!SetThreadPriority(GetCurrentThread(), HIGH_PRIORITY_CLASS))
+		{
+			auto ErrorLast = GetLastError();
+			_ERROR("SetThreadPriority returned failed (0x%x): %s", ErrorLast, _com_error(ErrorLast).ErrorMessage());
+		}
+		else
+			_MESSAGE("Set high priority has been set for main thread");
 
 		DWORD_PTR processAffinityMask, systemAffinityMask;
 		if (!GetProcessAffinityMask(ProcessHandle, &processAffinityMask, &systemAffinityMask))
@@ -53,7 +63,7 @@ namespace xc
 			{
 				_MESSAGE("A change in the usage of processor cores has been detected");
 				
-				if (!SetProcessAffinityMask(GetCurrentProcess(), systemAffinityMask))
+				if (!SetProcessAffinityMask(ProcessHandle, systemAffinityMask))
 				{
 					auto ErrorLast = GetLastError();
 					_ERROR("SetProcessAffinityMask returned failed (0x%x): %s", ErrorLast, _com_error(ErrorLast).ErrorMessage());
@@ -83,7 +93,10 @@ namespace xc
 		// This is to prevent error mode dialogs from hanging the application.
 		UInt32 OldErrMode = 0;
 		if (!SetThreadErrorMode(SEM_FAILCRITICALERRORS, &OldErrMode))
-			_ERROR("SetThreadErrorMode returned failed (0x%x), can't set the error mode for the application", GetLastError());
+		{
+			auto ErrorLast = GetLastError();
+			_ERROR("SetThreadErrorMode returned failed (0x%x): %s", ErrorLast, _com_error(ErrorLast).ErrorMessage());
+		}
 
 		return true;
 	}
