@@ -2,7 +2,7 @@
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
-#include <detours/Detours.h>
+#include <comdef.h>
 #include <xc_patch_threads.h>
 
 namespace xc
@@ -31,19 +31,47 @@ namespace xc
 		patch_iat(base, "kernel32.dll", "SetThreadPriority", (uintptr_t)&set_thread_priority);
 		patch_iat(base, "kernel32.dll", "SetThreadAffinityMask", (uintptr_t)&set_thread_affinity_mask);
 
-		if (!SetPriorityClass(GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS))
-			_ERROR("SetPriorityClass returned failed (0x%x)", GetLastError());
-
-		if (!SetProcessAffinityMask(GetCurrentProcess(), (DWORD_PTR)(-1)))
-			_ERROR("SetProcessAffinityMask returned failed (0x%x)", GetLastError());
-
-		auto kernel_32 = GetModuleHandle("kernel32.dll");
-		if (kernel_32)
+		auto ProcessHandle = GetCurrentProcess();
+		if (!SetPriorityClass(ProcessHandle, ABOVE_NORMAL_PRIORITY_CLASS))
 		{
-			auto SetPriorityClass_addr = GetProcAddress(kernel_32, "SetPriorityClass");
-			auto SetProcessAffinityMask_addr = GetProcAddress(kernel_32, "SetProcessAffinityMask");
-			patch_mem((uintptr_t)SetPriorityClass_addr, { 0x31, 0xC0, 0xC3, 0x90, });
-			patch_mem((uintptr_t)SetProcessAffinityMask_addr, { 0x31, 0xC0, 0xC3, 0x90, });
+			auto ErrorLast = GetLastError();
+			_ERROR("SetPriorityClass returned failed (0x%x): %s", ErrorLast, _com_error(ErrorLast).ErrorMessage());
+		}
+
+		DWORD_PTR processAffinityMask, systemAffinityMask;
+		if (!GetProcessAffinityMask(ProcessHandle, &processAffinityMask, &systemAffinityMask))
+		{
+			auto ErrorLast = GetLastError();
+			_ERROR("GetProcessAffinityMask returned failed (0x%x): %s", ErrorLast, _com_error(ErrorLast).ErrorMessage());
+		}
+		else
+		{
+			_MESSAGE("processAffinityMask: 0x%X", processAffinityMask);
+			_MESSAGE("systemAffinityMask: 0x%X", systemAffinityMask);
+
+			if (processAffinityMask != systemAffinityMask)
+			{
+				_MESSAGE("A change in the usage of processor cores has been detected");
+				
+				if (!SetProcessAffinityMask(GetCurrentProcess(), systemAffinityMask))
+				{
+					auto ErrorLast = GetLastError();
+					_ERROR("SetProcessAffinityMask returned failed (0x%x): %s", ErrorLast, _com_error(ErrorLast).ErrorMessage());
+				}
+				else
+					_MESSAGE("Restore usage of processor cores");
+			}
+
+			// Complete removal of WinAPI functions SetPriorityClass and SetProcessAffinityMask.
+			// Protection against premeditated, foolishly committed spoilage of the process.
+			auto kernel_32 = GetModuleHandle("kernel32.dll");
+			if (kernel_32)
+			{
+				auto SetPriorityClass_addr = GetProcAddress(kernel_32, "SetPriorityClass");
+				auto SetProcessAffinityMask_addr = GetProcAddress(kernel_32, "SetProcessAffinityMask");
+				patch_mem((uintptr_t)SetPriorityClass_addr, { 0x31, 0xC0, 0xC3, 0x90, });
+				patch_mem((uintptr_t)SetProcessAffinityMask_addr, { 0x31, 0xC0, 0xC3, 0x90, });
+			}
 		}
 
 		patch_iat(base, "kernel32.dll", "SetThreadAffinityMask", (uintptr_t)&set_thread_affinity_mask);
