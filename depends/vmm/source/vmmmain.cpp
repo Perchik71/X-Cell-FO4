@@ -44,11 +44,11 @@ namespace voltek
 		typedef page_t<block32768_t, __VMM_PAGE_CONFIG_SMALL_SIZE> page32768_t;
 		typedef page_t<block65536_t, __VMM_PAGE_CONFIG_LOW_SIZE> page65536_t;
 		typedef page_t<block131072_t, __VMM_PAGE_CONFIG_LOW_SIZE> page131072_t;
-		typedef pool_t<block8_t, page8_t> pool8_t;
-		typedef pool_t<block16_t, page16_t> pool16_t;
-		typedef pool_t<block32_t, page32_t> pool32_t;
-		typedef pool_t<block64_t, page64_t> pool64_t;
-		typedef pool_t<block128_t, page128_t> pool128_t;
+		typedef pool_t<block8_t, page8_t, __VMM_POOL_CONFIG_BIG_SIZE> pool8_t;
+		typedef pool_t<block16_t, page16_t, __VMM_POOL_CONFIG_BIG_SIZE> pool16_t;
+		typedef pool_t<block32_t, page32_t, __VMM_POOL_CONFIG_BIG_SIZE> pool32_t;
+		typedef pool_t<block64_t, page64_t, __VMM_POOL_CONFIG_LARGE_SIZE> pool64_t;
+		typedef pool_t<block128_t, page128_t, __VMM_POOL_CONFIG_LARGE_SIZE> pool128_t;
 		typedef pool_t<block256_t, page256_t> pool256_t;
 		typedef pool_t<block512_t, page512_t> pool512_t;
 		typedef pool_t<block1024_t, page1024_t> pool1024_t;
@@ -91,11 +91,22 @@ namespace voltek
 
 		static size_t POOL_SIZE = 64 * 1024;
 
-		memory_manager::memory_manager() : pools(nullptr)
+		memory_manager::memory_manager() : pools(nullptr), thread(nullptr)
 		{
 			core::initialize();
 			create_default_block(&zero_size_request_block, 0);
 			
+			event_close = CreateEventA(nullptr, true, false, nullptr);
+			event_close_w = CreateEventA(nullptr, true, false, nullptr);
+			if (!event_close || !event_close_w)
+			{
+				_vassert(!new_block);
+				return;
+			}
+			
+			ResetEvent((HANDLE)event_close);
+			ResetEvent((HANDLE)event_close_w);
+
 			//file_dbg_sniffer = fopen("vmm.log", "w+");
 
 			// Вся технология ускорения зависит от новых инструкций, если их нет, незачем
@@ -108,32 +119,77 @@ namespace voltek
 				pools[POOL_32] = new pool32_t(POOL_SIZE);
 				pools[POOL_64] = new pool64_t(POOL_SIZE);
 			}
+
+			thread = new std::thread([](HANDLE* ev_close, HANDLE* ev_close_w, void** pools, 
+				voltek::core::_internal::simple_lock* lock) {
+				while (1)
+				{
+					{
+						// Блокируем. Снятие блокировки будет заботить компилятор.
+						voltek::core::_internal::simple_scope_lock scope_lock(*lock);
+
+						if (pools[POOL_8]) { ((pool8_t*)pools[POOL_8])->push_free_block_to_cache(); }
+						if (pools[POOL_16]) { ((pool16_t*)pools[POOL_16])->push_free_block_to_cache(); }
+						if (pools[POOL_32]) { ((pool32_t*)pools[POOL_32])->push_free_block_to_cache(); }
+						if (pools[POOL_64]) { ((pool64_t*)pools[POOL_64])->push_free_block_to_cache(); }
+						if (pools[POOL_128]) { ((pool128_t*)pools[POOL_128])->push_free_block_to_cache(); }
+						if (pools[POOL_256]) { ((pool256_t*)pools[POOL_256])->push_free_block_to_cache(); }
+						if (pools[POOL_512]) { ((pool512_t*)pools[POOL_512])->push_free_block_to_cache(); }
+						if (pools[POOL_1024]) { ((pool1024_t*)pools[POOL_1024])->push_free_block_to_cache(); }
+						if (pools[POOL_4096]) { ((pool4096_t*)pools[POOL_4096])->push_free_block_to_cache(); }
+						if (pools[POOL_8192]) { ((pool8192_t*)pools[POOL_8192])->push_free_block_to_cache(); }
+						if (pools[POOL_16384]) { ((pool16384_t*)pools[POOL_16384])->push_free_block_to_cache(); }
+						if (pools[POOL_32768]) { ((pool32768_t*)pools[POOL_32768])->push_free_block_to_cache(); }
+						if (pools[POOL_65536]) { ((pool65536_t*)pools[POOL_65536])->push_free_block_to_cache(); }
+						if (pools[POOL_131072]) { ((pool131072_t*)pools[POOL_131072])->push_free_block_to_cache(); }
+					}
+
+					if (WaitForSingleObject(*ev_close, 10) == WAIT_OBJECT_0)
+					{
+						SetEvent(*ev_close_w);
+						break;
+					}
+
+					Sleep(1);
+				}
+			}, (HANDLE*)&event_close, (HANDLE*)&event_close_w, pools, &lock);
+			_vassert(!thread);
+			SetThreadPriority(thread->native_handle(), THREAD_PRIORITY_HIGHEST);
+			_vassert(!SetThreadAffinityMask(thread->native_handle(), 1llu << (thread->hardware_concurrency() - 1)));
+			thread->detach();
 		}
 
 		memory_manager::~memory_manager()
 		{
-			if (pools)
+			if (thread)
 			{
-				if (pools[POOL_8]) delete ((pool8_t*)pools[POOL_8]);
-				if (pools[POOL_16]) delete ((pool16_t*)pools[POOL_16]);
-				if (pools[POOL_32]) delete ((pool32_t*)pools[POOL_32]);
-				if (pools[POOL_64]) delete ((pool64_t*)pools[POOL_64]);
-				if (pools[POOL_128]) delete ((pool128_t*)pools[POOL_128]);
-				if (pools[POOL_256]) delete ((pool256_t*)pools[POOL_256]);
-				if (pools[POOL_512]) delete ((pool512_t*)pools[POOL_512]);
-				if (pools[POOL_1024]) delete ((pool1024_t*)pools[POOL_1024]);
-				if (pools[POOL_4096]) delete ((pool4096_t*)pools[POOL_4096]);
-				if (pools[POOL_8192]) delete ((pool8192_t*)pools[POOL_8192]);
-				if (pools[POOL_16384]) delete ((pool16384_t*)pools[POOL_16384]);
-				if (pools[POOL_32768]) delete ((pool32768_t*)pools[POOL_32768]);
-				if (pools[POOL_65536]) delete ((pool65536_t*)pools[POOL_65536]);
-				if (pools[POOL_131072]) delete ((pool131072_t*)pools[POOL_131072]);
+				SetEvent((HANDLE)event_close);
+				WaitForSingleObject((HANDLE)event_close_w, INFINITE);
 
-				voltek::core::_internal::aligned_free(pools);
-				pools = nullptr;
+				if (pools)
+				{
+					if (pools[POOL_8]) delete ((pool8_t*)pools[POOL_8]);
+					if (pools[POOL_16]) delete ((pool16_t*)pools[POOL_16]);
+					if (pools[POOL_32]) delete ((pool32_t*)pools[POOL_32]);
+					if (pools[POOL_64]) delete ((pool64_t*)pools[POOL_64]);
+					if (pools[POOL_128]) delete ((pool128_t*)pools[POOL_128]);
+					if (pools[POOL_256]) delete ((pool256_t*)pools[POOL_256]);
+					if (pools[POOL_512]) delete ((pool512_t*)pools[POOL_512]);
+					if (pools[POOL_1024]) delete ((pool1024_t*)pools[POOL_1024]);
+					if (pools[POOL_4096]) delete ((pool4096_t*)pools[POOL_4096]);
+					if (pools[POOL_8192]) delete ((pool8192_t*)pools[POOL_8192]);
+					if (pools[POOL_16384]) delete ((pool16384_t*)pools[POOL_16384]);
+					if (pools[POOL_32768]) delete ((pool32768_t*)pools[POOL_32768]);
+					if (pools[POOL_65536]) delete ((pool65536_t*)pools[POOL_65536]);
+					if (pools[POOL_131072]) delete ((pool131072_t*)pools[POOL_131072]);
+
+					voltek::core::_internal::aligned_free(pools);
+					pools = nullptr;
+				}
+
+				delete thread;
+				thread = nullptr;
 			}
-
-			//fclose(file_dbg_sniffer);
 		}
 
 		void* memory_manager::alloc(size_t size)
@@ -190,7 +246,7 @@ namespace voltek
 				if (pool->get_free_block(block, page, index_block))
 				{
 					create_pool_block(block, (uint32_t)size, (uint16_t)page->get_user_data(),
-						(uint16_t)index_block, (uint16_t)POOL_131072);
+						(uint32_t)index_block, (uint16_t)POOL_131072);
 					new_ptr = get_ptr_from_block_handle(block);
 					//_fsniff("Pool block allocated <131072>: %p %llu", new_ptr, size);
 				}
@@ -208,7 +264,7 @@ namespace voltek
 				if (pool->get_free_block(block, page, index_block))
 				{
 					create_pool_block(block, (uint32_t)size, (uint16_t)page->get_user_data(),
-						(uint16_t)index_block, (uint16_t)POOL_65536);
+						(uint32_t)index_block, (uint16_t)POOL_65536);
 					new_ptr = get_ptr_from_block_handle(block);
 					//_fsniff("Pool block allocated <65536>: %p %llu", new_ptr, size);
 				}
@@ -226,7 +282,7 @@ namespace voltek
 				if (pool->get_free_block(block, page, index_block))
 				{
 					create_pool_block(block, (uint32_t)size, (uint16_t)page->get_user_data(),
-						(uint16_t)index_block, (uint16_t)POOL_32768);
+						(uint32_t)index_block, (uint16_t)POOL_32768);
 					new_ptr = get_ptr_from_block_handle(block);
 					//_fsniff("Pool block allocated <32768>: %p %llu", new_ptr, size);
 				}
@@ -244,7 +300,7 @@ namespace voltek
 				if (pool->get_free_block(block, page, index_block))
 				{
 					create_pool_block(block, (uint32_t)size, (uint16_t)page->get_user_data(),
-						(uint16_t)index_block, (uint16_t)POOL_16384);
+						(uint32_t)index_block, (uint16_t)POOL_16384);
 					new_ptr = get_ptr_from_block_handle(block);
 					//_fsniff("Pool block allocated <16384>: %p %llu", new_ptr, size);
 				}
@@ -262,7 +318,7 @@ namespace voltek
 				if (pool->get_free_block(block, page, index_block))
 				{
 					create_pool_block(block, (uint32_t)size, (uint16_t)page->get_user_data(),
-						(uint16_t)index_block, (uint16_t)POOL_8192);
+						(uint32_t)index_block, (uint16_t)POOL_8192);
 					new_ptr = get_ptr_from_block_handle(block);
 					//_fsniff("Pool block allocated <8192>: %p %llu", new_ptr, size);
 				}
@@ -280,7 +336,7 @@ namespace voltek
 				if (pool->get_free_block(block, page, index_block))
 				{
 					create_pool_block(block, (uint32_t)size, (uint16_t)page->get_user_data(),
-						(uint16_t)index_block, (uint16_t)POOL_4096);
+						(uint32_t)index_block, (uint16_t)POOL_4096);
 					new_ptr = get_ptr_from_block_handle(block);
 					//_fsniff("Pool block allocated <4096>: %p %llu", new_ptr, size);
 				}
@@ -298,7 +354,7 @@ namespace voltek
 				if (pool->get_free_block(block, page, index_block))
 				{
 					create_pool_block(block, (uint32_t)size, (uint16_t)page->get_user_data(),
-						(uint16_t)index_block, (uint16_t)POOL_1024);
+						(uint32_t)index_block, (uint16_t)POOL_1024);
 					new_ptr = get_ptr_from_block_handle(block);
 					//_fsniff("Pool block allocated <1024>: %p %llu", new_ptr, size);
 				}
@@ -316,7 +372,7 @@ namespace voltek
 				if (pool->get_free_block(block, page, index_block))
 				{
 					create_pool_block(block, (uint32_t)size, (uint16_t)page->get_user_data(),
-						(uint16_t)index_block, (uint16_t)POOL_512);
+						(uint32_t)index_block, (uint16_t)POOL_512);
 					new_ptr = get_ptr_from_block_handle(block);
 					//_fsniff("Pool block allocated <512>: %p %llu", new_ptr, size);
 				}
@@ -334,7 +390,7 @@ namespace voltek
 				if (pool->get_free_block(block, page, index_block))
 				{
 					create_pool_block(block, (uint32_t)size, (uint16_t)page->get_user_data(),
-						(uint16_t)index_block, (uint16_t)POOL_256);
+						(uint32_t)index_block, (uint16_t)POOL_256);
 					new_ptr = get_ptr_from_block_handle(block);
 					//_fsniff("Pool block allocated <256>: %p %llu", new_ptr, size);
 				}
@@ -352,7 +408,7 @@ namespace voltek
 				if (pool->get_free_block(block, page, index_block))
 				{
 					create_pool_block(block, (uint32_t)size, (uint16_t)page->get_user_data(),
-						(uint16_t)index_block, (uint16_t)POOL_128);
+						(uint32_t)index_block, (uint16_t)POOL_128);
 					new_ptr = get_ptr_from_block_handle(block);
 					//_fsniff("Pool block allocated <128>: %p %llu", new_ptr, size);
 				}
@@ -367,7 +423,7 @@ namespace voltek
 				if (pool->get_free_block(block, page, index_block))
 				{
 					create_pool_block(block, (uint32_t)size, (uint16_t)page->get_user_data(),
-						(uint16_t)index_block, (uint16_t)POOL_64);
+						(uint32_t)index_block, (uint16_t)POOL_64);
 					new_ptr = get_ptr_from_block_handle(block);
 					//_fsniff("Pool block allocated <64>: %p %llu", new_ptr, size);
 				}
@@ -382,7 +438,7 @@ namespace voltek
 				if (pool->get_free_block(block, page, index_block))
 				{
 					create_pool_block(block, (uint32_t)size, (uint16_t)page->get_user_data(),
-						(uint16_t)index_block, (uint16_t)POOL_32);
+						(uint32_t)index_block, (uint16_t)POOL_32);
 					new_ptr = get_ptr_from_block_handle(block);
 					//_fsniff("Pool block allocated <32>: %p %llu", new_ptr, size);
 				}
@@ -397,7 +453,7 @@ namespace voltek
 				if (pool->get_free_block(block, page, index_block))
 				{
 					create_pool_block(block, (uint32_t)size, (uint16_t)page->get_user_data(),
-						(uint16_t)index_block, (uint16_t)POOL_16);
+						(uint32_t)index_block, (uint16_t)POOL_16);
 					new_ptr = get_ptr_from_block_handle(block);
 					//_fsniff("Pool block allocated <16>: %p %llu", new_ptr, size);
 				}
@@ -412,7 +468,7 @@ namespace voltek
 				if (pool->get_free_block(block, page, index_block))
 				{
 					create_pool_block(block, (uint32_t)size, (uint16_t)page->get_user_data(),
-						(uint16_t)index_block, (uint16_t)POOL_8);
+						(uint32_t)index_block, (uint16_t)POOL_8);
 					new_ptr = get_ptr_from_block_handle(block);
 					//_fsniff("Pool block allocated <8>: %p %llu", new_ptr, size);
 				}
@@ -447,7 +503,7 @@ namespace voltek
 			{
 				new_ptr = const_cast<void*>(ptr);
 				block_base* block = get_block_handle_from_ptr(new_ptr);
-				uint16_t pool_id = block->pool_id;
+				uint8_t pool_id = block->pool_id;
 
 				switch (pool_id)
 				{
@@ -622,9 +678,9 @@ namespace voltek
 			else
 			{
 				block_base* block = get_block_handle_from_ptr(ptr);
-				uint16_t pool_id = block->pool_id;
+				uint8_t pool_id = block->pool_id;
 				uint16_t page_id = block->page_id;
-				uint16_t block_id = block->block_id;
+				uint32_t block_id = block->block_id;
 
 				switch (pool_id)
 				{

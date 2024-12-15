@@ -5,10 +5,14 @@
 #pragma once
 
 #include "vmmpage.h"
+#include <stack>
 
+#define __VMM_POOL_CONFIG_BIG_SIZE 256ull * 1024
+#define __VMM_POOL_CONFIG_LARGE_SIZE 128ull * 1024
 #define __VMM_POOL_CONFIG_NORMAL_SIZE 64ull * 1024
 #define __VMM_POOL_CONFIG_SMALL_SIZE 4ull * 1024
 #define __VMM_POOL_CONFIG_LOW_SIZE 2ull * 1024
+#define __VMM_POOL_CONFIG_CACHE_SIZE 1024
 
 namespace voltek
 {
@@ -133,6 +137,22 @@ namespace voltek
 			// Блок указывается как занятый в последствии.
 			bool get_free_block(_type*& block, pageptr_t& page, size_t& index_block)
 			{
+				if (!free_stack_blocks.empty())
+				{
+					// Получить из стека
+					auto& item = free_stack_blocks.top();
+					// Передаём индекс блока
+					index_block = item.second;
+					// Передаём страницу
+					page = item.first;
+					// Получаем блок по текущему индексу
+					block = &(page->at(index_block));
+					// Удалить из стека
+					free_stack_blocks.pop();
+
+					return true;
+				}
+
 				if (!_current)
 				{
 				find_free_page_label:
@@ -207,12 +227,43 @@ namespace voltek
 						if (_current == page)
 							_current = nullptr;
 
+						// Очистить весь стэк
+						free_stack_blocks = {};
+
 						delete page;
 
 						_pages[index_page] = nullptr;
 					}
+					else if (free_stack_blocks.size() < __VMM_POOL_CONFIG_CACHE_SIZE)
+					{
+						// Занять индекс блока, более он не доступен.
+						page->set_block_busy(index_block);
+						// добавить в стэк
+						free_stack_blocks.push(std::make_pair(page, (uint32_t)index_block));
+					}
 
 					return true;
+				}
+
+				return false;
+			}
+
+			bool push_free_block_to_cache()
+			{
+				if (free_stack_blocks.size() < __VMM_POOL_CONFIG_CACHE_SIZE)
+				{
+					pageptr_t page = nullptr;
+					_type* block = nullptr;
+					size_t index_block = 0;
+
+					if (get_free_block(block, page, index_block))
+					{
+						// Занять индекс блока, более он не доступен.
+						page->set_block_busy(index_block);
+						// добавить в стэк
+						free_stack_blocks.push(std::make_pair(page, (uint32_t)index_block));
+						return true;
+					}
 				}
 
 				return false;
@@ -234,6 +285,8 @@ namespace voltek
 			pageptr_t _current;
 			// Кол-во доступных страниц.
 			size_t _count;
+			// Стек свободных блоков
+			std::stack<std::pair<pageptr_t, uint32_t>> free_stack_blocks;
 			// Дополнительная информация.
 			uintptr_t _user_data;
 			// Битовая карта.

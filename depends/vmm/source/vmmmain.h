@@ -8,6 +8,7 @@
 #include "vmmblock.h"
 #include "vsimplelock.h"
 #include <stddef.h>
+#include <thread>
 
 namespace voltek
 {
@@ -72,6 +73,11 @@ namespace voltek
 			void** pools;
 			// Блокировщик для работы с множеством потоков.
 			voltek::core::_internal::simple_lock lock;
+			// События для потока кеширования, чтобы можно выйти
+			void* event_close;
+			void* event_close_w;
+			// Поток для кеширования
+			std::thread* thread;
 		};
 
 		// Глобальный менеджер памяти, который требует инициализации.

@@ -27,7 +27,7 @@ namespace voltek
 					// Номер страницы.
 					uint16_t page_id;
 					// Номер блока в странице.
-					uint16_t block_id;
+					uint32_t block_id;
 				};
 
 				struct ssize_union
@@ -38,21 +38,9 @@ namespace voltek
 			};
 
 			// Флаги (состояния, доп. инфа).
-			uint16_t flags;
-
-			union
-			{
-				// Номер пула.
-				uint16_t pool_id;
-				// Для супер-блока
-				struct super_union
-				{
-					// Номер пула.
-					uint8_t pool_id;
-					// Информация о кол-ве занятых блоков.
-					uint8_t count_block;
-				} super;
-			};
+			uint8_t flags;
+			// Номер пула.
+			uint8_t pool_id;
 		};
 #pragma pack(pop)
 
@@ -115,47 +103,14 @@ namespace voltek
 		// Для проверки на валидность блока, от иной памяти выделенной, чем-то иным.
 		static constexpr uint32_t prologue_block = 0xdadafead;
 		// Флаг, который говорит, что блок используется каким-то пулом.
-		static constexpr uint16_t flag_block_pool_used = 0x1;
+		static constexpr uint8_t flag_block_pool_used = 0x1;
 		// Флаг, который говорит, что блок выделен просто и его нет в пулах.
-		static constexpr uint16_t flag_block_default_used = 0x2;
-		// Флаг, который говорит, что блок большой и содержит несколько блоков.
-		static constexpr uint16_t flag_block_super = 0x4;
+		static constexpr uint8_t flag_block_default_used = 0x2;
 
 		// Возвращает истину, если блок правильный и пренадлежит менеджеру.
 		inline static bool is_valid_block(const block_base* block)
 		{
 			return block->prologue == prologue_block;
-		}
-
-		// Возвращает истину, если блок является большим и содержит несколько блоков.
-		inline static bool is_super_block(const block_base* block)
-		{
-			return (block->flags & flag_block_super) == flag_block_super;
-		}
-
-		// Сделать блок супер-блоком
-		inline static bool set_super_block(block_base* block, uint8_t count)
-		{
-			// Супер блок использует область памяти индексации пула, так что только в пределах номера
-			// пула 0xFF и 0xFF кол-ва блоков.
-			if (!is_super_block(block) && (count <= 0xFF) && (block->pool_id <= 0xFF))
-			{
-				block->flags |= flag_block_super;
-				block->super.count_block = count;
-				return true;
-			}
-
-			return false;
-		}
-
-		// Сделать блок простым
-		inline static void unset_super_block(block_base* block)
-		{
-			if (is_super_block(block))
-			{
-				block->flags &= ~flag_block_super;
-				block->super.count_block = 0;
-			}
 		}
 
 		// Возвращает истину, если блок используется каким-то пулом.
@@ -191,19 +146,17 @@ namespace voltek
 		}
 
 		// Возвращает номер пула, если указанный в блоке он пуловский и правильный,
-		// иначе вернёт (uint16_t)-1.
-		inline static uint16_t get_pool_id_from_block(const block_base* block)
+		// иначе вернёт (uint8_t)-1.
+		inline static uint8_t get_pool_id_from_block(const block_base* block)
 		{
-			return (is_valid_block(block) && is_used_pool_block(block)) ? 
-				(is_super_block(block) ? block->super.pool_id : block->pool_id) :
-				(uint16_t)-1;
+			return (is_valid_block(block) && is_used_pool_block(block)) ? block->pool_id : (uint8_t)-1;
 		}
 
 		// Возвращает номер блока в странице, если указанный в блоке он пуловский и правильный,
-		// иначе вернёт (uint16_t)-1.
-		inline static uint16_t get_block_id_from_block(const block_base* block)
+		// иначе вернёт (uint32_t)-1.
+		inline static uint32_t get_block_id_from_block(const block_base* block)
 		{
-			return (is_valid_block(block) && is_used_pool_block(block)) ? block->block_id : (uint16_t)-1;
+			return (is_valid_block(block) && is_used_pool_block(block)) ? block->block_id : (uint32_t)-1;
 		}
 		
 		// Возвращает номер страницы, если указанный в блоке он пуловский и правильный,
@@ -229,24 +182,6 @@ namespace voltek
 		inline static bool is_valid_ptr(const void* ptr)
 		{
 			return is_valid_block(get_block_handle_from_ptr(ptr));
-		}
-
-		// Возвращает истину, если указатель занят другим потоком.
-		inline static bool is_super_ptr(const void* ptr)
-		{
-			return is_super_block(get_block_handle_from_ptr(ptr));
-		}
-
-		// Сделать указатель большим
-		inline static bool set_super_ptr(const void* ptr, uint8_t count)
-		{
-			set_super_block(get_block_handle_from_ptr(ptr), count);
-		}
-
-		// Сделать указатель простым
-		inline static void unset_super_ptr(const void* ptr)
-		{
-			unset_super_block(get_block_handle_from_ptr(ptr));
 		}
 
 		// Возвращает истину, если указатель используется каким-то пулом.
@@ -295,7 +230,7 @@ namespace voltek
 		}
 
 		// Функция инициализации блока для пула
-		inline static block_base* create_pool_block(block_base* dst, uint32_t size, uint16_t page_id, uint16_t block_id, uint16_t pool_id)
+		inline static block_base* create_pool_block(block_base* dst, uint32_t size, uint16_t page_id, uint32_t block_id, uint8_t pool_id)
 		{
 			dst->prologue = prologue_block;
 			dst->pool_id = pool_id;
@@ -303,20 +238,6 @@ namespace voltek
 			dst->block_id = block_id;
 			dst->size = size;
 			dst->flags = flag_block_pool_used;
-			return dst;
-		}
-
-		// Функция инициализации супер-блока для пула
-		inline static block_base* create_pool_super_block(block_base* dst, uint32_t size, uint16_t page_id, uint16_t block_start_id, 
-			uint8_t blocks_count, uint8_t pool_id)
-		{
-			dst->prologue = prologue_block;
-			dst->super.pool_id = pool_id;
-			dst->super.count_block = blocks_count;
-			dst->page_id = page_id;
-			dst->block_id = block_start_id;
-			dst->size = size;
-			dst->flags = flag_block_pool_used | flag_block_super;
 			return dst;
 		}
 
