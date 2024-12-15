@@ -40,7 +40,7 @@ namespace xc
 		else
 			_MESSAGE("Set high priority has been set for process");
 
-		if (!SetThreadPriority(GetCurrentThread(), HIGH_PRIORITY_CLASS))
+		if (!SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST))
 		{
 			auto ErrorLast = GetLastError();
 			_ERROR("SetThreadPriority returned failed (0x%x): %s", ErrorLast, _com_error(ErrorLast).ErrorMessage());
@@ -79,8 +79,10 @@ namespace xc
 			{
 				auto SetPriorityClass_addr = GetProcAddress(kernel_32, "SetPriorityClass");
 				auto SetProcessAffinityMask_addr = GetProcAddress(kernel_32, "SetProcessAffinityMask");
-				patch_mem((uintptr_t)SetPriorityClass_addr, { 0x31, 0xC0, 0xC3, 0x90, });
-				patch_mem((uintptr_t)SetProcessAffinityMask_addr, { 0x31, 0xC0, 0xC3, 0x90, });
+				if (SetPriorityClass_addr)
+					patch_mem((uintptr_t)SetPriorityClass_addr, { 0x31, 0xC0, 0xC3, 0x90, });
+				if (SetProcessAffinityMask_addr)
+					patch_mem((uintptr_t)SetProcessAffinityMask_addr, { 0x31, 0xC0, 0xC3, 0x90, });
 			}
 		}
 
