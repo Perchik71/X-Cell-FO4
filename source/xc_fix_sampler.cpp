@@ -51,6 +51,7 @@ namespace xc
 			{
 				D3D11_SAMPLER_DESC sd;
 				orig->GetDesc(&sd);
+
 				if (sd.MipLODBias) 
 				{
 					// do not mess with samplers that already have a bias or are not doing anisotropic filtering.
@@ -58,7 +59,10 @@ namespace xc
 					passThroughSamplers.insert(orig);
 					continue;
 				}
+
 				sd.MipLODBias = fLodBias;
+				sd.MinLOD = 0;
+				sd.MaxLOD = D3D11_FLOAT32_MAX;
 
 				d3d11_data->device->CreateSamplerState(&sd, mappedSamplers[orig].GetAddressOf());
 				passThroughSamplers.insert(mappedSamplers[orig].Get());
