@@ -5,6 +5,7 @@
 #pragma once
 
 #include <f4se/PluginAPI.h>
+#include <f4se/PapyrusVM.h>
 #include <ms_rtti.h>
 #include <xc_settings.h>
 #include <xc_patch.h>
@@ -31,6 +32,8 @@ namespace xc
 		bool init();
 		void output_info();
 		void run();
+
+		static bool register_funcs_vm(VirtualMachine* vm);
 	private:
 		void send_massages_game_data_ready();
 		bool get_pe_section_range(uintptr_t module_base, const char* section, uintptr_t* start, uintptr_t* end);
@@ -44,6 +47,7 @@ namespace xc
 		uintptr_t _base;
 		msrtti::section _section[3];
 		F4SEMessagingInterface* _messages;
+		F4SEPapyrusInterface* _papyrus;
 		const F4SEInterface* _f4se;
 	};
 }

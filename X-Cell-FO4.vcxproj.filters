@@ -28,6 +28,9 @@
     <Filter Include="typeinfo">
       <UniqueIdentifier>{d238b62a-94b7-4b54-919f-553704d8e34d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="f4se\OG">
+      <UniqueIdentifier>{bf6bc06d-2628-4217-af40-69cf7472ca5a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\xc_dllmain.cpp">
@@ -140,6 +143,84 @@
     </ClCompile>
     <ClCompile Include="source\xc_fix_packageallocatelocation.cpp">
       <Filter>Исходные файлы\patches</Filter>
+    </ClCompile>
+    <ClCompile Include="source\xc_fix_sampler.cpp">
+      <Filter>Исходные файлы\patches</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\PapyrusVM.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\PapyrusArgs.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\PapyrusStruct.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\PapyrusNativeFunctions.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\PapyrusGame.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\PapyrusForm.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\PapyrusUtility.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\PapyrusValue.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\PapyrusUtilities.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\NiTypes.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\NiExtraData.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\NiMaterials.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\NiNodes.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\NiObjects.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\NiProperties.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\NiRTTI.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\NiSerialization.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\NiTextures.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameCamera.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameHandle.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\PapyrusInterfaces.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\PapyrusInstanceData.cpp">
+      <Filter>f4se</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameAPI_OG.cpp">
+      <Filter>f4se\OG</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\PapyrusNativeFunctions_OG.cpp">
+      <Filter>f4se\OG</Filter>
+    </ClCompile>
+    <ClCompile Include="depends\f4se\f4se\f4se\GameTypes_OG.cpp">
+      <Filter>f4se\OG</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -263,6 +344,87 @@
     <ClInclude Include="include\xc_fix_packageallocatelocation.h">
       <Filter>Файлы заголовков\patches</Filter>
     </ClInclude>
+    <ClInclude Include="include\xc_fix_sampler.h">
+      <Filter>Файлы заголовков\patches</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\PapyrusVM.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\PapyrusArgs.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\PapyrusStruct.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\PapyrusNativeFunctions.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\PapyrusGame.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\PapyrusForm.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\PapyrusUtilities.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\PapyrusUtility.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\PapyrusValue.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\NiTextures.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\NiTypes.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\NiCloningProcess.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\NiExtraData.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\NiMaterials.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\NiNodes.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\NiObjects.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\NiProperties.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\NiRTTI.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\NiSerialization.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameCamera.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameHandle.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\PapyrusInstanceData.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\PapyrusInterfaces.h">
+      <Filter>f4se</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameAPI_OG.h">
+      <Filter>f4se\OG</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\PapyrusNativeFunctions_OG.h">
+      <Filter>f4se\OG</Filter>
+    </ClInclude>
+    <ClInclude Include="depends\f4se\f4se\f4se\GameTypes_OG.h">
+      <Filter>f4se\OG</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="depends\f4se\f4se\f4se\GameRTTI.inl">
@@ -279,6 +441,18 @@
     </None>
     <None Include="exports.def">
       <Filter>Файлы ресурсов</Filter>
+    </None>
+    <None Include="depends\f4se\f4se\f4se\PapyrusNativeFunctionDef.inl">
+      <Filter>f4se</Filter>
+    </None>
+    <None Include="depends\f4se\f4se\f4se\PapyrusNativeFunctionDef_Base.inl">
+      <Filter>f4se</Filter>
+    </None>
+    <None Include="depends\f4se\f4se\f4se\PapyrusNativeFunctionDef_Base_OG.inl">
+      <Filter>f4se\OG</Filter>
+    </None>
+    <None Include="depends\f4se\f4se\f4se\PapyrusNativeFunctionDef_OG.inl">
+      <Filter>f4se\OG</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

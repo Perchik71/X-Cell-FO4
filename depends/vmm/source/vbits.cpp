@@ -285,6 +285,10 @@ namespace voltek
 
 				size_t array_index = (size_t)i + voltek::ctzl(mask);
 				index = (array_index << 6) + voltek::ctzll((unsigned long long)(u64p[array_index]));
+
+				// Сбросить, чтобы не было пиналити
+				_mm256_zeroupper();
+
 				return true;
 			}
 

@@ -23,6 +23,7 @@ namespace xc
 		string read_str(const char* section, const char* name, const char* default_value) const noexcept;
 		int32_t read_int(const char* section, const char* name, int32_t default_value) const noexcept;
 		uint32_t read_uint(const char* section, const char* name, uint32_t default_value) const noexcept;
+		float read_float(const char* section, const char* name, float default_value) const noexcept;
 		bool read_bool(const char* section, const char* name, bool default_value) const noexcept;
 	private:
 		string _file_name;

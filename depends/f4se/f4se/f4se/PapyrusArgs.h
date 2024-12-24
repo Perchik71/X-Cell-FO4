@@ -489,32 +489,34 @@ struct IsArrayType<VMArray<T>>
 template <typename T>
 UInt64 GetTypeID <T>(VirtualMachine * vm)
 {
-	UInt64		result;
+	// FUCK (no compile)
 
-	if(IsArrayType<T>::value)
-	{
-		typedef IsArrayType<T>::TypedArg BaseType;
-		if(IsStructType<BaseType>::value)
-		{
-			result = GetTypeIDFromStructName(IsStructType<BaseType>::name(), vm) | VMValue::kType_Identifier;
-		}
-		else if(std::is_pointer<BaseType>::value)
-		{
-			typedef std::remove_pointer <BaseType>::type	ObjectType;
-			result = GetTypeIDFromFormTypeID(ObjectType::kTypeID, vm) | VMValue::kType_Identifier;
-		}
-	}
-	else if(IsStructType<T>::value)
-	{
-		result = GetTypeIDFromStructName(IsStructType<T>::name(), vm);
-	}
-	else if(std::is_pointer<T>::value)
-	{
-		typedef std::remove_pointer <T>::type	ObjectType;
-		result = GetTypeIDFromFormTypeID(ObjectType::kTypeID, vm);
-	}
+	//UInt64		result;
 
-	return result;
+	//if(IsArrayType<T>::value)
+	//{
+	//	typedef IsArrayType<T>::TypedArg BaseType;
+	//	if(IsStructType<BaseType>::value)
+	//	{
+	//		result = GetTypeIDFromStructName(IsStructType<BaseType>::name(), vm) | VMValue::kType_Identifier;
+	//	}
+	//	else if(std::is_pointer<BaseType>::value)
+	//	{
+	//		typedef std::remove_pointer <BaseType>::type	ObjectType;
+	//		result = GetTypeIDFromFormTypeID(ObjectType::kTypeID, vm) | VMValue::kType_Identifier;
+	//	}
+	//}
+	//else if(IsStructType<T>::value)
+	//{
+	//	result = GetTypeIDFromStructName(IsStructType<T>::name(), vm);
+	//}
+	//else if(std::is_pointer<T>::value)
+	//{
+	//	typedef std::remove_pointer <T>::type	ObjectType;
+	//	result = GetTypeIDFromFormTypeID(ObjectType::kTypeID, vm);
+	//}
+
+	return 0;
 }
 
 template <class T>

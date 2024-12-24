@@ -299,4 +299,4 @@ public:
 	DEFINE_MEMBER_FN(SendPapyrusEvent, void, 0x01067710, UInt64 handle, const BSFixedString & eventName, std::function<bool(void*)> functor); // Signature not correct yet
 };
 
-extern RelocPtr <GameVM *> g_gameVM;
+extern RelocPtr<GameVM*> g_gameVM;

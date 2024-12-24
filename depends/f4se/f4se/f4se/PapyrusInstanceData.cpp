@@ -126,7 +126,7 @@ namespace papyrusInstanceData
 	{
 		auto instanceData = GetWeaponInstanceData(&thisInstance);
 		if (instanceData) {
-			instanceData->baseDamage = max(0, min(nuDamage, 0xFFFF));
+			instanceData->baseDamage = max(0ul, min(nuDamage, 0xFFFFul));
 		}
 	}
 
@@ -154,7 +154,7 @@ namespace papyrusInstanceData
 	{
 		auto instanceData = GetWeaponInstanceData(&thisInstance);
 		if (instanceData) {
-			instanceData->ammoCapacity = max(0, min(nuDamage, 0xFFFF));
+			instanceData->ammoCapacity = max(0ul, min(nuDamage, 0xFFFFul));
 		}
 	}
 
@@ -259,7 +259,7 @@ namespace papyrusInstanceData
 	{
 		auto instanceData = GetWeaponInstanceData(&thisInstance);
 		if (instanceData) {
-			instanceData->accuracyBonus = max(0, min(nuDamage, 0xFF));
+			instanceData->accuracyBonus = max(0ul, min(nuDamage, 0xFFul));
 		}
 	}
 
@@ -385,7 +385,7 @@ namespace papyrusInstanceData
 	{
 		auto instanceData = GetWeaponInstanceData(&thisInstance);
 		if (instanceData) {
-			instanceData->stagger = max(0, min(stagger, 4));
+			instanceData->stagger = max(0ul, min(stagger, 4ul));
 		}
 	}
 
@@ -469,7 +469,7 @@ namespace papyrusInstanceData
 	{
 		auto instanceData = GetWeaponInstanceData(&thisInstance);
 		if(instanceData && instanceData->firingData) {
-			instanceData->firingData->numProjectiles = max(0, min(nuDamage, 0xFF));
+			instanceData->firingData->numProjectiles = max(0ul, min(nuDamage, 0xFFul));
 		}
 	}
 

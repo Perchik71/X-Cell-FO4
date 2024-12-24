@@ -18,6 +18,7 @@
 // fixes
 #include <xc_fix_greymovies.h>
 #include <xc_fix_packageallocatelocation.h>
+#include <xc_fix_sampler.h>
 
 namespace xc
 {
@@ -50,6 +51,14 @@ namespace xc
 			_MESSAGE("The game passed the data");
 			g_plugin->send_massages_game_data_ready();
 		}
+	}
+
+	bool plugin::register_funcs_vm(VirtualMachine* vm)
+	{
+		_MESSAGE("The game passed the register papyrus functions");
+		fix_sampler::register_functions(vm);
+
+		return true;
 	}
 
 	bool plugin::init()
@@ -148,6 +157,29 @@ namespace xc
 			}
 		}
 
+		_papyrus = (F4SEPapyrusInterface*)_f4se->QueryInterface(kInterface_Papyrus);
+		if (!_papyrus)
+		{
+			_WARNING("couldn't get papyrus interface");
+			return false;
+		}
+		else
+		{
+			if (_papyrus->interfaceVersion < F4SEPapyrusInterface::kInterfaceVersion)
+			{
+				_FATALERROR("F4SEPapyrusInterface interface too old (%d expected %d)",
+					_papyrus->interfaceVersion, F4SEPapyrusInterface::kInterfaceVersion);
+				return false;
+			}
+
+			if (!_papyrus->Register(register_funcs_vm))
+			{
+				_FATALERROR("Failed to register a message handler");
+				return false;
+			}
+
+		}
+
 		//////////////////
 
 		_patches.push_back(new patch_threads());
@@ -163,6 +195,7 @@ namespace xc
 
 		_fixes.push_back(new fix_greymovies());
 		_fixes.push_back(new fix_package_allocate_location());
+		_fixes.push_back(new fix_sampler());
 
 		//////////////////
 
@@ -200,6 +233,9 @@ namespace xc
 		__try
 		{
 			for (auto i : _patches)
+				if (i) i->game_data_ready_handler();
+
+			for (auto i : _fixes)
 				if (i) i->game_data_ready_handler();
 		}
 		__except (1)

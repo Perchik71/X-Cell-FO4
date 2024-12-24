@@ -4,6 +4,7 @@
 
 #include <mini/ini.h>
 #include <xc_settings.h>
+#include <stdio.h>
 
 namespace xc
 {
@@ -56,7 +57,7 @@ namespace xc
 	string settings::read_str(const char* section, const char* name, const char* default_value) const noexcept
 	{
 		auto h = (mINI::INIStructure*)_handle;
-		if (!h) return "";
+		if (!h) return default_value;
 		if (!h->get(section).has(name)) return default_value;
 		return h->get(section).get(name);
 	}
@@ -79,6 +80,14 @@ namespace xc
 		auto s = h->get(section).get(name);
 		char* end_ptr = nullptr;
 		return strtoul(s.c_str(), &end_ptr, 10);
+	}
+
+	float settings::read_float(const char* section, const char* name, float default_value) const noexcept
+	{
+		auto h = (mINI::INIStructure*)_handle;
+		if (!h) return default_value;
+		if (!h->get(section).has(name)) return default_value;
+		return strtof(h->get(section).get(name).c_str(), nullptr);
 	}
 
 	bool settings::read_bool(const char* section, const char* name, bool default_value) const noexcept
