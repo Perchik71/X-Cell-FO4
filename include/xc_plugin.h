@@ -25,7 +25,9 @@ namespace xc
 		inline UInt32 get_f4se_version() const noexcept { return _f4se_version; }
 		inline UInt32 get_runtime_version() const noexcept { return _runtime_version; }
 		inline settings* get_settings() noexcept { return &_settings; }
+		inline settings* get_usersettings() noexcept { return &_usersettings; }
 		inline uintptr_t get_base() const noexcept { return _base; }
+		inline msrtti::section get_section(size_t index) const noexcept { return _section[index]; }
 
 		static void f4se_messages_handler(F4SEMessagingInterface::Message* msg);
 
@@ -42,6 +44,7 @@ namespace xc
 		UInt32 _f4se_version;
 		UInt32 _runtime_version;
 		settings _settings;
+		settings _usersettings;
 		vector<patch*> _patches;
 		vector<patch*> _fixes;
 		uintptr_t _base;

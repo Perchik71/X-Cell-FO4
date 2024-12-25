@@ -27,6 +27,7 @@ namespace xc
 
 	bool fix_package_allocate_location::run() const
 	{
+#ifdef FO4NG2
 		// only NG
 		if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_984)
 		{
@@ -40,5 +41,8 @@ namespace xc
 		}
 
 		return true;
+#else
+		return false;
+#endif // FO4NG2
 	}
 }

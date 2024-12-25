@@ -10,9 +10,21 @@ namespace xc
 {
 	bool patch::start(const char* section)
 	{
-		if (g_plugin->get_settings()->read_bool(section, get_name(), false))
+		if (g_plugin->get_settings()->read_bool(section, get_name(), false) || 
+			g_plugin->get_usersettings()->read_bool(section, get_name(), false))
 			return start_impl();
 		return false;
+	}
+
+	bool patch::unlock_page(uintptr_t offset, uintptr_t size, uint32_t& flags) const noexcept
+	{
+		return VirtualProtect(reinterpret_cast<uint8_t*>(offset), size, PAGE_EXECUTE_READWRITE, (LPDWORD)&flags);
+	}
+
+	bool patch::lock_page(uintptr_t offset, uintptr_t size, uint32_t flags) const noexcept
+	{
+		DWORD dwOld = 0;
+		return VirtualProtect(reinterpret_cast<uint8_t*>(offset), size, flags, &dwOld);
 	}
 
 	bool patch::patch_mem_nop(uintptr_t offset, size_t size) const noexcept

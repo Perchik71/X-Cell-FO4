@@ -77,6 +77,8 @@ namespace xc
 			return false;
 		}
 
+		_usersettings.set_filename(5, "\\My Games\\Fallout4\\F4SE\\" MODNAME ".ini");
+
 		string path = szBuffer;
 		auto si = path.find_last_of("\\/");
 		if (si == string::npos)

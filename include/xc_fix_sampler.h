@@ -19,15 +19,12 @@ namespace xc
 
 		fix_sampler& operator=(const fix_sampler&) = default;
 
-		//static HRESULT hk_create_sampler_state(ID3D11Device* device, const D3D11_SAMPLER_DESC* pSamplerDesc, ID3D11SamplerState** ppSamplerState);
-
 		static void hk_pssetsamplers(ID3D11DeviceContext* This, UINT StartSlot, UINT NumSamplers, ID3D11SamplerState* const* ppSamplers);
 		static void hk_vssetsamplers(ID3D11DeviceContext* This, UINT StartSlot, UINT NumSamplers, ID3D11SamplerState* const* ppSamplers);
 		static void hk_gssetsamplers(ID3D11DeviceContext* This, UINT StartSlot, UINT NumSamplers, ID3D11SamplerState* const* ppSamplers);
 		static void hk_hssetsamplers(ID3D11DeviceContext* This, UINT StartSlot, UINT NumSamplers, ID3D11SamplerState* const* ppSamplers);
 		static void hk_dssetsamplers(ID3D11DeviceContext* This, UINT StartSlot, UINT NumSamplers, ID3D11SamplerState* const* ppSamplers);
 		static void hk_cssetsamplers(ID3D11DeviceContext* This, UINT StartSlot, UINT NumSamplers, ID3D11SamplerState* const* ppSamplers);
-
 
 		static void hk_sub_after_init();
 		static void register_functions(VirtualMachine* vm);

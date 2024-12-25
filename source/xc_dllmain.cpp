@@ -10,31 +10,33 @@ xc::plugin* g_plugin = nullptr;
 
 extern "C"
 {
-	// for f4se 7.0 and newer
-	__declspec(dllexport) F4SEPluginVersionData F4SEPlugin_Version =
-	{
-		F4SEPluginVersionData::kVersion,
-        xc::modver,
-        MODNAME,
-        AUTHOR,
-		0,
-		0,
-		{ RUNTIME_VERSION_1_10_984, 0 },
-		0,	// works with any version of the script extender. you probably do not need to put anything here
-	};
-
+#ifndef FO4NG2
 	// for f4se 6.23 and older
 	__declspec(dllexport) bool F4SEPlugin_Query(const F4SEInterface* f4se, PluginInfo* info)
 	{
 		if (f4se->runtimeVersion != RUNTIME_VERSION_1_10_163)
 			return false;
 
-		info->infoVersion = xc::modver;
-		info->version = F4SEPlugin_Version.pluginVersion;
+		info->infoVersion = PluginInfo::kInfoVersion;
+		info->version = xc::modver;
 		info->name = xc::modname;
 
 		return true;
 	}
+#else
+	// for f4se 7.0 and newer
+	__declspec(dllexport) F4SEPluginVersionData F4SEPlugin_Version =
+	{
+		F4SEPluginVersionData::kVersion,
+		xc::modver,
+		MODNAME,
+		AUTHOR,
+		0,
+		0,
+		{ RUNTIME_VERSION_1_10_984, 0 },
+		0,	// works with any version of the script extender. you probably do not need to put anything here
+	};
+#endif // !FO4NG2
 
 	__declspec(dllexport) bool F4SEPlugin_Load(const F4SEInterface* f4se)
 	{

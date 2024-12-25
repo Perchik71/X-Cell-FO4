@@ -12,7 +12,6 @@
 #include <wrl/client.h>
 
 #include <f4se/PapyrusNativeFunctions.h>
-#include <f4se/PapyrusNativeFunctions_OG.h>
 
 using namespace Microsoft::WRL;
 
@@ -130,25 +129,23 @@ namespace xc
 			mappedSamplers.clear();
 
 			fLodBias = value;
+			g_plugin->get_usersettings()->write_float("graphics", "miplodbias", fLodBias);
+		}
+
+		static void SetDefaultMipLODBias(StaticFunctionTag* base)
+		{
+			SetMipLODBias(base, 0.0f);
 		}
 	}
 
 	void fix_sampler::register_functions(VirtualMachine* vm)
 	{
-		if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_163)
-		{
-			vm->RegisterFunction(
-				(IFunction*)(new NativeFunctionOG0<StaticFunctionTag, float>("GetMipLODBias", "XCELL", PVM::GetMipLODBias, vm)));
-			vm->RegisterFunction(
-				(IFunction*)(new NativeFunctionOG1<StaticFunctionTag, void, float>("SetMipLODBias", "XCELL", PVM::SetMipLODBias, vm)));
-		}
-		else if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_984)
-		{
-			vm->RegisterFunction(
-				new NativeFunction0<StaticFunctionTag, float>("GetMipLODBias", "XCELL", PVM::GetMipLODBias, vm));
-			vm->RegisterFunction(
-				new NativeFunction1<StaticFunctionTag, void, float>("SetMipLODBias", "XCELL", PVM::SetMipLODBias, vm));
-		}
+		vm->RegisterFunction(
+			new NativeFunction0<StaticFunctionTag, float>("GetMipLODBias", "XCELL", PVM::GetMipLODBias, vm));
+		vm->RegisterFunction(
+			new NativeFunction1<StaticFunctionTag, void, float>("SetMipLODBias", "XCELL", PVM::SetMipLODBias, vm));
+		vm->RegisterFunction(
+			new NativeFunction0<StaticFunctionTag, void>("SetDefaultMipLODBias", "XCELL", PVM::SetDefaultMipLODBias, vm));
 	}
 
 	void fix_sampler::hk_sub_after_init()
@@ -208,11 +205,10 @@ namespace xc
 	bool fix_sampler::run() const
 	{
 		__this = const_cast<fix_sampler*>(this);
-		PVM::SetMipLODBias(nullptr, g_plugin->get_settings()->read_float("additional", "miplodbias", 0.0f));
+		PVM::SetMipLODBias(nullptr, g_plugin->get_usersettings()->read_float("graphics", "miplodbias", -1.3f));
 
-		if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_163)
-			detour_call(g_plugin->get_base() + 0x1D18A57, (uintptr_t)&hk_sub_after_init);
-		else if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_984)
+#ifdef FO4NG2
+		if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_984)
 			detour_call(g_plugin->get_base() + 0x16FB147, (uintptr_t)&hk_sub_after_init);
 		else
 		{
@@ -221,5 +217,16 @@ namespace xc
 		}
 
 		return true;
+#else
+		if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_163)
+			detour_call(g_plugin->get_base() + 0x1D18A57, (uintptr_t)&hk_sub_after_init);
+		else
+		{
+			_ERROR("The fix \"%s\" has not been installed, as the mod does not know the game", get_name());
+			return false;
+		}
+
+		return true;
+#endif // FO4NG2
 	}
 }

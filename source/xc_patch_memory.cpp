@@ -119,6 +119,20 @@ namespace xc
 			}
 		};
 
+		class BSSmallBlockAllocator
+		{
+		public:
+			static void* alloc(size_t size, uint32_t alignment, bool aligned)
+			{
+				return memory_manager::alloc(size, alignment, aligned, false);
+			}
+			static void sub_nullopt() { return; }
+			static int32_t sub08() { return 0; }
+			static void* alloc_block(size_t size, uint32_t alignment) { return alloc(size, alignment, true); }
+			static void dealloc_block(void* block) { memory_manager::dealloc(block); }
+			static void* alloc_block_noalign(size_t size) { return alloc(size, 0, false); }
+		};
+
 		class BGSScrapHeap
 		{
 		public:
@@ -251,11 +265,39 @@ namespace xc
 		return true;
 	}
 
+	bool patch_memory::check_buffout4() const noexcept
+	{
+		if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_163)
+		{
+			return
+				// ScaleformAllocator patch
+				(*((uint32_t*)(g_plugin->get_base() + 0x211051D)) != 0xFFF30F8Ful) ||
+				// MemoryManager patch
+				(*((uint8_t*)(g_plugin->get_base() + 0x1B0EC90)) == (uint8_t)0xCC) ||
+				// SmallBlock patch
+				(*((uint8_t*)(g_plugin->get_base() + 0x1B1BE48)) == (uint8_t)0x90) ||
+				// BSTextureStreamerLocalHeap patch
+				(*((uint8_t*)(g_plugin->get_base() + 0x1CB4534)) == (uint8_t)0xCC) ||
+				// HavokMemorySystem patch
+				(*((uint32_t*)(g_plugin->get_base() + 0x1D6FEB8)) != 0x66903E8ul);
+		}
+		else
+			return false;
+	}
+
 	bool patch_memory::run() const
 	{
 		if (GetModuleHandleA("BakaScrapHeap.dll"))
 		{
-			_WARNING("Mod \"Baka ScrapHeap\" has been detected, X-Cell patch \"%s\" is incompatible and will not be enabled.", get_name());
+			MessageBoxA(0, "Mod \"Baka ScrapHeap\" has been detected. X-Cell "
+				"patch \"memory\" is incompatible and will not be enabled.", "Warning", MB_OK | MB_ICONWARNING);
+			return false;
+		}
+
+		if (GetModuleHandleA("Buffout4.dll") && check_buffout4())
+		{
+			MessageBoxA(0, "Mod \"Buffout4\" has been detected with memory initialized patch. X-Cell "
+				"patch \"memory\" is incompatible and will not be enabled.", "Warning", MB_OK | MB_ICONWARNING);
 			return false;
 		}
 
@@ -380,6 +422,34 @@ namespace xc
 		}
 		else
 			_ERROR("The patch has not been fully installed, as the mod does not know the game");
+
+		// Remove BSSmallBlockAllocator
+		//
+		{
+			//
+			// Remove the thousands of [code below] since they're useless checks:
+			//
+			// if ( dword_142E62E00 != 2 ) // MemoryManager initialized flag
+			//     sub_14153DDA0((__int64)&unk_142E62980, &dword_142E62E00);
+			//
+
+			auto sec = g_plugin->get_section(0);
+			auto matches = find_patterns(sec.base, sec.end - sec.base,
+				"83 3D ? ? ? ? 02 74 13 48 8D 15 ? ? ? ? 48 8D 0D ? ? ? ? E8");
+
+			uint32_t f;
+			unlock_page(sec.base, sec.end - sec.base, f);
+			for (uintptr_t match : matches)
+				memcpy((void*)match, "\xEB\x1A", 2);
+			lock_page(sec.base, sec.end - sec.base, f);
+
+			_MESSAGE("memory: remove useless checks %llu", matches.size());
+
+			if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_984)
+				patch_mem((g_plugin->get_base() + 0x153DDA0), { 0xC3, 0x90 });
+			else if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_163)
+				patch_mem((g_plugin->get_base() + 0x1B0F450), { 0xC3, 0x90 });
+		}
 
 		return true;
 	}

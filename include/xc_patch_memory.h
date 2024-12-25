@@ -19,6 +19,8 @@ namespace xc
 
 		virtual const char* get_name() const noexcept;
 		virtual bool game_data_ready_handler() const noexcept;
+
+		bool check_buffout4() const noexcept;
 	protected:
 		virtual bool run() const;
 	private:

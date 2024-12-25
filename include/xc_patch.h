@@ -45,7 +45,10 @@ namespace xc
 		virtual bool game_data_ready_handler() const noexcept = 0;
 	protected:
 		virtual bool run() const = 0;
-	
+		
+		virtual bool unlock_page(uintptr_t offset, uintptr_t size, uint32_t& flags) const noexcept;
+		virtual bool lock_page(uintptr_t offset, uintptr_t size, uint32_t flags) const noexcept;
+
 		virtual bool patch_mem_nop(uintptr_t offset, size_t size) const noexcept;
 		virtual bool patch_mem(uintptr_t offset, uint8_t* buffer, size_t size) const noexcept;
 		virtual bool patch_mem(uintptr_t offset, initializer_list<uint8_t> list) const noexcept;
