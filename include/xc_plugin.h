@@ -29,6 +29,19 @@ namespace xc
 		inline uintptr_t get_base() const noexcept { return _base; }
 		inline msrtti::section get_section(size_t index) const noexcept { return _section[index]; }
 
+		string read_setting_str(const char* section, const char* name, const char* default_value) const noexcept;
+		int32_t read_setting_int(const char* section, const char* name, int32_t default_value) const noexcept;
+		uint32_t read_setting_uint(const char* section, const char* name, uint32_t default_value) const noexcept;
+		float read_setting_float(const char* section, const char* name, float default_value) const noexcept;
+		bool read_setting_bool(const char* section, const char* name, bool default_value) const noexcept;
+
+		void write_setting_str(const char* section, const char* name, const char* value) const noexcept;
+		void write_setting_int(const char* section, const char* name, int32_t value) const noexcept;
+		void write_setting_uint(const char* section, const char* name, uint32_t value) const noexcept;
+		void write_setting_float(const char* section, const char* name, float value) const noexcept;
+		void write_setting_bool(const char* section, const char* name, bool value) const noexcept;
+
+
 		static void f4se_messages_handler(F4SEMessagingInterface::Message* msg);
 
 		bool init();

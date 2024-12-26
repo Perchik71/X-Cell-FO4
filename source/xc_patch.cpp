@@ -10,8 +10,7 @@ namespace xc
 {
 	bool patch::start(const char* section)
 	{
-		if (g_plugin->get_settings()->read_bool(section, get_name(), false) || 
-			g_plugin->get_usersettings()->read_bool(section, get_name(), false))
+		if (g_plugin->read_setting_bool(section, get_name(), false))
 			return start_impl();
 		return false;
 	}

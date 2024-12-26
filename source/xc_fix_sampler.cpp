@@ -121,7 +121,7 @@ namespace xc
 
 		static void SetMipLODBias(StaticFunctionTag* base, float value)
 		{
-			value = std::min(3.0f, std::max(-3.0f, value));
+			value = std::min(5.0f, std::max(-5.0f, value));
 
 			_MESSAGE("MIP LOD Bias changed from %f to %f, recreating samplers", fLodBias, value);
 
@@ -129,7 +129,7 @@ namespace xc
 			mappedSamplers.clear();
 
 			fLodBias = value;
-			g_plugin->get_usersettings()->write_float("graphics", "miplodbias", fLodBias);
+			g_plugin->write_setting_float("graphics", "miplodbias", fLodBias);
 		}
 
 		static void SetDefaultMipLODBias(StaticFunctionTag* base)
@@ -205,7 +205,7 @@ namespace xc
 	bool fix_sampler::run() const
 	{
 		__this = const_cast<fix_sampler*>(this);
-		PVM::SetMipLODBias(nullptr, g_plugin->get_usersettings()->read_float("graphics", "miplodbias", -1.3f));
+		PVM::SetMipLODBias(nullptr, g_plugin->read_setting_float("graphics", "miplodbias", -1.3f));
 
 #ifdef FO4NG2
 		if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_984)

@@ -164,4 +164,11 @@ namespace xc
 	{
 		write_str(section, name, value ? "true" : "false");
 	}
+
+	bool settings::has(const char* section, const char* name) const noexcept
+	{
+		mINI::INIStructure* h = (mINI::INIStructure*)_handle;
+		if (!h || !h->has(section)) return false;
+		return (*h)[section].has(name);
+	}
 }

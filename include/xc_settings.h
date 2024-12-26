@@ -34,6 +34,8 @@ namespace xc
 		void write_uint(const char* section, const char* name, uint32_t value) const noexcept;
 		void write_float(const char* section, const char* name, float value) const noexcept;
 		void write_bool(const char* section, const char* name, bool value) const noexcept;
+
+		bool has(const char* section, const char* name) const noexcept;
 	private:
 		string _file_name;
 		void* _handle;

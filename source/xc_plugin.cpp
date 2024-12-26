@@ -44,6 +44,66 @@ namespace xc
 		return *this;
 	}
 
+	string plugin::read_setting_str(const char* section, const char* name, const char* default_value) const noexcept
+	{
+		return _usersettings.has(section, name) ?
+			_usersettings.read_str(section, name, default_value) :
+			_settings.read_str(section, name, default_value);
+	}
+
+	int32_t plugin::read_setting_int(const char* section, const char* name, int32_t default_value) const noexcept
+	{
+		return _usersettings.has(section, name) ?
+			_usersettings.read_int(section, name, default_value) :
+			_settings.read_int(section, name, default_value);
+	}
+
+	uint32_t plugin::read_setting_uint(const char* section, const char* name, uint32_t default_value) const noexcept
+	{
+		return _usersettings.has(section, name) ?
+			_usersettings.read_uint(section, name, default_value) :
+			_settings.read_uint(section, name, default_value);
+	}
+
+	float plugin::read_setting_float(const char* section, const char* name, float default_value) const noexcept
+	{
+		return _usersettings.has(section, name) ?
+			_usersettings.read_float(section, name, default_value) :
+			_settings.read_float(section, name, default_value);
+	}
+
+	bool plugin::read_setting_bool(const char* section, const char* name, bool default_value) const noexcept
+	{
+		return _usersettings.has(section, name) ?
+			_usersettings.read_bool(section, name, default_value) :
+			_settings.read_bool(section, name, default_value);
+	}
+
+	void plugin::write_setting_str(const char* section, const char* name, const char* value) const noexcept
+	{
+		_usersettings.write_str(section, name, value);
+	}
+
+	void plugin::write_setting_int(const char* section, const char* name, int32_t value) const noexcept
+	{
+		_usersettings.write_int(section, name, value);
+	}
+
+	void plugin::write_setting_uint(const char* section, const char* name, uint32_t value) const noexcept
+	{
+		_usersettings.write_uint(section, name, value);
+	}
+
+	void plugin::write_setting_float(const char* section, const char* name, float value) const noexcept
+	{
+		_usersettings.write_float(section, name, value);
+	}
+
+	void plugin::write_setting_bool(const char* section, const char* name, bool value) const noexcept
+	{
+		_usersettings.write_bool(section, name, value);
+	}
+
 	void plugin::f4se_messages_handler(F4SEMessagingInterface::Message* msg)
 	{
 		if (msg->type == F4SEMessagingInterface::kMessage_GameDataReady)
@@ -179,7 +239,6 @@ namespace xc
 				_FATALERROR("Failed to register a message handler");
 				return false;
 			}
-
 		}
 
 		//////////////////

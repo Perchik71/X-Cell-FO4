@@ -265,38 +265,11 @@ namespace xc
 		return true;
 	}
 
-	bool patch_memory::check_buffout4() const noexcept
-	{
-		if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_163)
-		{
-			return
-				// ScaleformAllocator patch
-				(*((uint32_t*)(g_plugin->get_base() + 0x211051D)) != 0xFFF30F8Ful) ||
-				// MemoryManager patch
-				(*((uint8_t*)(g_plugin->get_base() + 0x1B0EC90)) == (uint8_t)0xCC) ||
-				// SmallBlock patch
-				(*((uint8_t*)(g_plugin->get_base() + 0x1B1BE48)) == (uint8_t)0x90) ||
-				// BSTextureStreamerLocalHeap patch
-				(*((uint8_t*)(g_plugin->get_base() + 0x1CB4534)) == (uint8_t)0xCC) ||
-				// HavokMemorySystem patch
-				(*((uint32_t*)(g_plugin->get_base() + 0x1D6FEB8)) != 0x66903E8ul);
-		}
-		else
-			return false;
-	}
-
 	bool patch_memory::run() const
 	{
 		if (GetModuleHandleA("BakaScrapHeap.dll"))
 		{
 			MessageBoxA(0, "Mod \"Baka ScrapHeap\" has been detected. X-Cell "
-				"patch \"memory\" is incompatible and will not be enabled.", "Warning", MB_OK | MB_ICONWARNING);
-			return false;
-		}
-
-		if (GetModuleHandleA("Buffout4.dll") && check_buffout4())
-		{
-			MessageBoxA(0, "Mod \"Buffout4\" has been detected with memory initialized patch. X-Cell "
 				"patch \"memory\" is incompatible and will not be enabled.", "Warning", MB_OK | MB_ICONWARNING);
 			return false;
 		}
@@ -311,8 +284,8 @@ namespace xc
 		_MESSAGE("Memory (Total: %.2f Gb, Available: %.2f Gb)",
 			((double)statex.ullTotalPageFile / MEM_GB), ((double)statex.ullAvailPageFile / MEM_GB));
 
-		detail::BSScaleformSysMemMapper::PAGE_SIZE = g_plugin->get_settings()->read_uint("additional", "scaleform_page_size", 256 /* 256 Kb */);
-		detail::BSScaleformSysMemMapper::HEAP_SIZE = g_plugin->get_settings()->read_uint("additional", "scaleform_heap_size", 512 /* 512 Mb */);
+		detail::BSScaleformSysMemMapper::PAGE_SIZE = g_plugin->read_setting_uint("additional", "scaleform_page_size", 256 /* 256 Kb */);
+		detail::BSScaleformSysMemMapper::HEAP_SIZE = g_plugin->read_setting_uint("additional", "scaleform_heap_size", 512 /* 512 Mb */);
 
 		detail::BSScaleformSysMemMapper::PAGE_SIZE = min(detail::BSScaleformSysMemMapper::PAGE_SIZE, (UInt32)2 * 1024);
 		detail::BSScaleformSysMemMapper::PAGE_SIZE = (detail::BSScaleformSysMemMapper::PAGE_SIZE + 7) & ~7;
@@ -336,22 +309,24 @@ namespace xc
 		patch_iat(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_msize", (uintptr_t)&impl_msize);
 
 		// replacing memory manipulation functions with newer and more productive ones.
-
-		if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_163)
+		if (g_plugin->read_setting_bool("additional", "use_new_redistributable", false))
 		{
-			patch_iat(base, "msvcr110.dll", "memcmp", (uintptr_t)&memcmp);
-			patch_iat(base, "msvcr110.dll", "memmove", (uintptr_t)&memmove);
-			patch_iat(base, "msvcr110.dll", "memcpy", (uintptr_t)&memcpy);
-			patch_iat(base, "msvcr110.dll", "memset", (uintptr_t)&memset);
-			patch_iat(base, "msvcr110.dll", "memmove_s", (uintptr_t)&memmove_s);
-			patch_iat(base, "msvcr110.dll", "memcpy_s", (uintptr_t)&memcpy_s);
-		}
-		else
-		{
-			patch_iat(base, "vcruntime140.dll", "memcmp", (uintptr_t)&memcmp);
-			patch_iat(base, "vcruntime140.dll", "memmove", (uintptr_t)&memmove);
-			patch_iat(base, "vcruntime140.dll", "memcpy", (uintptr_t)&memcpy);
-			patch_iat(base, "vcruntime140.dll", "memset", (uintptr_t)&memset);
+			if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_163)
+			{
+				patch_iat(base, "msvcr110.dll", "memcmp", (uintptr_t)&memcmp);
+				patch_iat(base, "msvcr110.dll", "memmove", (uintptr_t)&memmove);
+				patch_iat(base, "msvcr110.dll", "memcpy", (uintptr_t)&memcpy);
+				patch_iat(base, "msvcr110.dll", "memset", (uintptr_t)&memset);
+				patch_iat(base, "msvcr110.dll", "memmove_s", (uintptr_t)&memmove_s);
+				patch_iat(base, "msvcr110.dll", "memcpy_s", (uintptr_t)&memcpy_s);
+			}
+			else
+			{
+				patch_iat(base, "vcruntime140.dll", "memcmp", (uintptr_t)&memcmp);
+				patch_iat(base, "vcruntime140.dll", "memmove", (uintptr_t)&memmove);
+				patch_iat(base, "vcruntime140.dll", "memcpy", (uintptr_t)&memcpy);
+				patch_iat(base, "vcruntime140.dll", "memset", (uintptr_t)&memset);
+			}
 		}
 
 		// detail::BGSMemoryManager::alloc pattern 48895C24??48896C24??48897424??5741544155415641574883EC??65488B0425
@@ -447,8 +422,9 @@ namespace xc
 
 			if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_984)
 				patch_mem((g_plugin->get_base() + 0x153DDA0), { 0xC3, 0x90 });
-			else if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_163)
-				patch_mem((g_plugin->get_base() + 0x1B0F450), { 0xC3, 0x90 });
+			// crashes
+			//else if (g_plugin->get_runtime_version() == RUNTIME_VERSION_1_10_163)
+			//	patch_mem((g_plugin->get_base() + 0x1B0F450), { 0xC3, 0x90 });
 		}
 
 		return true;
