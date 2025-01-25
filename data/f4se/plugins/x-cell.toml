@@ -1,0 +1,21 @@
+# X-CELL FALLOUT 4 PLUGIN SETTINGS
+
+[Patches]
+bThreads=true					# All threads have priority above idle, process above normal, for adequate latency, prohibition on changing processor cores.
+bMemory=true					# Replaced memory manager and scrap heap, also functions for working with memory.
+bFacegen=true					# Enables facegen support and removes freezes.
+bIO=true						# Replacing file search functions with a newer one and use OS file cache for less disk access.
+bLibDeflate=true				# Replace old zlib decompression code with optimized libdeflate https://github.com/ebiggers/libdeflate.
+bProfile=true					# Replacing outdated functions WritePrivateProfileStringA, GetPrivateProfileStringA, GetPrivateProfileIntA. They read INI files. 
+bLoadScreen=false				# Black loading screen.
+bUpscaler=false					# TODO
+
+[NGFixes]						# Only NG version game. Already present in Buffout 4, but are missing in Buffout 4 NG (at time 28.09.2024).
+bGreyMovies=true				# Fixes a bug where movies that don't define "BackgroundAlpha" on their movie root could load with a grey background.
+bPackageAllocateLocation=true	# Fixes a crash when allocating the location for a package.
+
+[Additional]
+uScaleformPageSize=256			# The page size (in KB), vanilla size is 64. More, better, but the higher the memory consumption. Limit 2Mb (2048), number must be a multiple of 8.
+uScaleformHeapSize=512			# The heap size (in MB), vanilla size is 128. This is all the available memory, out of memory = CTD. Limit 2Gb (2048), number must be a multiple of 8.
+bUseNewRedistributable=false	# Replaces the old redistributable with a new one. If option is enabled, reports will include X-Cell in case of errors related to copying or comparing memory.
+bOutputRTTI=false				# Create file "<FALLOUT4_DIR>\\Data\\F4SE\\Plugins\\rtti-x-cell.txt" with rtti info.
