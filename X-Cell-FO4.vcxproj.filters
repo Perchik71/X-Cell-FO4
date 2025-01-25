@@ -13,87 +13,108 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Исходные файлы\patches">
-      <UniqueIdentifier>{4d553468-084a-419c-960d-a7caa1de5076}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы заголовков\patches">
-      <UniqueIdentifier>{6b12e902-4d2e-4d72-b433-b388d963a708}</UniqueIdentifier>
-    </Filter>
     <Filter Include="version">
       <UniqueIdentifier>{15097cb5-a4cc-4314-9293-a08009876516}</UniqueIdentifier>
     </Filter>
     <Filter Include="typeinfo">
       <UniqueIdentifier>{d238b62a-94b7-4b54-919f-553704d8e34d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Modules">
+      <UniqueIdentifier>{a52ae614-a4c7-46e6-a6f3-e463e3b66820}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Modules">
+      <UniqueIdentifier>{31dc559c-f94c-41a6-b59a-1e3670f65e87}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\xc_dllmain.cpp">
+    <ClCompile Include="source\XCellDllMain.cpp">
       <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="source\xc_plugin.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="source\xc_patch.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="source\xc_patch_threads.cpp">
-      <Filter>Исходные файлы\patches</Filter>
-    </ClCompile>
-    <ClCompile Include="source\xc_settings.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="source\xc_patch_memory.cpp">
-      <Filter>Исходные файлы\patches</Filter>
     </ClCompile>
     <ClCompile Include="depends\typeinfo\ms_rtti.cpp">
       <Filter>typeinfo</Filter>
     </ClCompile>
-    <ClCompile Include="source\xc_patch_facegen.cpp">
-      <Filter>Исходные файлы\patches</Filter>
-    </ClCompile>
-    <ClCompile Include="source\xc_patch_io.cpp">
-      <Filter>Исходные файлы\patches</Filter>
-    </ClCompile>
-    <ClCompile Include="source\xc_assertion.cpp">
+    <ClCompile Include="source\XCellPlugin.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="source\xc_patch_loadscreen.cpp">
-      <Filter>Исходные файлы\patches</Filter>
+    <ClCompile Include="source\XCellRelocator.cpp">
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="source\xc_patch_profile.cpp">
-      <Filter>Исходные файлы\patches</Filter>
+    <ClCompile Include="source\XCellObject.cpp">
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="source\xc_patch_archive_limit.cpp">
-      <Filter>Исходные файлы\patches</Filter>
+    <ClCompile Include="source\XCellEvent.cpp">
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="source\xc_patch_libdeflate.cpp">
-      <Filter>Исходные файлы\patches</Filter>
+    <ClCompile Include="source\XCellModule.cpp">
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="source\xc_fix_greymovies.cpp">
-      <Filter>Исходные файлы\patches</Filter>
+    <ClCompile Include="source\XCellModuleManager.cpp">
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="source\xc_fix_packageallocatelocation.cpp">
-      <Filter>Исходные файлы\patches</Filter>
+    <ClCompile Include="source\XCellModuleImGUI.cpp">
+      <Filter>Исходные файлы\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="source\xc_fix_sampler.cpp">
-      <Filter>Исходные файлы\patches</Filter>
+    <ClCompile Include="source\XCellSettings.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellCVar.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellModuleThreads.cpp">
+      <Filter>Исходные файлы\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellModuleMemory.cpp">
+      <Filter>Исходные файлы\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellTableID.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellAssertion.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellModuleIO.cpp">
+      <Filter>Исходные файлы\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellModuleLoadScreen.cpp">
+      <Filter>Исходные файлы\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellModuleLibDeflate.cpp">
+      <Filter>Исходные файлы\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellModuleGreyMovies.cpp">
+      <Filter>Исходные файлы\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellModulePackageAllocateLocation.cpp">
+      <Filter>Исходные файлы\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellParseINI.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellStream.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellModuleProfile.cpp">
+      <Filter>Исходные файлы\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellModuleFacegen.cpp">
+      <Filter>Исходные файлы\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellStringUtils.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellModuleUpscaler.cpp">
+      <Filter>Исходные файлы\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellPostProcessor.cpp">
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\xc_common.h">
+    <ClInclude Include="include\XCellCommon.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\xc_version.h">
+    <ClInclude Include="include\XCellVersion.h">
       <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="include\xc_plugin.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="include\xc_patch.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="include\xc_patch_threads.h">
-      <Filter>Файлы заголовков\patches</Filter>
     </ClInclude>
     <ClInclude Include="version\resource_version2.h">
       <Filter>version</Filter>
@@ -101,44 +122,83 @@
     <ClInclude Include="version\resource_version.h">
       <Filter>version</Filter>
     </ClInclude>
-    <ClInclude Include="include\xc_settings.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="include\xc_patch_memory.h">
-      <Filter>Файлы заголовков\patches</Filter>
-    </ClInclude>
     <ClInclude Include="depends\typeinfo\ms_rtti.h">
       <Filter>typeinfo</Filter>
     </ClInclude>
-    <ClInclude Include="include\xc_assertion.h">
+    <ClInclude Include="include\XCellPlugin.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\xc_patch_facegen.h">
-      <Filter>Файлы заголовков\patches</Filter>
+    <ClInclude Include="include\XCellRelocator.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\xc_patch_io.h">
-      <Filter>Файлы заголовков\patches</Filter>
+    <ClInclude Include="include\XCellObject.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\xc_patch_loadscreen.h">
-      <Filter>Файлы заголовков\patches</Filter>
+    <ClInclude Include="include\XCellEvent.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\xc_patch_profile.h">
-      <Filter>Файлы заголовков\patches</Filter>
+    <ClInclude Include="include\XCellModule.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\xc_patch_archive_limit.h">
-      <Filter>Файлы заголовков\patches</Filter>
+    <ClInclude Include="include\XCellModuleManager.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\xc_patch_libdeflate.h">
-      <Filter>Файлы заголовков\patches</Filter>
+    <ClInclude Include="include\XCellModuleImGUI.h">
+      <Filter>Файлы заголовков\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="include\xc_fix_greymovies.h">
-      <Filter>Файлы заголовков\patches</Filter>
+    <ClInclude Include="include\XCellSettings.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\xc_fix_packageallocatelocation.h">
-      <Filter>Файлы заголовков\patches</Filter>
+    <ClInclude Include="include\XCellCVar.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\xc_fix_sampler.h">
-      <Filter>Файлы заголовков\patches</Filter>
+    <ClInclude Include="include\XCellModuleThreads.h">
+      <Filter>Файлы заголовков\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellModuleMemory.h">
+      <Filter>Файлы заголовков\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellTableID.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellAssertion.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellModuleIO.h">
+      <Filter>Файлы заголовков\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellModuleLoadScreen.h">
+      <Filter>Файлы заголовков\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellModuleLibDeflate.h">
+      <Filter>Файлы заголовков\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellModulePackageAllocateLocation.h">
+      <Filter>Файлы заголовков\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellModuleGreyMovies.h">
+      <Filter>Файлы заголовков\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellParseINI.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellStream.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellStringUtils.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellModuleProfile.h">
+      <Filter>Файлы заголовков\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellModuleFacegen.h">
+      <Filter>Файлы заголовков\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellModuleUpscaler.h">
+      <Filter>Файлы заголовков\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellPostProcessor.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
