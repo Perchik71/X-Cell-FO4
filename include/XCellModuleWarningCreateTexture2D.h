@@ -4,30 +4,26 @@
 
 #pragma once
 
-// F4SE
-#include <f4se/PapyrusVM.h>
-
 // XCell
 #include "XCellModule.h"
 #include "XCellRelocator.h"
 
 namespace XCell
 {
-	class XCellModuleUpscaler : public Module
+	class XCellModuleWarningCreateTexture2D : public Module
 	{
+		ID3D11Device* _Device;
 	public:
-		static constexpr auto SourceName = "Module Upscaler";
+		static constexpr auto SourceName = "Module Warning CreateTexture2D";
 
-		XCellModuleUpscaler(void* Context);
-		virtual ~XCellModuleUpscaler() = default;
+		XCellModuleWarningCreateTexture2D(void* Context);
+		virtual ~XCellModuleWarningCreateTexture2D() = default;
 
-		XCellModuleUpscaler(const XCellModuleUpscaler&) = delete;
-		XCellModuleUpscaler& operator=(const XCellModuleUpscaler&) = delete;
+		XCellModuleWarningCreateTexture2D(const XCellModuleWarningCreateTexture2D&) = delete;
+		XCellModuleWarningCreateTexture2D& operator=(const XCellModuleWarningCreateTexture2D&) = delete;
 
 		virtual HRESULT DXListener(HWND WindowHandle, ID3D11Device* Device, ID3D11DeviceContext* Context,
 			IDXGISwapChain* SwapChain);
-		virtual HRESULT VMListener(VirtualMachine* VM);
-		virtual HRESULT DXEndFrameListener();
 	protected:
 		virtual HRESULT InstallImpl();
 		virtual HRESULT ShutdownImpl();

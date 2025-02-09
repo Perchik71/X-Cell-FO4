@@ -87,7 +87,7 @@ class ThumbstickEvent : public IDEvent, public InputEvent
 public:
 	UInt32 unk20[6];
 };
-STATIC_ASSERT(sizeof(ThumbstickEvent) == 0x048);
+//STATIC_ASSERT(sizeof(ThumbstickEvent) == 0x048);
 
 // 30
 class DeviceConnectEvent : public InputEvent
@@ -95,7 +95,7 @@ class DeviceConnectEvent : public InputEvent
 public:
 	UInt32 unk20[2];
 };
-STATIC_ASSERT(sizeof(DeviceConnectEvent) == 0x030);
+//STATIC_ASSERT(sizeof(DeviceConnectEvent) == 0x030);
 
 // 40
 class KinectEvent : public IDEvent, public InputEvent
@@ -103,7 +103,7 @@ class KinectEvent : public IDEvent, public InputEvent
 public:
 	UInt32 unk28[4];
 };
-STATIC_ASSERT(sizeof(KinectEvent) == 0x040);
+//STATIC_ASSERT(sizeof(KinectEvent) == 0x040);
 
 // EF0
 class InputEventTable

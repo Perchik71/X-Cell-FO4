@@ -9,6 +9,8 @@
 
 namespace XCell
 {
+	static DWORD gIOCacheFlag = 0;
+
 	static HANDLE WINAPI HKFindFirstFileExA(LPCSTR file_name, LPWIN32_FIND_DATAA pdata)
 	{
 		return FindFirstFileExA(file_name, FindExInfoStandard, pdata, FindExSearchNameMatch,
@@ -26,7 +28,7 @@ namespace XCell
 		HANDLE TemplateFile)
 	{
 		return CreateFileA(FileName, DesiredAccess, ShareMode, SecurityAttributes, CreationDisposition,
-			(FlagsAndAttributes & ~FILE_FLAG_NO_BUFFERING) | FILE_FLAG_SEQUENTIAL_SCAN, TemplateFile);
+			FILE_FLAG_OVERLAPPED | gIOCacheFlag, TemplateFile);
 	}
 
 	static HANDLE WINAPI HKCreateFileW(LPCWSTR FileName, DWORD DesiredAccess, DWORD ShareMode,
@@ -34,7 +36,7 @@ namespace XCell
 		HANDLE TemplateFile)
 	{
 		return CreateFileW(FileName, DesiredAccess, ShareMode, SecurityAttributes, CreationDisposition,
-			(FlagsAndAttributes & ~FILE_FLAG_NO_BUFFERING) | FILE_FLAG_SEQUENTIAL_SCAN, TemplateFile);
+			FILE_FLAG_OVERLAPPED | gIOCacheFlag, TemplateFile);
 	}
 
 	XCellModuleIO::XCellModuleIO(void* Context) :
@@ -53,6 +55,8 @@ namespace XCell
 		_functions[1].Install(base, "kernel32.dll", "FindFirstFileW", (uintptr_t)&HKFindFirstFileExW);
 		_functions[2].Install(base, "kernel32.dll", "CreateFileA", (uintptr_t)&HKCreateFileA);
 		_functions[3].Install(base, "kernel32.dll", "CreateFileW", (uintptr_t)&HKCreateFileW);
+
+		gIOCacheFlag = CVarUseIORandomAccess->GetBool() ? FILE_FLAG_RANDOM_ACCESS : FILE_FLAG_SEQUENTIAL_SCAN;
 	}
 
 	HRESULT XCellModuleIO::InstallImpl()

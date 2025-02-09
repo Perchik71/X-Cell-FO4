@@ -31,7 +31,10 @@ namespace XCell
 		EventGameDataReadyLink _registered_dataready_link;
 		EventGameLoadedLink _registered_loaded_link;
 		EventNewGameLink _registered_newgame_link;
+		EventRenderEndFrameLink _registered_endframe_link;
+		EventPrepareUIDrawCuledLink _registered_uidrawculed_link;
 		REL::DetourCall _graphics_listener;
+		REL::DetourJump _prepare_ui_listener;
 		msrtti::section _section[3];
 		UInt64 _base;
 
@@ -57,6 +60,8 @@ namespace XCell
 		HRESULT Shutdown() noexcept(true);
 
 		void Listener(Event::ListenerEventType Type, ...);
+
+		inline void RunPrepareUIDrawCuled(void* Unknown) const noexcept(true) { XCFastCall<void>(_prepare_ui_listener.GetOld(), Unknown); }
 
 		inline virtual UInt64 GetProcessBase() const noexcept(true) { return _base; }
 		inline virtual msrtti::section GetPESectionText() const noexcept(true) { return _section[0]; }

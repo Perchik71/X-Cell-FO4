@@ -65,9 +65,7 @@ namespace XCell
 			auto Module = _registered_objects[Index];
 			if (Module->Enabled)
 			{
-				if (SUCCEEDED(Module->InitializeDirectXLinker.DoListener(Module, WindowHandle, Device, Context, SwapChain)))
-					_MESSAGE("Event \"%s\" for \"%s\" processed successfully", Name.c_str(), Module->Name.c_str());
-				else
+				if (FAILED(Module->InitializeDirectXLinker.DoListener(Module, WindowHandle, Device, Context, SwapChain)))
 					_ERROR("Event \"%s\" for \"%s\" processed with an error", Name.c_str(), Module->Name.c_str());
 			}
 		}
@@ -90,9 +88,7 @@ namespace XCell
 			auto Module = _registered_objects[Index];
 			if (Module->Enabled)
 			{
-				if (SUCCEEDED(Module->InitializePapyrusLinker.DoListener(Module, vm)))
-					_MESSAGE("Event \"%s\" for \"%s\" processed successfully", Name.c_str(), Module->Name.c_str());
-				else
+				if (FAILED(Module->InitializePapyrusLinker.DoListener(Module, vm)))
 					_ERROR("Event \"%s\" for \"%s\" processed with an error", Name.c_str(), Module->Name.c_str());
 			}
 		}
@@ -115,9 +111,7 @@ namespace XCell
 			auto Module = _registered_objects[Index];
 			if (Module->Enabled)
 			{
-				if (SUCCEEDED(Module->GameDataReadyLinker.DoListener(Module)))
-					_MESSAGE("Event \"%s\" for \"%s\" processed successfully", Name.c_str(), Module->Name.c_str());
-				else
+				if (FAILED(Module->GameDataReadyLinker.DoListener(Module)))
 					_ERROR("Event \"%s\" for \"%s\" processed with an error", Name.c_str(), Module->Name.c_str());
 			}
 		}
@@ -140,9 +134,7 @@ namespace XCell
 			auto Module = _registered_objects[Index];
 			if (Module->Enabled)
 			{
-				if (SUCCEEDED(Module->GameLoadedLinker.DoListener(Module)))
-					_MESSAGE("Event \"%s\" for \"%s\" processed successfully", Name.c_str(), Module->Name.c_str());
-				else
+				if (FAILED(Module->GameLoadedLinker.DoListener(Module)))
 					_ERROR("Event \"%s\" for \"%s\" processed with an error", Name.c_str(), Module->Name.c_str());
 			}
 		}
@@ -165,10 +157,54 @@ namespace XCell
 			auto Module = _registered_objects[Index];
 			if (Module->Enabled)
 			{
-				if (SUCCEEDED(Module->NewGameLinker.DoListener(Module)))
-					_MESSAGE("Event \"%s\" for \"%s\" processed successfully", Name.c_str(), Module->Name.c_str());
-				else
+				if (FAILED(Module->NewGameLinker.DoListener(Module)))
 					_ERROR("Event \"%s\" for \"%s\" processed with an error", Name.c_str(), Module->Name.c_str());
+			}
+		}
+
+		_registered_objects.Unlock();
+		return S_OK;
+	}
+
+	EventRenderEndFrameLink::EventRenderEndFrameLink() :
+		Event("Render End Frame")
+	{}
+
+	HRESULT EventRenderEndFrameLink::Listener() const noexcept(true)
+	{
+		_registered_objects.Lock();
+
+		UInt64 Total = Count();
+		for (UInt64 Index = 0; Index < Total; Index++)
+		{
+			auto Module = _registered_objects[Index];
+			if (Module->Enabled)
+			{
+				if (FAILED(Module->RenderEndFrameLinker.DoListener(Module)))
+					_FATALERROR("Event \"%s\" for \"%s\" processed with an error", Name.c_str(), Module->Name.c_str());
+			}
+		}
+
+		_registered_objects.Unlock();
+		return S_OK;
+	}
+
+	EventPrepareUIDrawCuledLink::EventPrepareUIDrawCuledLink() :
+		Event("Prepare UI Draw Culed")
+	{}
+
+	HRESULT EventPrepareUIDrawCuledLink::Listener() const noexcept(true)
+	{
+		_registered_objects.Lock();
+
+		UInt64 Total = Count();
+		for (UInt64 Index = 0; Index < Total; Index++)
+		{
+			auto Module = _registered_objects[Index];
+			if (Module->Enabled)
+			{
+				if (FAILED(Module->PrepareUIDrawCuledLinker.DoListener(Module)))
+					_FATALERROR("Event \"%s\" for \"%s\" processed with an error", Name.c_str(), Module->Name.c_str());
 			}
 		}
 

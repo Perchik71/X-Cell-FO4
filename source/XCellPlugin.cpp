@@ -24,6 +24,7 @@
 #include "XCellModuleUpscaler.h"
 #include "XCellModuleGreyMovies.h"
 #include "XCellModulePackageAllocateLocation.h"
+#include "XCellModuleWarningCreateTexture2D.h"
 
 namespace XCell
 {
@@ -41,14 +42,37 @@ namespace XCell
 	Context* gContext = nullptr;
 	HMODULE gModuleHandle = nullptr;
 	DirectXData* gDirectXData = nullptr;
+	UInt64 gOldDXGIPresentFunctions = 0;
 
-	static void F4SEListenerDX11()
+	static void XCListenerDX11RenderEndFrame(IDXGISwapChain* This, UINT SyncInterval, UINT Flags)
+	{
+		if (gContext && (Flags != DXGI_PRESENT_TEST))
+			gContext->Listener(Event::EventRenderEndFrame);
+
+		XCFastCall<void>(gOldDXGIPresentFunctions, This, 0/*SyncInterval*/, 0/*Flags*/);
+	}
+
+	static void XCListenerPrepareUIDrawCuled(void* Unknown)
+	{
+		if (gContext)
+		{
+			gContext->Listener(Event::EventPrepareUIDrawCuled);
+			gContext->RunPrepareUIDrawCuled(Unknown);
+		}
+	}
+
+	static void XCListenerDX11()
 	{
 		// maybe NiRenderWindow
 		gDirectXData = (DirectXData*)REL::ID(10);
-		if (gContext && gDirectXData) 
-			gContext->Listener(Event::EventInitializeDirectX, gDirectXData->window, gDirectXData->device, gDirectXData->context, 
+		if (gContext && gDirectXData)
+		{
+			gContext->Listener(Event::EventInitializeDirectX, gDirectXData->window, gDirectXData->device, gDirectXData->context,
 				gDirectXData->swap_chain);
+
+			gOldDXGIPresentFunctions = REL::Impl::DetourVTable(*((UInt64*)gDirectXData->swap_chain), 
+				(UInt64)&XCListenerDX11RenderEndFrame, 8);
+		}
 		// continue...
 		XCFastCall<void>(REL::ID(20));
 	}
@@ -106,6 +130,9 @@ namespace XCell
 
 	HRESULT Context::InitializeCVar() noexcept(true)
 	{
+		HRESULT Result = SHGetFolderPathA(NULL, CSIDL_MYDOCUMENTS | CSIDL_FLAG_CREATE, NULL, SHGFP_TYPE_CURRENT, Game::gINIGameSettingPref);
+		strcat_s(Game::gINIGameSettingPref, "\\My Games\\Fallout4\\Fallout4Prefs.ini");
+
 		// Patches
 		_settings.Add(CVarThreads);
 		_settings.Add(CVarMemory);
@@ -119,12 +146,14 @@ namespace XCell
 		// Fixes
 		_settings.Add(CVarGreyMovies);
 		_settings.Add(CVarPackageAllocateLocation);
+		_settings.Add(CVarWarningCreateTexture2D);
 
 		// Additional
 		_settings.Add(CVarScaleformPageSize);
 		_settings.Add(CVarScaleformHeapSize);
 		_settings.Add(CVarUseNewRedistributable);
 		_settings.Add(CVarOutputRTTI);
+		_settings.Add(CVarUseIORandomAccess);
 
 		// Load settings
 		if (!_settings.LoadFromFile((_app_path + "Data\\F4SE\\Plugins\\x-cell.toml").c_str()))
@@ -195,8 +224,11 @@ namespace XCell
 
 	HRESULT Context::InitializeGraphicPending() noexcept(true)
 	{
-		_graphics_listener.Install(REL::ID(0), (UInt64)F4SEListenerDX11);
-		return _graphics_listener.Enable();
+		_graphics_listener.Install(REL::ID(0), (UInt64)XCListenerDX11);
+		_prepare_ui_listener.Install(REL::ID(21), (UInt64)XCListenerPrepareUIDrawCuled);
+		if (FAILED(_graphics_listener.Enable())) return E_FAIL;
+		if (FAILED(_prepare_ui_listener.Enable())) return E_FAIL;
+		return S_OK;
 	}
 
 	HRESULT Context::InitializePapyrusPending() noexcept(true)
@@ -282,13 +314,17 @@ namespace XCell
 
 	HRESULT Context::InitializeModules() noexcept(true)
 	{
-		if (SUCCEEDED(_modules.Add(make_shared<XCellModuleImGUI>(this))))
+		/*if (SUCCEEDED(_modules.Add(make_shared<XCellModuleImGUI>(this))))
 		{
 			auto Mod = _modules.FindByName(XCellModuleImGUI::SourceName);
-			if (Mod) _registered_initdx11_link.RegisterModule(Mod);
+			if (Mod)
+			{
+				_registered_initdx11_link.RegisterModule(Mod);
+				_registered_uidrawculed_link.RegisterModule(Mod);
+			}
 		}
 		else
-			return E_FAIL;
+			return E_FAIL;*/
 
 		if (SUCCEEDED(_modules.Add(make_shared<XCellModuleFacegen>(this))))
 		{
@@ -304,6 +340,7 @@ namespace XCell
 			if (Mod)
 			{
 				_registered_initdx11_link.RegisterModule(Mod);
+				//_registered_endframe_link.RegisterModule(Mod);
 				_registered_initvm_link.RegisterModule(Mod);
 			}
 		}
@@ -318,6 +355,14 @@ namespace XCell
 		if (FAILED(_modules.Add(make_shared<XCellModuleLoadScreen>(this)))) return E_FAIL;
 		if (FAILED(_modules.Add(make_shared<XCellModuleGreyMovies>(this)))) return E_FAIL;
 		if (FAILED(_modules.Add(make_shared<XCellModulePackageAllocateLocation>(this)))) return E_FAIL;
+
+		if (SUCCEEDED(_modules.Add(make_shared<XCellModuleWarningCreateTexture2D>(this))))
+		{
+			auto Mod = _modules.FindByName(XCellModuleWarningCreateTexture2D::SourceName);
+			if (Mod) _registered_initdx11_link.RegisterModule(Mod);
+		}
+		else
+			return E_FAIL;
 
 		return S_OK;
 	}
@@ -504,6 +549,10 @@ namespace XCell
 			_registered_loaded_link.Listener();
 		else if (Type == Event::EventNewGame)
 			_registered_newgame_link.Listener();
+		else if (Type == Event::EventRenderEndFrame)
+			_registered_endframe_link.Listener();
+		else if (Type == Event::EventPrepareUIDrawCuled)
+			_registered_uidrawculed_link.Listener();	
 	}
 
 	HRESULT CreateContextInstance(Context** pContext, const F4SEInterface* f4se) noexcept(true)

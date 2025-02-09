@@ -12,6 +12,8 @@ namespace voltek
 	{
 		namespace _internal
 		{
+			//class St
+
 			void* aligned_malloc(size_t size, size_t alignment);
 			void* aligned_calloc(size_t count, size_t size, size_t alignment);
 			void* aligned_realloc(void* ptr, size_t size, size_t alignment);

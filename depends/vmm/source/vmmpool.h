@@ -12,7 +12,7 @@
 #define __VMM_POOL_CONFIG_NORMAL_SIZE 64ull * 1024
 #define __VMM_POOL_CONFIG_SMALL_SIZE 4ull * 1024
 #define __VMM_POOL_CONFIG_LOW_SIZE 2ull * 1024
-#define __VMM_POOL_CONFIG_CACHE_SIZE 1024
+#define __VMM_POOL_CONFIG_CACHE_SIZE 8ull * 1024
 
 namespace voltek
 {

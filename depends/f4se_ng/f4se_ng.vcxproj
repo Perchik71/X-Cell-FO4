@@ -22,6 +22,7 @@
     <ClCompile Include="f4se\f4se\GameHandle.cpp" />
     <ClCompile Include="f4se\f4se\GameInput.cpp" />
     <ClCompile Include="f4se\f4se\GameMemory.cpp" />
+    <ClCompile Include="f4se\f4se\GameMenus.cpp" />
     <ClCompile Include="f4se\f4se\GameMessages.cpp" />
     <ClCompile Include="f4se\f4se\GameObjects.cpp" />
     <ClCompile Include="f4se\f4se\GameReferences.cpp" />
@@ -51,6 +52,8 @@
     <ClCompile Include="f4se\f4se\PapyrusUtility.cpp" />
     <ClCompile Include="f4se\f4se\PapyrusValue.cpp" />
     <ClCompile Include="f4se\f4se\PapyrusVM.cpp" />
+    <ClCompile Include="f4se\f4se\ScaleformAPI.cpp" />
+    <ClCompile Include="f4se\f4se\ScaleformCallbacks.cpp" />
     <ClCompile Include="f4se\f4se\ScaleformMovie.cpp" />
     <ClCompile Include="f4se\f4se\ScaleformTypes.cpp" />
     <ClCompile Include="f4se\f4se\ScaleformValue.cpp" />
@@ -67,6 +70,7 @@
     <ClInclude Include="f4se\f4se\GameHandle.h" />
     <ClInclude Include="f4se\f4se\GameInput.h" />
     <ClInclude Include="f4se\f4se\GameMemory.h" />
+    <ClInclude Include="f4se\f4se\GameMenus.h" />
     <ClInclude Include="f4se\f4se\GameMessages.h" />
     <ClInclude Include="f4se\f4se\GameObjects.h" />
     <ClInclude Include="f4se\f4se\GameReferences.h" />
@@ -97,6 +101,8 @@
     <ClInclude Include="f4se\f4se\PapyrusUtility.h" />
     <ClInclude Include="f4se\f4se\PapyrusValue.h" />
     <ClInclude Include="f4se\f4se\PapyrusVM.h" />
+    <ClInclude Include="f4se\f4se\ScaleformAPI.h" />
+    <ClInclude Include="f4se\f4se\ScaleformCallbacks.h" />
     <ClInclude Include="f4se\f4se\ScaleformMovie.h" />
     <ClInclude Include="f4se\f4se\ScaleformTypes.h" />
     <ClInclude Include="f4se\f4se\ScaleformValue.h" />

@@ -38,6 +38,30 @@ namespace XCell
 	static DataHandler** FacegenDataHandler = nullptr;
 	static ParseINI FacegenExceptionINI;
 
+	namespace BSTextureDB
+	{
+#pragma pack(push, 1)
+		struct EntryID
+		{
+			UInt32 Cache;
+			char Type[4];
+			UInt32 Unk;
+		};
+#pragma pack(pop)
+
+		// Working buried function.
+		static UInt64 FacegenPathPrintf = 0;
+		static UInt64 CreateEntryID = 0;
+
+		static bool __stdcall FormatPath__And__ExistIn(TESNPC* NPC, const char* DestPath,
+			UInt32 Size, UInt32 TextureIndex)
+		{
+			EntryID ID;
+			XCFastCall<void>(FacegenPathPrintf, NPC, DestPath, Size, TextureIndex);
+			return XCFastCall<bool>(CreateEntryID, DestPath + 14, &ID);
+		}
+	}
+
 	static bool __stdcall GetLoadOrderByFormID(const string& PluginName, UInt32& FormID)
 	{
 		constexpr static UInt16 INVALID_INDEX = (UInt16)-1;
@@ -90,7 +114,11 @@ namespace XCell
 		for (auto it_except : FacegenExceptionFormIDs)
 			if (NPC->formID == it_except) return false;
 		// player form can't have a facegen.
-		return NPC->formID != 0x7;
+		if (NPC->formID == 0x7)
+			return false;
+		// check exists diffuse texture.
+		char buf[MAX_PATH];
+		return BSTextureDB::FormatPath__And__ExistIn(NPC, buf, MAX_PATH, 0);
 	}
 
 	XCellModuleFacegen::XCellModuleFacegen(void* Context) :
@@ -147,7 +175,8 @@ namespace XCell
 		FacegenExceptionINI.Parse((Utils::GetGameDataPath() + "F4SE\\Plugins\\x-cell-exceptions.ini").c_str());
 
 		// Working buried function.
-		UInt64 FacegenPathPrintf = REL::ID(200);	
+		BSTextureDB::FacegenPathPrintf = REL::ID(200);	
+		BSTextureDB::CreateEntryID = REL::ID(225);
 		UInt64 Offset = REL::ID(205);
 
 		// Remove useless stuff.
@@ -166,7 +195,7 @@ namespace XCell
 			REL::Impl::Patch(Offset + 0x30, { 0x4C, 0x89, 0xE9, 0x48, 0x8D, 0x55, 0xF0, 0x41, 0xB8, 0x04, 0x01, 0x00, 0x00,
 				0x41, 0x89, 0xF1, 0x41, 0x83, 0xF9, 0x02, 0xB8, 0x07, 0x00, 0x00, 0x00, 0x44, 0x0F, 0x44, 0xC8 });
 			// call
-			REL::Impl::DetourCall(Offset + 0x4D, FacegenPathPrintf);
+			REL::Impl::DetourCall(Offset + 0x4D, BSTextureDB::FacegenPathPrintf);
 		}
 		else if (REL::Version() == RUNTIME_VERSION_1_10_984)
 		{
@@ -183,7 +212,7 @@ namespace XCell
 			REL::Impl::Patch(Offset + 0x2D, { 0x4C, 0x89, 0xE9, 0x48, 0x8D, 0x55, 0xC0, 0x41, 0xB8, 0x04, 0x01, 0x00, 0x00,
 				0x41, 0x89, 0xF9, 0x41, 0x83, 0xF9, 0x02, 0xB8, 0x07, 0x00, 0x00, 0x00, 0x44, 0x0F, 0x44, 0xC8 });
 			// call
-			REL::Impl::DetourCall(Offset + 0x4A, FacegenPathPrintf);
+			REL::Impl::DetourCall(Offset + 0x4A, BSTextureDB::FacegenPathPrintf);
 		}
 		else 
 			return E_FAIL;

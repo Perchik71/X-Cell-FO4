@@ -36,6 +36,7 @@
     <ClCompile Include="source\XCellModuleProfile.cpp" />
     <ClCompile Include="source\XCellModuleThreads.cpp" />
     <ClCompile Include="source\XCellModuleUpscaler.cpp" />
+    <ClCompile Include="source\XCellModuleWarningCreateTexture2D.cpp" />
     <ClCompile Include="source\XCellObject.cpp" />
     <ClCompile Include="source\XCellParseINI.cpp" />
     <ClCompile Include="source\XCellPlugin.cpp" />
@@ -65,6 +66,7 @@
     <ClInclude Include="include\XCellModuleProfile.h" />
     <ClInclude Include="include\XCellModuleThreads.h" />
     <ClInclude Include="include\XCellModuleUpscaler.h" />
+    <ClInclude Include="include\XCellModuleWarningCreateTexture2D.h" />
     <ClInclude Include="include\XCellObject.h" />
     <ClInclude Include="include\XCellParseINI.h" />
     <ClInclude Include="include\XCellPlugin.h" />
@@ -224,7 +226,8 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>common_vc22.lib;f4se_common.lib;detours.lib;VoltekLib.MemoryManager.lib;libdeflate.lib;shlwapi.lib;f4se_ng.lib;d3d11.lib;dxgi.lib;ImGUI.lib;Toml.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>common_vc22.lib;f4se_common.lib;detours.lib;VoltekLib.MemoryManager.lib;libdeflate.lib;shlwapi.lib;f4se_v984.lib;d3d11.lib;dxgi.lib;windowscodecs.lib;dxguid.lib;ImGUI.lib;Toml.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <PreBuildEvent>
       <Command>powershell -ExecutionPolicy Bypass -File "$(SolutionDir)\version\scripts.ps1"</Command>
@@ -259,7 +262,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>common_vc22.lib;f4se_common.lib;detours.lib;VoltekLib.MemoryManager.lib;libdeflate.lib;shlwapi.lib;f4se_og.lib;d3d11.lib;dxgi.lib;ImGUI.lib;toml.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>common_vc22.lib;f4se_common.lib;detours.lib;VoltekLib.MemoryManager.lib;libdeflate.lib;shlwapi.lib;f4se_v163.lib;d3d11.lib;dxgi.lib;windowscodecs.lib;dxguid.lib;ImGUI.lib;toml.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>powershell -ExecutionPolicy Bypass -File "$(SolutionDir)\version\scripts.ps1"</Command>

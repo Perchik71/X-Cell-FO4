@@ -108,6 +108,9 @@
     <ClCompile Include="source\XCellPostProcessor.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="source\XCellModuleWarningCreateTexture2D.cpp">
+      <Filter>Исходные файлы\Modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\XCellCommon.h">
@@ -199,6 +202,9 @@
     </ClInclude>
     <ClInclude Include="include\XCellPostProcessor.h">
       <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellModuleWarningCreateTexture2D.h">
+      <Filter>Файлы заголовков\Modules</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -21,6 +21,15 @@ namespace XCell
 
 			void __stdcall Patch(UInt64 Target, initializer_list<UInt8> daDatata);
 
+			template<typename T>
+			void __stdcall PatchT(UInt64 Target, T& Data)
+			{
+				if (!Target) return;
+				auto Size = (UInt64)sizeof(T);
+				auto pvSource = reinterpret_cast<UInt8*>(&Data);
+				Patch(Target, pvSource, Size);
+			}
+
 			void __stdcall PatchNop(UInt64 Target, size_t Size);
 
 			UInt64 __stdcall DetourJump(UInt64 Target, UInt64 Function);
@@ -108,6 +117,8 @@ namespace XCell
 				return Install(Target, *(UInt64*)&Function);
 			}
 
+			inline UInt64 GetOld() const noexcept(true) { return _trampoline; }
+
 			DetourJump(const DetourJump&) = delete;
 			DetourJump& operator=(const DetourJump&) = delete;
 		protected:
@@ -126,6 +137,8 @@ namespace XCell
 			{
 				return Install(Target, *(UInt64*)&Function);
 			}
+
+			inline UInt64 GetOld() const noexcept(true) { return _trampoline; }
 
 			DetourCall(const DetourCall&) = delete;
 			DetourCall& operator=(const DetourCall&) = delete;

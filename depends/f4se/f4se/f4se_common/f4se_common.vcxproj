@@ -22,11 +22,6 @@
   <ItemGroup>
     <ResourceCompile Include="f4se_version.rc" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\common\common\common_vc11.vcxproj">
-      <Project>{d4c128a1-73dc-4941-a453-ce55af239ba8}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{20C6411C-596F-4B85-BE4E-8BC91F59D8A6}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>

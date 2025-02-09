@@ -86,6 +86,32 @@ namespace XCell
 		virtual HRESULT DoListener(const shared_ptr<Module> Mod) const noexcept(true);
 	};
 
+	class EventRenderEndFrameSourceLink
+	{
+	public:
+		typedef HRESULT(Module::* EventFunctionType)();
+
+		EventRenderEndFrameSourceLink();
+		EventRenderEndFrameSourceLink(const EventRenderEndFrameSourceLink&) = delete;
+		EventRenderEndFrameSourceLink& operator=(const EventRenderEndFrameSourceLink&) = delete;
+
+		EventFunctionType OnListener;
+		virtual HRESULT DoListener(const shared_ptr<Module> Mod) const noexcept(true);
+	};
+
+	class EventPrepareUIDrawCuledSourceLink
+	{
+	public:
+		typedef HRESULT(Module::* EventFunctionType)();
+
+		EventPrepareUIDrawCuledSourceLink();
+		EventPrepareUIDrawCuledSourceLink(const EventPrepareUIDrawCuledSourceLink&) = delete;
+		EventPrepareUIDrawCuledSourceLink& operator=(const EventPrepareUIDrawCuledSourceLink&) = delete;
+
+		EventFunctionType OnListener;
+		virtual HRESULT DoListener(const shared_ptr<Module> Mod) const noexcept(true);
+	};
+
 	class Module : public Object
 	{
 		bool _enabled;
@@ -113,6 +139,8 @@ namespace XCell
 		EventGameDataReadySourceLink GameDataReadyLinker;
 		EventGameLoadedSourceLink GameLoadedLinker;
 		EventNewGameSourceLink NewGameLinker;
+		EventRenderEndFrameSourceLink RenderEndFrameLinker;
+		EventPrepareUIDrawCuledSourceLink PrepareUIDrawCuledLinker;
 
 		XCPropertyReadOnly(GetEnabled) bool Enabled;
 		XCPropertyReadOnly(GetSettingEnabled) bool SettingEnabled;

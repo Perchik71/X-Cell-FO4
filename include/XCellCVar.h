@@ -38,6 +38,8 @@ namespace XCell
 	extern std::shared_ptr<Setting> CVarGreyMovies;
 	// Fixes a crash when allocating the location for a package.
 	extern std::shared_ptr<Setting> CVarPackageAllocateLocation;
+	// Warns when a call to CreateTexture2D fails.
+	extern std::shared_ptr<Setting> CVarWarningCreateTexture2D;
 	// BSScaleformSysMemMapper was separated from the main x - cell memory manager.This option indicates the page size in KB,
 	// which is allocated at once, if necessary, to allocate a new page, the vanilla size is 64 KB.
 	// One call takes more than 1K processor cycles and turns to 0 ring, thereby stopping all threads, causing a freeze.
@@ -55,10 +57,14 @@ namespace XCell
 	extern std::shared_ptr<Setting> CVarUseNewRedistributable;
 	// Create file "<FALLOUT4_DIR>\\Data\\F4SE\\Plugins\\rtti-x-cell.txt" with rtti info.
 	extern std::shared_ptr<Setting> CVarOutputRTTI;
+	// Activate a prompt for the system that you need to use a cache with random access, otherwise it will be sequential (Need bIO patch).
+	extern std::shared_ptr<Setting> CVarUseIORandomAccess;
 
 	// ---
 
 	extern std::shared_ptr<Setting> CVarLodMipBias;
 	extern std::shared_ptr<Setting> CVarMaxAnisotropy;
+	extern std::shared_ptr<Setting> CVarDisplayScale;
+	extern std::shared_ptr<Setting> CVarMaxFrameRateVSync;
 	extern std::shared_ptr<Setting> CVarVSync;
 }

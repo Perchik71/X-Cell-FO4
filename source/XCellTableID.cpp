@@ -58,6 +58,7 @@ namespace XCell
 			{ 0,		0x1D18A57 },
 			{ 10,		0x61E0910 },
 			{ 20,		0x1D4FE40 },
+			{ 21,		0x2043A80 },
 
 			// MEMORY
 			{ 30,		0x1B0EFD0 },
@@ -87,6 +88,7 @@ namespace XCell
 			{ 210,		0x59DADD0 },
 			{ 215,		0x679B20 },
 			{ 220,		0x679BB2 },
+			{ 225,		0x1C97190 },
 
 			// UPSCALER
 			//{ 230,		0x1D18A57 },
@@ -98,6 +100,7 @@ namespace XCell
 			{ 0,		0x16FB147 },
 			{ 10,		0x3769610 },
 			{ 20,		0x1739EB0 },
+			{ 21,		0x1966EC0 },
 
 			// MEMORY
 			{ 30,		0x153D7D0 },
@@ -136,10 +139,15 @@ namespace XCell
 			{ 210,		0x2F6ED50 },
 			{ 215,		0x68B900 },
 			{ 220,		0x68B994 },
+			{ 225,		0x16894C0 },	
 
 			// UPSCALER
-			//{ 230,		0x16FB147 },
-			//{ 231,		0x1739EB0 },
+			{ 230,		0x2CDBDA0 },	// Size W : Display
+			{ 231,		0x2CDBDB8 },	// Size H : Display
+			{ 232,		0x2CDBDD0 },	// Location X : Display
+			{ 233,		0x2CDBDE8 },	// Location Y : Display
+			{ 240,		0x156C230 },	// First use read ^ data
+			
 			});
 	}
 }

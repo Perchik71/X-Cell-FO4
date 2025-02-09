@@ -21,6 +21,8 @@ namespace XCell
 			EventGameDataReady,
 			EventGameLoaded,
 			EventNewGame,
+			EventRenderEndFrame,
+			EventPrepareUIDrawCuled,
 		};
 
 		Event(const char* Name);
@@ -97,6 +99,30 @@ namespace XCell
 		EventNewGameLink();
 		EventNewGameLink(const EventNewGameLink&) = delete;
 		EventNewGameLink& operator=(const EventNewGameLink&) = delete;
+
+		virtual HRESULT Listener() const noexcept(true);
+	};
+
+	class EventRenderEndFrameLink : public Event
+	{
+	public:
+		static constexpr ListenerEventType Type = EventRenderEndFrame;
+
+		EventRenderEndFrameLink();
+		EventRenderEndFrameLink(const EventRenderEndFrameLink&) = delete;
+		EventRenderEndFrameLink& operator=(const EventRenderEndFrameLink&) = delete;
+
+		virtual HRESULT Listener() const noexcept(true);
+	};
+
+	class EventPrepareUIDrawCuledLink : public Event
+	{
+	public:
+		static constexpr ListenerEventType Type = EventPrepareUIDrawCuled;
+
+		EventPrepareUIDrawCuledLink();
+		EventPrepareUIDrawCuledLink(const EventPrepareUIDrawCuledLink&) = delete;
+		EventPrepareUIDrawCuledLink& operator=(const EventPrepareUIDrawCuledLink&) = delete;
 
 		virtual HRESULT Listener() const noexcept(true);
 	};

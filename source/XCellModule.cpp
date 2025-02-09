@@ -97,6 +97,42 @@ namespace XCell
 		return E_FAIL;
 	}
 
+	EventRenderEndFrameSourceLink::EventRenderEndFrameSourceLink() :
+		OnListener(nullptr)
+	{}
+
+	HRESULT EventRenderEndFrameSourceLink::DoListener(const shared_ptr<Module> Mod) const noexcept(true)
+	{
+		if (OnListener)
+		{
+			auto m = Mod.get();
+			if (m->HasSetting() && !m->SettingEnabled)
+				// Skip
+				return S_FALSE;
+			// Run
+			return ((*m).*OnListener)();
+		}
+		return E_FAIL;
+	}
+
+	EventPrepareUIDrawCuledSourceLink::EventPrepareUIDrawCuledSourceLink() :
+		OnListener(nullptr)
+	{}
+
+	HRESULT EventPrepareUIDrawCuledSourceLink::DoListener(const shared_ptr<Module> Mod) const noexcept(true)
+	{
+		if (OnListener)
+		{
+			auto m = Mod.get();
+			if (m->HasSetting() && !m->SettingEnabled)
+				// Skip
+				return S_FALSE;
+			// Run
+			return ((*m).*OnListener)();
+		}
+		return E_FAIL;
+	}
+
 	Module::Module(void* Context, const char* Name) :
 		Object(Name), Context(Context), SettingMod(nullptr), _enabled(false)
 	{}

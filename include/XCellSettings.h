@@ -15,6 +15,20 @@
 
 namespace XCell
 {
+	namespace Game
+	{
+		extern char gINIGameSettingPref[MAX_PATH];
+
+		bool __stdcall XCReadINISettingGameInt(const char* INIFile, const char* OptionName, long Default, long* Value);
+		bool __stdcall XCReadINISettingGameFloat(const char* INIFile, const char* OptionName, float Default, float* Value);
+		bool __stdcall XCReadINISettingGameString(const char* INIFile, const char* OptionName, const char* Default, 
+			char* Buffer, long Size);
+
+		bool __stdcall XCWriteINISettingGameInt(const char* INIFile, const char* OptionName, long Value);
+		bool __stdcall XCWriteINISettingGameFloat(const char* INIFile, const char* OptionName, float Value);
+		bool __stdcall XCWriteINISettingGameString(const char* INIFile, const char* OptionName, const char* Value);
+	}
+
 	class Setting : public Object
 	{
 	public:

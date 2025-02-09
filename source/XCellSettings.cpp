@@ -11,6 +11,97 @@
 
 namespace XCell
 {
+	namespace Game
+	{
+		char gINIGameSettingPref[MAX_PATH];
+
+		bool __stdcall XCReadINISettingGameInt(const char* INIFile, const char* OptionName, long Default, long* Value)
+		{
+			if (!INIFile || !OptionName || !Value)
+				return false;
+
+			string op = OptionName;
+			auto it = op.find_first_of(':');
+			if (it == string::npos)
+				return false;
+
+			string sec = op.substr(it + 1);
+			op = op.substr(0, it);
+
+			// It's not optimized, but it's not necessary.
+			*Value = (long)GetPrivateProfileIntA(sec.c_str(), op.c_str(), Default, INIFile);
+			return true;
+		}
+
+		bool __stdcall XCReadINISettingGameFloat(const char* INIFile, const char* OptionName, float Default, float* Value)
+		{
+			if (!Value)
+				return false;
+
+			char szBuf[64];
+			if (!XCReadINISettingGameString(INIFile, OptionName, "", szBuf, 64) || (szBuf[0] == '\0'))
+			{
+				*Value = Default;
+				return false;
+			}
+
+			*Value = strtof(szBuf, nullptr);
+			return true;
+		}
+
+		bool __stdcall XCReadINISettingGameString(const char* INIFile, const char* OptionName, const char* Default, 
+			char* Buffer, long Size)
+		{
+			if (!INIFile || !OptionName || !Buffer || !Size)
+				return false;
+
+			string op = OptionName;
+			auto it = op.find_first_of(':');
+			if (it == string::npos)
+				return false;
+
+			string sec = op.substr(it + 1);
+			op = op.substr(0, it);
+
+			// It's not optimized, but it's not necessary.
+			return GetPrivateProfileStringA(sec.c_str(), op.c_str(), Default, Buffer, Size, INIFile) > 0;
+		}
+
+		bool __stdcall XCWriteINISettingGameInt(const char* INIFile, const char* OptionName, long Value)
+		{
+			if (!INIFile || !OptionName)
+				return false;
+
+			char szBuf[64];
+			_itoa_s(Value, szBuf, 10);
+			return XCWriteINISettingGameString(INIFile, OptionName, szBuf);
+		}
+
+		bool __stdcall XCWriteINISettingGameFloat(const char* INIFile, const char* OptionName, float Value)
+		{
+			char szBuf[64];
+			sprintf_s(szBuf, "%f", Value);
+			return XCWriteINISettingGameString(INIFile, OptionName, szBuf);
+		}
+
+		bool __stdcall XCWriteINISettingGameString(const char* INIFile, const char* OptionName, const char* Value)
+		{
+			if (!INIFile || !OptionName || !Value)
+				return false;
+
+			string op = OptionName;
+			auto it = op.find_first_of(':');
+			if (it == string::npos)
+				return false;
+
+			string sec = op.substr(it + 1);
+			op = op.substr(0, it);
+
+			// It's not optimized, but it's not necessary.
+			return WritePrivateProfileStringA(sec.c_str(), op.c_str(), Value, INIFile);
+		}
+	}
+
 	// Setting
 
 	Setting::Setting(const char* name, bool value, const char* desc) :

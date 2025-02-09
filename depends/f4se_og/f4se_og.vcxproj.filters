@@ -44,6 +44,9 @@
     <ClCompile Include="f4se\f4se\ScaleformMovie.cpp" />
     <ClCompile Include="f4se\f4se\ScaleformTypes.cpp" />
     <ClCompile Include="f4se\f4se\ScaleformValue.cpp" />
+    <ClCompile Include="f4se\f4se\GameMenus.cpp" />
+    <ClCompile Include="f4se\f4se\ScaleformCallbacks.cpp" />
+    <ClCompile Include="f4se\f4se\ScaleformAPI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="f4se\f4se\GameAPI.h" />
@@ -90,6 +93,9 @@
     <ClInclude Include="f4se\f4se\ScaleformMovie.h" />
     <ClInclude Include="f4se\f4se\ScaleformTypes.h" />
     <ClInclude Include="f4se\f4se\ScaleformValue.h" />
+    <ClInclude Include="f4se\f4se\GameMenus.h" />
+    <ClInclude Include="f4se\f4se\ScaleformCallbacks.h" />
+    <ClInclude Include="f4se\f4se\ScaleformAPI.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="f4se\f4se\GameRTTI.inl" />

@@ -107,7 +107,7 @@ namespace XCell
 					for (auto value : Data)
 						*(volatile UInt8*)i++ = value;
 				}
-			}
+			}	
 
 			void __stdcall PatchNop(UInt64 Target, size_t Size)
 			{
