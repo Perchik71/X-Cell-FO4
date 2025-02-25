@@ -15,7 +15,6 @@
 #include <wrl/client.h>
 #include <d3d11.h>
 #include <dxgi.h>
-#include <smaa.h>
 
 #include <unordered_map>
 #include <unordered_set>
