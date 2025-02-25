@@ -278,7 +278,7 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>common_vc22.lib;f4se_common.lib;detours.lib;VoltekLib.MemoryManager.lib;libdeflate.lib;shlwapi.lib;f4se_v984.lib;d3d11.lib;dxgi.lib;windowscodecs.lib;dxguid.lib;ImGUI.lib;Toml.lib;screengrab.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -318,7 +318,7 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>common_vc22.lib;f4se_common.lib;detours.lib;VoltekLib.MemoryManager.lib;libdeflate.lib;shlwapi.lib;f4se_v163.lib;d3d11.lib;dxgi.lib;windowscodecs.lib;dxguid.lib;ImGUI.lib;toml.lib;screengrab.lib;%(AdditionalDependencies)</AdditionalDependencies>
