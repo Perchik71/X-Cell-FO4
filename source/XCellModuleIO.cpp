@@ -77,7 +77,7 @@ namespace XCell
 	{
 		if ((REL::Version() == RUNTIME_VERSION_1_10_163) && GetModuleHandleA("libdiskCacheEnabler.dll"))
 		{
-			_WARNING("Mod \"\" has been detected. X-Cell it's unnecessary.");
+			_WARNING("Mod \"Disk Cache Enabler\" has been detected. X-Cell it's unnecessary.");
 			return S_FALSE;
 		}
 
