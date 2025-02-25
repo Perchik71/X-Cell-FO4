@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+# Shaders
+*.cso
+
 # Compiled Object files
 *.slo
 *.lo
