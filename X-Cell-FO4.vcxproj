@@ -21,9 +21,11 @@
   <ItemGroup>
     <ClCompile Include="depends\typeinfo\ms_rtti.cpp" />
     <ClCompile Include="source\XCellAssertion.cpp" />
+    <ClCompile Include="source\XCellComputeShader.cpp" />
     <ClCompile Include="source\XCellCVar.cpp" />
     <ClCompile Include="source\XCellEvent.cpp" />
     <ClCompile Include="source\XCellModule.cpp" />
+    <ClCompile Include="source\XCellModuleControlSamples.cpp" />
     <ClCompile Include="source\XCellModuleFacegen.cpp" />
     <ClCompile Include="source\XCellModuleGreyMovies.cpp" />
     <ClCompile Include="source\XCellModuleImGUI.cpp" />
@@ -39,21 +41,30 @@
     <ClCompile Include="source\XCellModuleWarningCreateTexture2D.cpp" />
     <ClCompile Include="source\XCellObject.cpp" />
     <ClCompile Include="source\XCellParseINI.cpp" />
+    <ClCompile Include="source\XCellPixelShader.cpp" />
     <ClCompile Include="source\XCellPlugin.cpp" />
     <ClCompile Include="source\XCellDllMain.cpp" />
     <ClCompile Include="source\XCellPostProcessor.cpp" />
     <ClCompile Include="source\XCellRelocator.cpp" />
     <ClCompile Include="source\XCellSettings.cpp" />
+    <ClCompile Include="source\XCellShader.cpp" />
+    <ClCompile Include="source\XCellState.cpp" />
     <ClCompile Include="source\XCellStream.cpp" />
     <ClCompile Include="source\XCellStringUtils.cpp" />
+    <ClCompile Include="source\XCellTAA.cpp" />
     <ClCompile Include="source\XCellTableID.cpp" />
+    <ClCompile Include="source\XCellClassesShader.cpp" />
+    <ClCompile Include="source\XCellVertexShader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="depends\typeinfo\ms_rtti.h" />
     <ClInclude Include="include\XCellAssertion.h" />
+    <ClInclude Include="include\XCellCommonType.h" />
+    <ClInclude Include="include\XCellComputeShader.h" />
     <ClInclude Include="include\XCellCVar.h" />
     <ClInclude Include="include\XCellEvent.h" />
     <ClInclude Include="include\XCellModule.h" />
+    <ClInclude Include="include\XCellModuleControlSamples.h" />
     <ClInclude Include="include\XCellModuleFacegen.h" />
     <ClInclude Include="include\XCellModuleGreyMovies.h" />
     <ClInclude Include="include\XCellModuleImGUI.h" />
@@ -69,15 +80,22 @@
     <ClInclude Include="include\XCellModuleWarningCreateTexture2D.h" />
     <ClInclude Include="include\XCellObject.h" />
     <ClInclude Include="include\XCellParseINI.h" />
+    <ClInclude Include="include\XCellPixelShader.h" />
     <ClInclude Include="include\XCellPlugin.h" />
     <ClInclude Include="include\XCellCommon.h" />
     <ClInclude Include="include\XCellPostProcessor.h" />
     <ClInclude Include="include\XCellRelocator.h" />
+    <ClInclude Include="include\XCellResource.h" />
     <ClInclude Include="include\XCellSettings.h" />
+    <ClInclude Include="include\XCellShader.h" />
+    <ClInclude Include="include\XCellState.h" />
     <ClInclude Include="include\XCellStream.h" />
     <ClInclude Include="include\XCellStringUtils.h" />
+    <ClInclude Include="include\XCellTAA.h" />
     <ClInclude Include="include\XCellTableID.h" />
+    <ClInclude Include="include\XCellClassesShader.h" />
     <ClInclude Include="include\XCellVersion.h" />
+    <ClInclude Include="include\XCellVertexShader.h" />
     <ClInclude Include="version\resource_version.h" />
     <ClInclude Include="version\resource_version2.h" />
   </ItemGroup>
@@ -88,10 +106,46 @@
     <None Include="version\scripts.ps1" />
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="res\shaders.rc" />
     <ResourceCompile Include="version\resource_version.rc" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="version\build_version.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="shaders\PlainPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release 10.163|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release 10.163|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release 10.984|x64'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release 10.984|x64'">$(SolutionDir)res\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release 10.163|x64'">$(SolutionDir)res\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="shaders\TAA.hlsl">
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release 10.984|x64'">$(SolutionDir)res\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release 10.163|x64'">$(SolutionDir)res\%(Filename).cso</ObjectFileOutput>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release 10.163|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release 10.163|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release 10.984|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release 10.984|x64'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release 10.984|x64'">main</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="shaders\TAASharpener.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release 10.984|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release 10.984|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release 10.163|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release 10.163|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release 10.163|x64'">$(SolutionDir)res\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release 10.984|x64'">$(SolutionDir)res\%(Filename).cso</ObjectFileOutput>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release 10.984|x64'">main</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="shaders\PlainVS.hlsl">
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release 10.984|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release 10.984|x64'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release 10.984|x64'">$(SolutionDir)res\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release 10.163|x64'">$(SolutionDir)res\%(Filename).cso</ObjectFileOutput>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release 10.163|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release 10.163|x64'">5.0</ShaderModel>
+    </FxCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -206,9 +260,10 @@
       <PreprocessorDefinitions>NDEBUG;XCELLFO4_EXPORTS;_WINDOWS;_USRDLL;XBYAK_NO_OP_NAMES;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;NOMINMAX;VOLTEK_LIB_BUILD;FO4_V984;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)depends\f4se;$(SolutionDir)depends\f4se\f4se;$(SolutionDir)depends\f4se_ng\f4se;$(SolutionDir)depends\f4se\common;$(SolutionDir)include;$(SolutionDir)depends\detours\;$(SolutionDir)depends\typeinfo\;$(SolutionDir)depends\vmm\include\;$(SolutionDir)depends\mini\src;$(SolutionDir)depends\libdeflate;$(SolutionDir)depends\ImGUI;$(SolutionDir)depends\Toml\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)depends\f4se;$(SolutionDir)depends\f4se\f4se;$(SolutionDir)depends\f4se_ng\f4se;$(SolutionDir)depends\f4se\common;$(SolutionDir)include;$(SolutionDir)depends\detours\;$(SolutionDir)depends\typeinfo\;$(SolutionDir)depends\vmm\include\;$(SolutionDir)depends\mini\src;$(SolutionDir)depends\libdeflate;$(SolutionDir)depends\ImGUI;$(SolutionDir)depends\Toml\include;$(SolutionDir)depends\screengrab;$(SolutionDir)depends\smaa;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -226,12 +281,15 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>common_vc22.lib;f4se_common.lib;detours.lib;VoltekLib.MemoryManager.lib;libdeflate.lib;shlwapi.lib;f4se_v984.lib;d3d11.lib;dxgi.lib;windowscodecs.lib;dxguid.lib;ImGUI.lib;Toml.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>common_vc22.lib;f4se_common.lib;detours.lib;VoltekLib.MemoryManager.lib;libdeflate.lib;shlwapi.lib;f4se_v984.lib;d3d11.lib;dxgi.lib;windowscodecs.lib;dxguid.lib;ImGUI.lib;Toml.lib;screengrab.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <PreBuildEvent>
       <Command>powershell -ExecutionPolicy Bypass -File "$(SolutionDir)\version\scripts.ps1"</Command>
     </PreBuildEvent>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release 10.163|x64'">
     <ClCompile>
@@ -242,9 +300,10 @@
       <PreprocessorDefinitions>NDEBUG;XCELLFO4_EXPORTS;_WINDOWS;_USRDLL;XBYAK_NO_OP_NAMES;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;NOMINMAX;VOLTEK_LIB_BUILD;FO4_V163;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)depends\f4se;$(SolutionDir)depends\f4se\f4se;$(SolutionDir)depends\f4se_og\f4se;$(SolutionDir)depends\f4se\common;$(SolutionDir)include;$(SolutionDir)depends\detours\;$(SolutionDir)depends\typeinfo\;$(SolutionDir)depends\vmm\include\;$(SolutionDir)depends\mini\src;$(SolutionDir)depends\libdeflate;$(SolutionDir)depends\ImGUI;$(SolutionDir)depends\Toml\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)depends\f4se;$(SolutionDir)depends\f4se\f4se;$(SolutionDir)depends\f4se_og\f4se;$(SolutionDir)depends\f4se\common;$(SolutionDir)include;$(SolutionDir)depends\detours\;$(SolutionDir)depends\typeinfo\;$(SolutionDir)depends\vmm\include\;$(SolutionDir)depends\mini\src;$(SolutionDir)depends\libdeflate;$(SolutionDir)depends\ImGUI;$(SolutionDir)depends\Toml\include;$(SolutionDir)depends\screengrab;$(SolutionDir)depends\smaa;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -262,7 +321,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>common_vc22.lib;f4se_common.lib;detours.lib;VoltekLib.MemoryManager.lib;libdeflate.lib;shlwapi.lib;f4se_v163.lib;d3d11.lib;dxgi.lib;windowscodecs.lib;dxguid.lib;ImGUI.lib;toml.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>common_vc22.lib;f4se_common.lib;detours.lib;VoltekLib.MemoryManager.lib;libdeflate.lib;shlwapi.lib;f4se_v163.lib;d3d11.lib;dxgi.lib;windowscodecs.lib;dxguid.lib;ImGUI.lib;toml.lib;screengrab.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>powershell -ExecutionPolicy Bypass -File "$(SolutionDir)\version\scripts.ps1"</Command>

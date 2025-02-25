@@ -1,4 +1,4 @@
-// Copyright � 2024-2025 aka perchik71. All rights reserved.
+﻿// Copyright © 2024-2025 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -276,11 +276,11 @@ namespace XCell
 		return TRUE;
 	}
 
-	XCellModuleProfile::XCellModuleProfile(void* Context) :
+	ModuleProfile::ModuleProfile(void* Context) :
 		Module(Context, SourceName, CVarProfile)
 	{}
 
-	HRESULT XCellModuleProfile::InstallImpl()
+	HRESULT ModuleProfile::InstallImpl()
 	{
 		if (GetModuleHandleA("PrivateProfileRedirector.dll"))
 		{
@@ -309,7 +309,7 @@ namespace XCell
 		return S_OK;
 	}
 
-	HRESULT XCellModuleProfile::ShutdownImpl()
+	HRESULT ModuleProfile::ShutdownImpl()
 	{
 		// No recommended
 

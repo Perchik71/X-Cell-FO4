@@ -1,4 +1,4 @@
-// Copyright � 2024-2025 aka perchik71. All rights reserved.
+﻿// Copyright © 2024-2025 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -22,7 +22,7 @@ namespace XCell
 		return numeric_limits<DWORD_PTR>::max();
 	}
 
-	XCellModuleThreads::XCellModuleThreads(void* Context) :
+	ModuleThreads::ModuleThreads(void* Context) :
 		Module(Context, SourceName, CVarThreads), OldErrMode(0)
 	{
 		auto gContext = ((XCell::Context*)Context);
@@ -42,7 +42,7 @@ namespace XCell
 		}
 	}
 
-	HRESULT XCellModuleThreads::InstallImpl()
+	HRESULT ModuleThreads::InstallImpl()
 	{
 		_functions[0].Enable();
 		_functions[1].Enable();
@@ -109,7 +109,7 @@ namespace XCell
 		return S_OK;
 	}
 
-	HRESULT XCellModuleThreads::ShutdownImpl()
+	HRESULT ModuleThreads::ShutdownImpl()
 	{
 		// Returned
 

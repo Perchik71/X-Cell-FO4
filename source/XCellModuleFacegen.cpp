@@ -1,4 +1,4 @@
-// Copyright � 2024-2025 aka perchik71. All rights reserved.
+﻿// Copyright © 2024-2025 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -121,14 +121,14 @@ namespace XCell
 		return BSTextureDB::FormatPath__And__ExistIn(NPC, buf, MAX_PATH, 0);
 	}
 
-	XCellModuleFacegen::XCellModuleFacegen(void* Context) :
-		Module(Context, SourceName, CVarFacegen)
+	ModuleFacegen::ModuleFacegen(void* Context) :
+		Module(Context, SourceName, CVarFacegen, XCELL_MODULE_QUERY_DATA_READY)
 	{
 		FacegenDataHandler = g_dataHandler.GetPtr();
-		GameDataReadyLinker.OnListener = (EventGameDataReadySourceLink::EventFunctionType)(&XCellModuleFacegen::Listener);
+		GameDataReadyLinker.OnListener = (EventGameDataReadySourceLink::EventFunctionType)(&ModuleFacegen::Listener);
 	}
 
-	HRESULT XCellModuleFacegen::Listener()
+	HRESULT ModuleFacegen::Listener()
 	{
 		FacegenExceptionFormIDs = FacegenPrimaryExceptionFormIDs;
 		if (FacegenExceptionINI.Contains("facegen_exception"))
@@ -170,7 +170,7 @@ namespace XCell
 		return S_OK;
 	}
 
-	HRESULT XCellModuleFacegen::InstallImpl()
+	HRESULT ModuleFacegen::InstallImpl()
 	{
 		FacegenExceptionINI.Parse((Utils::GetGameDataPath() + "F4SE\\Plugins\\x-cell-exceptions.ini").c_str());
 
@@ -229,7 +229,7 @@ namespace XCell
 		return S_OK;
 	}
 
-	HRESULT XCellModuleFacegen::ShutdownImpl()
+	HRESULT ModuleFacegen::ShutdownImpl()
 	{
 		// Imposible
 

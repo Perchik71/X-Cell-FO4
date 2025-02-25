@@ -1,4 +1,4 @@
-// Copyright � 2024-2025 aka perchik71. All rights reserved.
+﻿// Copyright © 2024-2025 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -302,11 +302,11 @@ namespace XCell
 		return memory_manager::msize(block);
 	}
 
-	XCellModuleMemory::XCellModuleMemory(void* Context) :
+	ModuleMemory::ModuleMemory(void* Context) :
 		Module(Context, SourceName, CVarMemory)
 	{}
 
-	HRESULT XCellModuleMemory::InstallImpl()
+	HRESULT ModuleMemory::InstallImpl()
 	{
 		if (GetModuleHandleA("BakaScrapHeap.dll"))
 		{
@@ -426,7 +426,7 @@ namespace XCell
 		return S_OK;
 	}
 
-	HRESULT XCellModuleMemory::ShutdownImpl()
+	HRESULT ModuleMemory::ShutdownImpl()
 	{
 		// Cannot be disabled in runtime
 

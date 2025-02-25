@@ -25,6 +25,15 @@
     <Filter Include="Файлы заголовков\Modules">
       <UniqueIdentifier>{31dc559c-f94c-41a6-b59a-1e3670f65e87}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{edf97026-e2cd-4dbb-94db-a6b20293af25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\D3D11">
+      <UniqueIdentifier>{737b1d28-bfc6-49a3-9c65-890f99a7ecf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\D3D11">
+      <UniqueIdentifier>{737706e3-9cd2-4302-978e-c18ddd970951}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\XCellDllMain.cpp">
@@ -105,11 +114,35 @@
     <ClCompile Include="source\XCellModuleUpscaler.cpp">
       <Filter>Исходные файлы\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="source\XCellPostProcessor.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="source\XCellModuleWarningCreateTexture2D.cpp">
       <Filter>Исходные файлы\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellShader.cpp">
+      <Filter>Исходные файлы\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellPixelShader.cpp">
+      <Filter>Исходные файлы\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellVertexShader.cpp">
+      <Filter>Исходные файлы\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellPostProcessor.cpp">
+      <Filter>Исходные файлы\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellModuleControlSamples.cpp">
+      <Filter>Исходные файлы\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellComputeShader.cpp">
+      <Filter>Исходные файлы\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellClassesShader.cpp">
+      <Filter>Исходные файлы\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellState.cpp">
+      <Filter>Исходные файлы\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="source\XCellTAA.cpp">
+      <Filter>Исходные файлы\D3D11</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -200,11 +233,41 @@
     <ClInclude Include="include\XCellModuleUpscaler.h">
       <Filter>Файлы заголовков\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="include\XCellPostProcessor.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="include\XCellModuleWarningCreateTexture2D.h">
       <Filter>Файлы заголовков\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellResource.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellVertexShader.h">
+      <Filter>Файлы заголовков\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellShader.h">
+      <Filter>Файлы заголовков\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellPixelShader.h">
+      <Filter>Файлы заголовков\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellPostProcessor.h">
+      <Filter>Файлы заголовков\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellModuleControlSamples.h">
+      <Filter>Файлы заголовков\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellComputeShader.h">
+      <Filter>Файлы заголовков\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellCommonType.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellClassesShader.h">
+      <Filter>Файлы заголовков\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellState.h">
+      <Filter>Файлы заголовков\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellTAA.h">
+      <Filter>Файлы заголовков\D3D11</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -225,10 +288,27 @@
     <ResourceCompile Include="version\resource_version.rc">
       <Filter>version</Filter>
     </ResourceCompile>
+    <ResourceCompile Include="res\shaders.rc">
+      <Filter>Файлы ресурсов</Filter>
+    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="version\build_version.txt">
       <Filter>version</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="shaders\PlainVS.hlsl">
+      <Filter>shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="shaders\TAASharpener.hlsl">
+      <Filter>shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="shaders\TAA.hlsl">
+      <Filter>shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="shaders\PlainPS.hlsl">
+      <Filter>shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

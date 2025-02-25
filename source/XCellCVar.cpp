@@ -1,4 +1,4 @@
-// Copyright � 2024-2025 aka perchik71. All rights reserved.
+﻿// Copyright © 2024-2025 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -27,8 +27,8 @@ namespace XCell
 
 	std::shared_ptr<Setting> CVarLodMipBias = std::make_shared<Setting>("fLodMipBias:Graphics", 0.0f);
 	std::shared_ptr<Setting> CVarMaxAnisotropy = std::make_shared<Setting>("uMaxAnisotropy:Graphics", 0);
-	std::shared_ptr<Setting> CVarDisplayScale = std::make_shared<Setting>("fDisplayScale:Graphics", .75f);
 
-	std::shared_ptr<Setting> CVarMaxFrameRateVSync = std::make_shared<Setting>("uMaxFrameRateVSync:Graphics", 80);
-	std::shared_ptr<Setting> CVarVSync = std::make_shared<Setting>("bVSync:Graphics", 1);
+	std::shared_ptr<Setting> CVarDisplayScale = std::make_shared<Setting>("fDisplayScale:PostProccessing", 0.75f);
+	std::shared_ptr<Setting> CVarNoUseTAA = std::make_shared<Setting>("bNoUseOriginalTAA:PostProccessing", false);
+	std::shared_ptr<Setting> CVarTAA = std::make_shared<Setting>("bEnableTAA:PostProccessing", true);
 }

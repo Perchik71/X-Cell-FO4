@@ -1,4 +1,4 @@
-// Copyright � 2024-2025 aka perchik71. All rights reserved.
+﻿// Copyright © 2024-2025 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -18,6 +18,7 @@
 namespace XCell
 {
 	class Module;
+	class Context;
 
 	class EventInitializeDirectXSourceLink
 	{
@@ -112,16 +113,28 @@ namespace XCell
 		virtual HRESULT DoListener(const shared_ptr<Module> Mod) const noexcept(true);
 	};
 
+	enum : UInt32
+	{
+		XCELL_MODULE_QUERY_DIRECTX_INIT		= 1 << 0,
+		XCELL_MODULE_QUERY_PAPYRUS_INIT		= 1 << 1,
+		XCELL_MODULE_QUERY_DATA_READY		= 1 << 2,
+		XCELL_MODULE_QUERY_GAME_LOADED		= 1 << 3,
+		XCELL_MODULE_QUERY_NEW_GAME			= 1 << 4,
+		XCELL_MODULE_QUERY_END_FRAME		= 1 << 5,
+		XCELL_MODULE_QUERY_PREPARE_UI_DRAW	= 1 << 6,
+	};
+
 	class Module : public Object
 	{
 		bool _enabled;
 	protected:
+		UInt32 _queryEvent;
 		ICriticalSection CriticalSection;
 		shared_ptr<Setting> SettingMod;	
-		void* Context;
+		Context* Context;
 	public:
-		Module(void* Context, const char* Name);
-		Module(void* Context, const char* Name, const shared_ptr<Setting>& SettingMod);
+		Module(void* Context, const char* Name, UInt32 QueryEvent = 0);
+		Module(void* Context, const char* Name, const shared_ptr<Setting>& SettingMod, UInt32 QueryEvent = 0);
 		virtual ~Module();
 
 		Module(const Module&) = delete;

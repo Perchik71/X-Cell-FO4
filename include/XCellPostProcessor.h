@@ -1,120 +1,129 @@
-// Copyright � 2024-2025 aka perchik71. All rights reserved.
+﻿// Copyright © 2024-2025 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
 #pragma once
 
+#include <ICriticalSection.h>
+#include <f4se/GameMenus.h>
+
+#include "XCellPixelShader.h"
+#include "XCellVertexShader.h"
+#include "XCellComputeShader.h"
+#include "XCellClassesShader.h"
+#include "XCellTAA.h"
+
 #include <wrl/client.h>
 #include <d3d11.h>
 #include <dxgi.h>
+#include <smaa.h>
 
 #include <unordered_map>
 #include <unordered_set>
+#include <memory>
 
 namespace XCell
 {
 	using namespace Microsoft::WRL;
 
-	// https://github.com/fholger/vrperfkit/blob/a52f8a45d330d0b66206aee85165db715e4482cd/src/d3d11/d3d11_helper.h#L22
-	struct PostProcessorState 
+	class PostProcessor;
+	class RenderFrame : public Object
 	{
-		ComPtr<ID3D11VertexShader> VertexShader;
-		ComPtr<ID3D11PixelShader> PixelShader;
-		ComPtr<ID3D11ComputeShader> ComputeShader;
-		ComPtr<ID3D11InputLayout> InputLayout;
-		D3D11_PRIMITIVE_TOPOLOGY Topology;
-		ID3D11Buffer* VertexBuffers[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
-		UINT Strides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
-		UINT Offsets[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
-		ComPtr<ID3D11Buffer> IndexBuffer;
-		DXGI_FORMAT Format;
-		UINT Offset;
-		ID3D11RenderTargetView* RenderTargets[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT];
-		ComPtr<ID3D11DepthStencilView> DepthStencil;
-		ComPtr<ID3D11RasterizerState> RasterizerState;
-		ComPtr<ID3D11DepthStencilState> DepthStencilState;
-		UINT StencilRef;
-		D3D11_VIEWPORT Viewports[D3D11_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE];
-		UINT NumViewports = 0;
-		ComPtr<ID3D11Buffer> VSConstantBuffer;
-		ComPtr<ID3D11Buffer> PSConstantBuffer;
-		ComPtr<ID3D11Buffer> CSConstantBuffer;
-		ID3D11ShaderResourceView* CSShaderResources[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT];
-		ID3D11UnorderedAccessView* CSUavs[D3D11_1_UAV_SLOT_COUNT];
+		const PostProcessor* _core;
+		unique_ptr<TextureShader> _colorBuffer;
+		unique_ptr<TextureShader> _depthBuffer;
+		unique_ptr<RenderTargetView> _renderTarget;
+		unique_ptr<ResourceView> _colorView;
+		unique_ptr<ResourceView> _depthView;
+	public:
+		RenderFrame(const char* Name, const PostProcessor* Core);
+		virtual ~RenderFrame() = default;
+
+		RenderFrame(const RenderFrame&) = delete;
+		RenderFrame& operator=(const RenderFrame&) = delete;
+
+		virtual bool Initialize(const ID3D11Resource* Color, const ID3D11Resource* Depth) noexcept(true);
+		virtual bool CopyFrame(const ID3D11Resource* Color, const ID3D11Resource* Depth) noexcept(true);
+		virtual bool CopyFrame(const RenderFrame* Frame) noexcept(true);
+		virtual void DebugSaveFrameToFiles() const noexcept(true);
+		virtual void DebugInfo() const noexcept(true);
+
+		virtual inline void InitColorPipeline(UInt32 Type, UInt32 BindID) const noexcept(true)
+		{ _colorView->InitPipeline(Type, BindID); }
+		virtual inline void InitDepthPipeline(UInt32 Type, UInt32 BindID) const noexcept(true) 
+		{ _depthView->InitPipeline(Type, BindID); }
+
+		virtual inline void ShutdownColorPipeline() const noexcept(true)
+		{ _colorView->ShutdownPipeline(); }
+		virtual inline void ShutdownDepthPipeline() const noexcept(true)
+		{ _depthView->ShutdownPipeline(); }
+
+		[[nodiscard]] virtual inline ID3D11Resource* GetColor() const noexcept(true) { return _colorBuffer->Get(); }
+		[[nodiscard]] virtual inline ID3D11Resource* GetDepth() const noexcept(true) { return _depthBuffer->Get(); }
+		[[nodiscard]] virtual inline ID3D11ShaderResourceView* GetColorView() const noexcept(true) { return _colorView->Get(); }
+		[[nodiscard]] virtual inline ID3D11ShaderResourceView* GetDepthView() const noexcept(true) { return _depthView->Get(); }
 	};
 
-	struct PostProcessorInput
+	class HistoryFrames : public Object
 	{
-		UINT NumInputViewports;
-		D3D11_VIEWPORT InputViewports[D3D11_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE];
-		ID3D11Texture2D* InputTexture;		
-		ComPtr<ID3D11Texture2D> OutputTexture;
-		D3D11_TEXTURE2D_DESC InputTextureDesc;
-		D3D11_TEXTURE2D_DESC OutputTextureDesc;
-	};
+		const PostProcessor* _core;
+		UINT64 _count;
+		ICriticalSection _CriticalSection;
+		unique_ptr<RenderFrame> _currFrame, _prevFrame;
+	public:
+		HistoryFrames(const char* Name, const PostProcessor* Core);
+		virtual ~HistoryFrames() = default;
 
-	//struct PostProcessorInput
-	//{
-	//	
-	//	
-	//	ID3D11ShaderResourceView* InputView;
-	//	ID3D11ShaderResourceView* OutputView;
-	//	ID3D11UnorderedAccessView* OutputUav;
-	//};
+		HistoryFrames(const HistoryFrames&) = delete;
+		HistoryFrames& operator=(const HistoryFrames&) = delete;
+
+		virtual void StoreFrame(const ID3D11Resource* Color, const ID3D11Resource* Depth) noexcept(true);
+		virtual void ClearHistory() noexcept(true);
+		virtual void DebugSaveCurrentFrameToFiles() const noexcept(true);
+
+		[[nodiscard]] virtual inline UINT64 Count() const noexcept(true) { return _count; }
+		[[nodiscard]] virtual inline const RenderFrame* CurrentFrame() const noexcept(true) { return _currFrame.get(); }
+		[[nodiscard]] virtual inline const RenderFrame* PreviousFrame() const noexcept(true) { return _prevFrame.get(); }
+	};
 
 	class PostProcessor
 	{
 		FLOAT _Width, _Height;
+		UINT64 _CountFrame;
 		HWND _RenderWindow;
 		ID3D11Device* _D3D11Device;
 		ID3D11DeviceContext* _D3D11DeviceContext;
-		IDXGISwapChain* _DXGISwapChain;
-		D3D11_VIEWPORT _D3D11Viewport;
-		UInt64 _OldFunctions[8];
-		PostProcessorState _State;
-		PostProcessorInput _Input;
-
-		ID3D11RenderTargetView* _render;
-
-		bool _StateStared;
-		bool _Failed;
-
-		unordered_set<ID3D11SamplerState*> PassThroughSamplers;
-		unordered_map<ID3D11SamplerState*, ComPtr<ID3D11SamplerState>> MappedSamplers;
-
-		virtual void PushState() noexcept(true);
-		virtual void PopState() noexcept(true);
+		IDXGISwapChain* _DXGISwapChain;	
+		ComPtr<ID3D11RasterizerState> _D3D11RasterizerState;		
+		unique_ptr<HistoryFrames> _history;
+		unique_ptr<TAA> _taa;
 	public:
 		PostProcessor(ID3D11Device* D3D11Device, ID3D11DeviceContext* D3D11DeviceContext, IDXGISwapChain* DXGISwapChain,
 			HWND RenderWindow);
 
-		inline virtual void GetWindowSize(FLOAT* Width, FLOAT* Height) const noexcept(true) { *Width = _Width; *Height = _Height; }
-		inline virtual FLOAT GetWindowWidth() const noexcept(true) { return _Width; }
-		inline virtual FLOAT GetWindowHeight() const noexcept(true) { return _Height; }	
+		virtual inline void GetWindowSize(FLOAT* Width, FLOAT* Height) const noexcept(true) { *Width = _Width; *Height = _Height; }
+		virtual inline FLOAT GetWindowWidth() const noexcept(true) { return _Width; }
+		virtual inline FLOAT GetWindowHeight() const noexcept(true) { return _Height; }
 		XCPropertyReadOnly(GetWindowWidth) FLOAT WindowWidth;
 		XCPropertyReadOnly(GetWindowHeight) FLOAT WindowHeight;
 
-		inline virtual HWND GetWindowHandle() const noexcept(true) { return _RenderWindow; }
+		virtual inline HWND GetWindowHandle() const noexcept(true) { return _RenderWindow; }
 		XCPropertyReadOnly(GetWindowHandle) HWND WindowHandle;
 
-		inline virtual ID3D11Device* GetDevice() const noexcept(true) { return _D3D11Device; }
-		inline virtual ID3D11DeviceContext* GetDeviceContext() const noexcept(true) { return _D3D11DeviceContext; }
-		inline virtual IDXGISwapChain* GetSwapChain() const noexcept(true) { return _DXGISwapChain; }
+		virtual inline ID3D11Device* GetDevice() const noexcept(true) { return _D3D11Device; }
+		virtual inline ID3D11DeviceContext* GetDeviceContext() const noexcept(true) { return _D3D11DeviceContext; }
+		virtual inline IDXGISwapChain* GetSwapChain() const noexcept(true) { return _DXGISwapChain; }
 		XCPropertyReadOnly(GetDevice) ID3D11Device* Device;
 		XCPropertyReadOnly(GetDeviceContext) ID3D11DeviceContext* DeviceContext;
 		XCPropertyReadOnly(GetSwapChain) IDXGISwapChain* SwapChain;
 
-		// IMPLS
-		virtual void PreXSSetSamplers(ID3D11SamplerState** OutSamplers, UINT StartSlot, UINT NumSamplers,
-			ID3D11SamplerState* const* Samplers);
-		virtual void NativeCallXSSetSamplers(UInt8 Index, UINT StartSlot, UINT NumSamplers,
-			ID3D11SamplerState* const* Samplers);
-		virtual void NativeCallClearRenderTargetView(ID3D11RenderTargetView* RenderTargetView, const FLOAT* ColorRGBA);
+		virtual inline const HistoryFrames* GetHistoryFrames() const noexcept(true) { return _history.get(); }
+		XCPropertyReadOnly(GetHistoryFrames) const HistoryFrames* History;
 
 		// METHODS
 		virtual void Install();
 		virtual void Shutdown();
-		virtual void Reset();
-		virtual void PrepareUpscaler() noexcept(true);
+		virtual void Processing(ID3D11RenderTargetView* pRenderTarget, ID3D11Resource* pBackBuffer, 
+			ID3D11Resource* pDepthStencilBuffer) noexcept(true);
 	} extern *GlobalPostProcessor;
 }

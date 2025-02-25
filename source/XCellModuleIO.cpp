@@ -1,4 +1,4 @@
-// Copyright � 2024-2025 aka perchik71. All rights reserved.
+﻿// Copyright © 2024-2025 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -27,19 +27,33 @@ namespace XCell
 		LPSECURITY_ATTRIBUTES SecurityAttributes, DWORD CreationDisposition, DWORD FlagsAndAttributes,
 		HANDLE TemplateFile)
 	{
+		FlagsAndAttributes &= ~FILE_FLAG_NO_BUFFERING;	
+		if ((FlagsAndAttributes & FILE_FLAG_SEQUENTIAL_SCAN) == FILE_FLAG_SEQUENTIAL_SCAN)
+		{
+			FlagsAndAttributes &= ~FILE_FLAG_SEQUENTIAL_SCAN;
+			FlagsAndAttributes |= gIOCacheFlag;
+		}
+
 		return CreateFileA(FileName, DesiredAccess, ShareMode, SecurityAttributes, CreationDisposition,
-			FILE_FLAG_OVERLAPPED | gIOCacheFlag, TemplateFile);
+			FlagsAndAttributes, TemplateFile);
 	}
 
 	static HANDLE WINAPI HKCreateFileW(LPCWSTR FileName, DWORD DesiredAccess, DWORD ShareMode,
 		LPSECURITY_ATTRIBUTES SecurityAttributes, DWORD CreationDisposition, DWORD FlagsAndAttributes,
 		HANDLE TemplateFile)
 	{
+		FlagsAndAttributes &= ~FILE_FLAG_NO_BUFFERING;
+		if ((FlagsAndAttributes & FILE_FLAG_SEQUENTIAL_SCAN) == FILE_FLAG_SEQUENTIAL_SCAN)
+		{
+			FlagsAndAttributes &= ~FILE_FLAG_SEQUENTIAL_SCAN;
+			FlagsAndAttributes |= gIOCacheFlag;
+		}
+
 		return CreateFileW(FileName, DesiredAccess, ShareMode, SecurityAttributes, CreationDisposition,
-			FILE_FLAG_OVERLAPPED | gIOCacheFlag, TemplateFile);
+			FlagsAndAttributes, TemplateFile);
 	}
 
-	XCellModuleIO::XCellModuleIO(void* Context) :
+	ModuleIO::ModuleIO(void* Context) :
 		Module(Context, SourceName, CVarIO)
 	{
 		auto gContext = (XCell::Context*)Context;
@@ -59,10 +73,13 @@ namespace XCell
 		gIOCacheFlag = CVarUseIORandomAccess->GetBool() ? FILE_FLAG_RANDOM_ACCESS : FILE_FLAG_SEQUENTIAL_SCAN;
 	}
 
-	HRESULT XCellModuleIO::InstallImpl()
+	HRESULT ModuleIO::InstallImpl()
 	{
 		if ((REL::Version() == RUNTIME_VERSION_1_10_163) && GetModuleHandleA("libdiskCacheEnabler.dll"))
+		{
 			_WARNING("Mod \"\" has been detected. X-Cell it's unnecessary.");
+			return S_FALSE;
+		}
 
 		//
 		// io optimizations:
@@ -78,7 +95,7 @@ namespace XCell
 		return S_OK;
 	}
 
-	HRESULT XCellModuleIO::ShutdownImpl()
+	HRESULT ModuleIO::ShutdownImpl()
 	{
 		// Returned
 

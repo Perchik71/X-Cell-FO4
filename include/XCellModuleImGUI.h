@@ -1,4 +1,4 @@
-// Copyright � 2024-2025 aka perchik71. All rights reserved.
+﻿// Copyright © 2024-2025 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -12,7 +12,7 @@
 
 namespace XCell
 {
-	class XCellModuleImGUI : public Module
+	class ModuleImGUI : public Module
 	{
 		ID3D11DeviceContext* _DXContext;
 		ID3D11RenderTargetView* _DXBackBufferView;
@@ -25,11 +25,11 @@ namespace XCell
 	public:
 		static constexpr auto SourceName = "Module ImGUI";
 
-		XCellModuleImGUI(void* Context);
-		virtual ~XCellModuleImGUI() = default;
+		ModuleImGUI(void* Context);
+		virtual ~ModuleImGUI() = default;
 
-		XCellModuleImGUI(const XCellModuleImGUI&) = delete;
-		XCellModuleImGUI& operator=(const XCellModuleImGUI&) = delete;
+		ModuleImGUI(const ModuleImGUI&) = delete;
+		ModuleImGUI& operator=(const ModuleImGUI&) = delete;
 
 		virtual HRESULT DXListener(HWND WindowHandle, ID3D11Device* Device, ID3D11DeviceContext* Context, 
 			IDXGISwapChain* SwapChain);

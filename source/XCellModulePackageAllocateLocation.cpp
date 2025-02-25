@@ -1,4 +1,4 @@
-// Copyright � 2024-2025 aka perchik71. All rights reserved.
+﻿// Copyright © 2024-2025 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -10,7 +10,7 @@
 
 namespace XCell
 {
-	XCellModulePackageAllocateLocation::XCellModulePackageAllocateLocation(void* Context) :
+	ModulePackageAllocateLocation::ModulePackageAllocateLocation(void* Context) :
 		Module(Context, SourceName, CVarPackageAllocateLocation)
 	{
 		if (REL::Version() == RUNTIME_VERSION_1_10_984)
@@ -20,14 +20,14 @@ namespace XCell
 		}
 	}
 
-	HRESULT XCellModulePackageAllocateLocation::InstallImpl()
+	HRESULT ModulePackageAllocateLocation::InstallImpl()
 	{
 		_function.Enable();
 
 		return S_OK;
 	}
 
-	HRESULT XCellModulePackageAllocateLocation::ShutdownImpl()
+	HRESULT ModulePackageAllocateLocation::ShutdownImpl()
 	{
 		// Returned
 		

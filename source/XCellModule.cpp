@@ -1,8 +1,9 @@
-// Copyright � 2024-2025 aka perchik71. All rights reserved.
+﻿// Copyright © 2024-2025 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
 #include "XCellModule.h"
+#include "XCellPlugin.h"
 
 namespace XCell
 {
@@ -133,12 +134,12 @@ namespace XCell
 		return E_FAIL;
 	}
 
-	Module::Module(void* Context, const char* Name) :
-		Object(Name), Context(Context), SettingMod(nullptr), _enabled(false)
+	Module::Module(void* Context, const char* Name, UInt32 QueryEvent) :
+		Object(Name), Context((XCell::Context*)Context), SettingMod(nullptr), _enabled(false), _queryEvent(QueryEvent)
 	{}
 
-	Module::Module(void* Context, const char* Name, const shared_ptr<Setting>& SettingMod) :
-		Object(Name), Context(Context), SettingMod(SettingMod), _enabled(false)
+	Module::Module(void* Context, const char* Name, const shared_ptr<Setting>& SettingMod, UInt32 QueryEvent) :
+		Object(Name), Context((XCell::Context*)Context), SettingMod(SettingMod), _enabled(false), _queryEvent(QueryEvent)
 	{
 		if (SettingMod && !SettingMod->CheckValidValueType(Setting::stBool))
 		{
@@ -157,6 +158,8 @@ namespace XCell
 		if (_enabled || (SettingMod && !SettingMod->GetBool()))
 			return S_FALSE;
 
+		Context->RegisterListeners(this, _queryEvent);
+
 		auto Result = InstallImpl();
 		_enabled = SUCCEEDED(Result);
 		return Result;
@@ -166,6 +169,8 @@ namespace XCell
 	{
 		if (!_enabled || (SettingMod && !SettingMod->GetBool()))
 			return S_FALSE;
+
+		Context->UnregisterListeners(this, _queryEvent);
 
 		auto Result = ShutdownImpl();
 		_enabled = FAILED(Result);

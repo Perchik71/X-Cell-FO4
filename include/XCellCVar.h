@@ -1,4 +1,4 @@
-// Copyright � 2024-2025 aka perchik71. All rights reserved.
+﻿// Copyright © 2024-2025 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -32,7 +32,7 @@ namespace XCell
 	extern std::shared_ptr<Setting> CVarProfile;
 	// Black loading screen.
 	extern std::shared_ptr<Setting> CVarLoadScreen;
-	// TODO
+	// Increase FPS due to scaling, requires Win 8.1 and newer, and a graphics card with hardware scaling support.
 	extern std::shared_ptr<Setting> CVarUpscaler;
 	// Fixes a bug where movies that don't define "BackgroundAlpha" on their movie root could load with a grey background.
 	extern std::shared_ptr<Setting> CVarGreyMovies;
@@ -59,12 +59,14 @@ namespace XCell
 	extern std::shared_ptr<Setting> CVarOutputRTTI;
 	// Activate a prompt for the system that you need to use a cache with random access, otherwise it will be sequential (Need bIO patch).
 	extern std::shared_ptr<Setting> CVarUseIORandomAccess;
+	// Scaling in for the game screen. Range: [0.5, 1]
+	extern std::shared_ptr<Setting> CVarDisplayScale;
+	// Do not use the original TAA, which causes slight ripples.
+	extern std::shared_ptr<Setting> CVarNoUseTAA;
 
 	// ---
 
 	extern std::shared_ptr<Setting> CVarLodMipBias;
 	extern std::shared_ptr<Setting> CVarMaxAnisotropy;
-	extern std::shared_ptr<Setting> CVarDisplayScale;
-	extern std::shared_ptr<Setting> CVarMaxFrameRateVSync;
-	extern std::shared_ptr<Setting> CVarVSync;
+	extern std::shared_ptr<Setting> CVarTAA;
 }

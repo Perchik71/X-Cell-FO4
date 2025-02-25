@@ -1,4 +1,4 @@
-// Copyright © 2024-2025 aka perchik71. All rights reserved.
+п»ї// Copyright В© 2024-2025 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -14,6 +14,7 @@
 #include "XCellRelocator.h"
 #include "XCellTableID.h"
 #include "XCellVersion.h"
+#include "XCellCVar.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
 
@@ -28,14 +29,15 @@ namespace XCell
 		return _OriginalWndProc(hWnd, uMsg, wParam, lParam);
 	}
 
-	XCellModuleImGUI::XCellModuleImGUI(void* Context) :
-		Module(Context, SourceName), _DXContext(nullptr), _DXBackBufferView(nullptr), 
-		_ModMenuEffectColorR(nullptr), _ModMenuEffectColorG(nullptr), _ModMenuEffectColorB(nullptr)
+	ModuleImGUI::ModuleImGUI(void* Context) :
+		Module(Context, SourceName, XCELL_MODULE_QUERY_DIRECTX_INIT | XCELL_MODULE_QUERY_PREPARE_UI_DRAW),
+		_DXContext(nullptr), _DXBackBufferView(nullptr), _ModMenuEffectColorR(nullptr), _ModMenuEffectColorG(nullptr), 
+		_ModMenuEffectColorB(nullptr)
 	{
 		ZeroMemory(_Colors, _ARRAYSIZE(_Colors));
 	}
 
-	HRESULT XCellModuleImGUI::DXListener(HWND WindowHandle, ID3D11Device* Device, ID3D11DeviceContext* Context,
+	HRESULT ModuleImGUI::DXListener(HWND WindowHandle, ID3D11Device* Device, ID3D11DeviceContext* Context,
 		IDXGISwapChain* SwapChain)
 	{
 		if (!IsWindow(WindowHandle) || !Device || !Context || !SwapChain)
@@ -86,7 +88,7 @@ namespace XCell
 		return S_OK;
 	}
 
-	HRESULT XCellModuleImGUI::PrepareUIDrawCuledListener()
+	HRESULT ModuleImGUI::PrepareUIDrawCuledListener()
 	{
 		// Show only menu save/load/quit etc
 		if ((*g_ui.GetPtr())->IsMenuOpen("PauseMenu"))
@@ -120,7 +122,7 @@ namespace XCell
 			ImGui::TextDisabled("Hello World");
 			if (ImGui::Button("Press"))
 			{
-
+				CVarTAA->SetBool(!CVarTAA->GetBool());
 			}
 			ImGui::End();
 
@@ -132,7 +134,7 @@ namespace XCell
 		return S_OK;
 	}
 
-	HRESULT XCellModuleImGUI::InstallImpl()
+	HRESULT ModuleImGUI::InstallImpl()
 	{
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -155,13 +157,13 @@ namespace XCell
 		if (!_Fonts[0] || !_Fonts[1] || !_Fonts[2])
 			return E_FAIL;
 
-		InitializeDirectXLinker.OnListener = (EventInitializeDirectXSourceLink::EventFunctionType)(&XCellModuleImGUI::DXListener);
-		PrepareUIDrawCuledLinker.OnListener = (EventPrepareUIDrawCuledSourceLink::EventFunctionType)(&XCellModuleImGUI::PrepareUIDrawCuledListener);
+		InitializeDirectXLinker.OnListener = (EventInitializeDirectXSourceLink::EventFunctionType)(&ModuleImGUI::DXListener);
+		PrepareUIDrawCuledLinker.OnListener = (EventPrepareUIDrawCuledSourceLink::EventFunctionType)(&ModuleImGUI::PrepareUIDrawCuledListener);
 
 		return S_OK;
 	}
 
-	HRESULT XCellModuleImGUI::ShutdownImpl()
+	HRESULT ModuleImGUI::ShutdownImpl()
 	{
 		// Cleanup
 		ImGui_ImplDX11_Shutdown();
@@ -171,7 +173,7 @@ namespace XCell
 		return S_OK;
 	}
 
-	void XCellModuleImGUI::UpdateStyles(bool Force)
+	void ModuleImGUI::UpdateStyles(bool Force)
 	{
 		if (Force || 
 			((abs(_Colors[0] - _ModMenuEffectColorR->data.f32) > 0.001) || 
@@ -188,58 +190,58 @@ namespace XCell
 			_Style.WindowRounding = 0.0f;
 			_Style.AntiAliasedLines = true;
 
-			//[ImGuiCol_Text]					= Цвет для текста, который будет использоваться для всего меню.
-			//[ImGuiCol_TextDisabled]			= Цвет для "не активного/отключенного текста".
-			//[ImGuiCol_WindowBg]				= Цвет заднего фона.
-			//[ImGuiCol_PopupBg]				= Цвет, который используется для заднего фона в ImGui::Combo и ImGui::MenuBar.
-			//[ImGuiCol_Border]					= Цвет, который используется для обводки вашего меню.
-			//[ImGuiCol_BorderShadow]			= Цвет для тени обводки.
-			//[ImGuiCol_FrameBg]				= Цвет для ImGui::InputText и для заднего фона ImGui::Checkbox
-			//[ImGuiCol_FrameBgHovered]			= Цвет, который используется практически так же что и тот, который выше, кроме того, что он изменяет цвет при наводке на ImGui::Checkbox.
-			//[ImGuiCol_FrameBgActive]			= Активный цвет.
-			//[ImGuiCol_TitleBg]				= Цвет для изменения главного места в самом верху меню(там где находится название вашего "топприватногохакаинзеворлдвсес0писалсяполгода".
-			//[ImGuiCol_TitleBgCollapsed]		= Свернутый цвет тайтла.
-			//[ImGuiCol_TitleBgActive]			= Цвет активного окна тайтла, т.е если вы имеете меню с несколькими окнами, то этот цвет будет использоваться для окна, в котором вы будет находится на данный момент.
-			//[ImGuiCol_MenuBarBg]				= Цвет для меню бара. (Не во всех сурсах видел такое, но все же)
-			//[ImGuiCol_ScrollbarBg]			= Цвет для заднего фона "полоски", через которую можно "листать" функции в софте по вертикале.
-			//[ImGuiCol_ScrollbarGrab]			= Цвет для сколл бара, т.е для "полоски", которая используется для передвижения меню по вертикали.
-			//[ImGuiCol_ScrollbarGrabHovered]	= Цвет для "свернутого/не используемого" скролл бара.
-			//[ImGuiCol_ScrollbarGrabActive]	= Цвет для "активной" деятельности в том окне, где находится скролл бар.
-			//[ImGuiCol_ComboBg]				= Цвет для заднего фона для ImGui::Combo.
-			//[ImGuiCol_CheckMark]				= Цвет для вашего ImGui::Checkbox.
-			//[ImGuiCol_SliderGrab]				= Цвет для ползунка ImGui::SliderInt и ImGui::SliderFloat.
-			//[ImGuiCol_SliderGrabActive]		= Цвет ползунка, который будет отображаться при использовании SliderFloat и SliderInt.
-			//[ImGuiCol_Button]					= Цвет для кнопки.
-			//[ImGuiCol_ButtonHovered]			= Цвет, при наведении на кнопку.
-			//[ImGuiCol_ButtonActive]			= Используемый цвет кнопки.
-			//[ImGuiCol_Header]					= Цвет для ImGui::CollapsingHeader.
-			//[ImGuiCol_HeaderHovered]			= Цвет, при наведении на ImGui::CollapsingHeader.
-			//[ImGuiCol_HeaderActive]			= Используемый цвет ImGui::CollapsingHeader.
-			//[ImGuiCol_Column]					= Цвет для "полоски отделения" ImGui::Column и ImGui::NextColumn.
-			//[ImGuiCol_ColumnHovered]			= Цвет, при наведении на "полоску отделения" ImGui::Column и ImGui::NextColumn.
-			//[ImGuiCol_ColumnActive]			= Используемый цвет для "полоски отделения" ImGui::Column и ImGui::NextColumn.
-			//[ImGuiCol_ResizeGrip]				= Цвет для "треугольника" в правом нижнем углу, который используется для увеличения или уменьшения размеров меню.
-			//[ImGuiCol_ResizeGripHovered]		= Цвет, при наведении на "треугольника" в правом нижнем углу, который используется для увеличения или уменьшения размеров меню.
-			//[ImGuiCol_ResizeGripActive]		= Используемый цвет для "треугольника" в правом нижнем углу, который используется для увеличения или уменьшения размеров меню.
-			//[ImGuiCol_CloseButton]			= Цвет для кнопки - закрытия меню.
-			//[ImGuiCol_CloseButtonHovered]		= Цвет, при наведении на кнопку - закрытия меню.
-			//[ImGuiCol_CloseButtonActive]		= Используемый цвет для кнопки - закрытия меню.
+			//[ImGuiCol_Text]					= Р¦РІРµС‚ РґР»СЏ С‚РµРєСЃС‚Р°, РєРѕС‚РѕСЂС‹Р№ Р±СѓРґРµС‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊСЃСЏ РґР»СЏ РІСЃРµРіРѕ РјРµРЅСЋ.
+			//[ImGuiCol_TextDisabled]			= Р¦РІРµС‚ РґР»СЏ "РЅРµ Р°РєС‚РёРІРЅРѕРіРѕ/РѕС‚РєР»СЋС‡РµРЅРЅРѕРіРѕ С‚РµРєСЃС‚Р°".
+			//[ImGuiCol_WindowBg]				= Р¦РІРµС‚ Р·Р°РґРЅРµРіРѕ С„РѕРЅР°.
+			//[ImGuiCol_PopupBg]				= Р¦РІРµС‚, РєРѕС‚РѕСЂС‹Р№ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ Р·Р°РґРЅРµРіРѕ С„РѕРЅР° РІ ImGui::Combo Рё ImGui::MenuBar.
+			//[ImGuiCol_Border]					= Р¦РІРµС‚, РєРѕС‚РѕСЂС‹Р№ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ РѕР±РІРѕРґРєРё РІР°С€РµРіРѕ РјРµРЅСЋ.
+			//[ImGuiCol_BorderShadow]			= Р¦РІРµС‚ РґР»СЏ С‚РµРЅРё РѕР±РІРѕРґРєРё.
+			//[ImGuiCol_FrameBg]				= Р¦РІРµС‚ РґР»СЏ ImGui::InputText Рё РґР»СЏ Р·Р°РґРЅРµРіРѕ С„РѕРЅР° ImGui::Checkbox
+			//[ImGuiCol_FrameBgHovered]			= Р¦РІРµС‚, РєРѕС‚РѕСЂС‹Р№ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РїСЂР°РєС‚РёС‡РµСЃРєРё С‚Р°Рє Р¶Рµ С‡С‚Рѕ Рё С‚РѕС‚, РєРѕС‚РѕСЂС‹Р№ РІС‹С€Рµ, РєСЂРѕРјРµ С‚РѕРіРѕ, С‡С‚Рѕ РѕРЅ РёР·РјРµРЅСЏРµС‚ С†РІРµС‚ РїСЂРё РЅР°РІРѕРґРєРµ РЅР° ImGui::Checkbox.
+			//[ImGuiCol_FrameBgActive]			= РђРєС‚РёРІРЅС‹Р№ С†РІРµС‚.
+			//[ImGuiCol_TitleBg]				= Р¦РІРµС‚ РґР»СЏ РёР·РјРµРЅРµРЅРёСЏ РіР»Р°РІРЅРѕРіРѕ РјРµСЃС‚Р° РІ СЃР°РјРѕРј РІРµСЂС…Сѓ РјРµРЅСЋ(С‚Р°Рј РіРґРµ РЅР°С…РѕРґРёС‚СЃСЏ РЅР°Р·РІР°РЅРёРµ РІР°С€РµРіРѕ "С‚РѕРїРїСЂРёРІР°С‚РЅРѕРіРѕС…Р°РєР°РёРЅР·РµРІРѕСЂР»РґРІСЃРµСЃ0РїРёСЃР°Р»СЃСЏРїРѕР»РіРѕРґР°".
+			//[ImGuiCol_TitleBgCollapsed]		= РЎРІРµСЂРЅСѓС‚С‹Р№ С†РІРµС‚ С‚Р°Р№С‚Р»Р°.
+			//[ImGuiCol_TitleBgActive]			= Р¦РІРµС‚ Р°РєС‚РёРІРЅРѕРіРѕ РѕРєРЅР° С‚Р°Р№С‚Р»Р°, С‚.Рµ РµСЃР»Рё РІС‹ РёРјРµРµС‚Рµ РјРµРЅСЋ СЃ РЅРµСЃРєРѕР»СЊРєРёРјРё РѕРєРЅР°РјРё, С‚Рѕ СЌС‚РѕС‚ С†РІРµС‚ Р±СѓРґРµС‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊСЃСЏ РґР»СЏ РѕРєРЅР°, РІ РєРѕС‚РѕСЂРѕРј РІС‹ Р±СѓРґРµС‚ РЅР°С…РѕРґРёС‚СЃСЏ РЅР° РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚.
+			//[ImGuiCol_MenuBarBg]				= Р¦РІРµС‚ РґР»СЏ РјРµРЅСЋ Р±Р°СЂР°. (РќРµ РІРѕ РІСЃРµС… СЃСѓСЂСЃР°С… РІРёРґРµР» С‚Р°РєРѕРµ, РЅРѕ РІСЃРµ Р¶Рµ)
+			//[ImGuiCol_ScrollbarBg]			= Р¦РІРµС‚ РґР»СЏ Р·Р°РґРЅРµРіРѕ С„РѕРЅР° "РїРѕР»РѕСЃРєРё", С‡РµСЂРµР· РєРѕС‚РѕСЂСѓСЋ РјРѕР¶РЅРѕ "Р»РёСЃС‚Р°С‚СЊ" С„СѓРЅРєС†РёРё РІ СЃРѕС„С‚Рµ РїРѕ РІРµСЂС‚РёРєР°Р»Рµ.
+			//[ImGuiCol_ScrollbarGrab]			= Р¦РІРµС‚ РґР»СЏ СЃРєРѕР»Р» Р±Р°СЂР°, С‚.Рµ РґР»СЏ "РїРѕР»РѕСЃРєРё", РєРѕС‚РѕСЂР°СЏ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ РїРµСЂРµРґРІРёР¶РµРЅРёСЏ РјРµРЅСЋ РїРѕ РІРµСЂС‚РёРєР°Р»Рё.
+			//[ImGuiCol_ScrollbarGrabHovered]	= Р¦РІРµС‚ РґР»СЏ "СЃРІРµСЂРЅСѓС‚РѕРіРѕ/РЅРµ РёСЃРїРѕР»СЊР·СѓРµРјРѕРіРѕ" СЃРєСЂРѕР»Р» Р±Р°СЂР°.
+			//[ImGuiCol_ScrollbarGrabActive]	= Р¦РІРµС‚ РґР»СЏ "Р°РєС‚РёРІРЅРѕР№" РґРµСЏС‚РµР»СЊРЅРѕСЃС‚Рё РІ С‚РѕРј РѕРєРЅРµ, РіРґРµ РЅР°С…РѕРґРёС‚СЃСЏ СЃРєСЂРѕР»Р» Р±Р°СЂ.
+			//[ImGuiCol_ComboBg]				= Р¦РІРµС‚ РґР»СЏ Р·Р°РґРЅРµРіРѕ С„РѕРЅР° РґР»СЏ ImGui::Combo.
+			//[ImGuiCol_CheckMark]				= Р¦РІРµС‚ РґР»СЏ РІР°С€РµРіРѕ ImGui::Checkbox.
+			//[ImGuiCol_SliderGrab]				= Р¦РІРµС‚ РґР»СЏ РїРѕР»Р·СѓРЅРєР° ImGui::SliderInt Рё ImGui::SliderFloat.
+			//[ImGuiCol_SliderGrabActive]		= Р¦РІРµС‚ РїРѕР»Р·СѓРЅРєР°, РєРѕС‚РѕСЂС‹Р№ Р±СѓРґРµС‚ РѕС‚РѕР±СЂР°Р¶Р°С‚СЊСЃСЏ РїСЂРё РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРё SliderFloat Рё SliderInt.
+			//[ImGuiCol_Button]					= Р¦РІРµС‚ РґР»СЏ РєРЅРѕРїРєРё.
+			//[ImGuiCol_ButtonHovered]			= Р¦РІРµС‚, РїСЂРё РЅР°РІРµРґРµРЅРёРё РЅР° РєРЅРѕРїРєСѓ.
+			//[ImGuiCol_ButtonActive]			= РСЃРїРѕР»СЊР·СѓРµРјС‹Р№ С†РІРµС‚ РєРЅРѕРїРєРё.
+			//[ImGuiCol_Header]					= Р¦РІРµС‚ РґР»СЏ ImGui::CollapsingHeader.
+			//[ImGuiCol_HeaderHovered]			= Р¦РІРµС‚, РїСЂРё РЅР°РІРµРґРµРЅРёРё РЅР° ImGui::CollapsingHeader.
+			//[ImGuiCol_HeaderActive]			= РСЃРїРѕР»СЊР·СѓРµРјС‹Р№ С†РІРµС‚ ImGui::CollapsingHeader.
+			//[ImGuiCol_Column]					= Р¦РІРµС‚ РґР»СЏ "РїРѕР»РѕСЃРєРё РѕС‚РґРµР»РµРЅРёСЏ" ImGui::Column Рё ImGui::NextColumn.
+			//[ImGuiCol_ColumnHovered]			= Р¦РІРµС‚, РїСЂРё РЅР°РІРµРґРµРЅРёРё РЅР° "РїРѕР»РѕСЃРєСѓ РѕС‚РґРµР»РµРЅРёСЏ" ImGui::Column Рё ImGui::NextColumn.
+			//[ImGuiCol_ColumnActive]			= РСЃРїРѕР»СЊР·СѓРµРјС‹Р№ С†РІРµС‚ РґР»СЏ "РїРѕР»РѕСЃРєРё РѕС‚РґРµР»РµРЅРёСЏ" ImGui::Column Рё ImGui::NextColumn.
+			//[ImGuiCol_ResizeGrip]				= Р¦РІРµС‚ РґР»СЏ "С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°" РІ РїСЂР°РІРѕРј РЅРёР¶РЅРµРј СѓРіР»Сѓ, РєРѕС‚РѕСЂС‹Р№ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ СѓРІРµР»РёС‡РµРЅРёСЏ РёР»Рё СѓРјРµРЅСЊС€РµРЅРёСЏ СЂР°Р·РјРµСЂРѕРІ РјРµРЅСЋ.
+			//[ImGuiCol_ResizeGripHovered]		= Р¦РІРµС‚, РїСЂРё РЅР°РІРµРґРµРЅРёРё РЅР° "С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°" РІ РїСЂР°РІРѕРј РЅРёР¶РЅРµРј СѓРіР»Сѓ, РєРѕС‚РѕСЂС‹Р№ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ СѓРІРµР»РёС‡РµРЅРёСЏ РёР»Рё СѓРјРµРЅСЊС€РµРЅРёСЏ СЂР°Р·РјРµСЂРѕРІ РјРµРЅСЋ.
+			//[ImGuiCol_ResizeGripActive]		= РСЃРїРѕР»СЊР·СѓРµРјС‹Р№ С†РІРµС‚ РґР»СЏ "С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°" РІ РїСЂР°РІРѕРј РЅРёР¶РЅРµРј СѓРіР»Сѓ, РєРѕС‚РѕСЂС‹Р№ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ СѓРІРµР»РёС‡РµРЅРёСЏ РёР»Рё СѓРјРµРЅСЊС€РµРЅРёСЏ СЂР°Р·РјРµСЂРѕРІ РјРµРЅСЋ.
+			//[ImGuiCol_CloseButton]			= Р¦РІРµС‚ РґР»СЏ РєРЅРѕРїРєРё - Р·Р°РєСЂС‹С‚РёСЏ РјРµРЅСЋ.
+			//[ImGuiCol_CloseButtonHovered]		= Р¦РІРµС‚, РїСЂРё РЅР°РІРµРґРµРЅРёРё РЅР° РєРЅРѕРїРєСѓ - Р·Р°РєСЂС‹С‚РёСЏ РјРµРЅСЋ.
+			//[ImGuiCol_CloseButtonActive]		= РСЃРїРѕР»СЊР·СѓРµРјС‹Р№ С†РІРµС‚ РґР»СЏ РєРЅРѕРїРєРё - Р·Р°РєСЂС‹С‚РёСЏ РјРµРЅСЋ.
 			//<-------------------------------------------------------------------------------------------------------------->
-			//Данные параметры для меня не известны, т.к не использую их на деле.
+			//Р”Р°РЅРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ РґР»СЏ РјРµРЅСЏ РЅРµ РёР·РІРµСЃС‚РЅС‹, С‚.Рє РЅРµ РёСЃРїРѕР»СЊР·СѓСЋ РёС… РЅР° РґРµР»Рµ.
 			//[ImGuiCol_PlotLines]
 			//[ImGuiCol_PlotLinesHovered]
 			//[ImGuiCol_PlotHistogram]
 			//[ImGuiCol_PlotHistogramHovered]
 			//<-------------------------------------------------------------------------------------------------------------->
-			//[ImGuiCol_TextSelectedBg]			= Цвет выбранного текста, в ImGui::MenuBar.
-			//[ImGuiCol_ModalWindowDarkening]	= Цвет "Затемнения окна" вашего меню.
-			//Редко вижу данные обозначения, но все таки решил их сюда поместить.
-			//[ImGuiCol_Tab]					= Цвет для табов в меню.
-			//[ImGuiCol_TabActive]				= Активный цвет табов, т.е при нажатии на таб у вас будет этот цвет.
-			//[ImGuiCol_TabHovered]				= Цвет, который будет отображаться при наведении на таб.
-			//[ImGuiCol_TabSelected]			= Цвет, при котором, используется тогда, когда вы будете находится в одном из табов.
-			//[ImGuiCol_TabText]				= Цвет текста, который распространяется только на табы.
-			//[ImGuiCol_TabTextActive]			= Активный цвет текста для табов.
+			//[ImGuiCol_TextSelectedBg]			= Р¦РІРµС‚ РІС‹Р±СЂР°РЅРЅРѕРіРѕ С‚РµРєСЃС‚Р°, РІ ImGui::MenuBar.
+			//[ImGuiCol_ModalWindowDarkening]	= Р¦РІРµС‚ "Р—Р°С‚РµРјРЅРµРЅРёСЏ РѕРєРЅР°" РІР°С€РµРіРѕ РјРµРЅСЋ.
+			//Р РµРґРєРѕ РІРёР¶Сѓ РґР°РЅРЅС‹Рµ РѕР±РѕР·РЅР°С‡РµРЅРёСЏ, РЅРѕ РІСЃРµ С‚Р°РєРё СЂРµС€РёР» РёС… СЃСЋРґР° РїРѕРјРµСЃС‚РёС‚СЊ.
+			//[ImGuiCol_Tab]					= Р¦РІРµС‚ РґР»СЏ С‚Р°Р±РѕРІ РІ РјРµРЅСЋ.
+			//[ImGuiCol_TabActive]				= РђРєС‚РёРІРЅС‹Р№ С†РІРµС‚ С‚Р°Р±РѕРІ, С‚.Рµ РїСЂРё РЅР°Р¶Р°С‚РёРё РЅР° С‚Р°Р± Сѓ РІР°СЃ Р±СѓРґРµС‚ СЌС‚РѕС‚ С†РІРµС‚.
+			//[ImGuiCol_TabHovered]				= Р¦РІРµС‚, РєРѕС‚РѕСЂС‹Р№ Р±СѓРґРµС‚ РѕС‚РѕР±СЂР°Р¶Р°С‚СЊСЃСЏ РїСЂРё РЅР°РІРµРґРµРЅРёРё РЅР° С‚Р°Р±.
+			//[ImGuiCol_TabSelected]			= Р¦РІРµС‚, РїСЂРё РєРѕС‚РѕСЂРѕРј, РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ С‚РѕРіРґР°, РєРѕРіРґР° РІС‹ Р±СѓРґРµС‚Рµ РЅР°С…РѕРґРёС‚СЃСЏ РІ РѕРґРЅРѕРј РёР· С‚Р°Р±РѕРІ.
+			//[ImGuiCol_TabText]				= Р¦РІРµС‚ С‚РµРєСЃС‚Р°, РєРѕС‚РѕСЂС‹Р№ СЂР°СЃРїСЂРѕСЃС‚СЂР°РЅСЏРµС‚СЃСЏ С‚РѕР»СЊРєРѕ РЅР° С‚Р°Р±С‹.
+			//[ImGuiCol_TabTextActive]			= РђРєС‚РёРІРЅС‹Р№ С†РІРµС‚ С‚РµРєСЃС‚Р° РґР»СЏ С‚Р°Р±РѕРІ.
 
 			_Style.Colors[ImGuiCol_Text]				= { _Colors[0], _Colors[1], _Colors[2], 1.0f };
 			_Style.Colors[ImGuiCol_TextDisabled]		= { _Colors[0] * 0.5f, _Colors[1] * 0.5f, _Colors[2] * 0.5f, 1.0f };

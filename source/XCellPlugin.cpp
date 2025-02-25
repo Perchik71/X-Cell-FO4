@@ -1,9 +1,7 @@
-// Copyright � 2024-2025 aka perchik71. All rights reserved.
+﻿// Copyright © 2024-2025 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
-#include <dxgi.h>
-#include <d3d11.h>
 #include <ShlObj_core.h>
 
 // XCell
@@ -11,8 +9,10 @@
 #include "XCellCVar.h"
 #include "XCellTableID.h"
 #include "XCellStringUtils.h"
+#include "XCellCommonType.h"
 
 // XCell modules
+#include "XCellModuleControlSamples.h"
 #include "XCellModuleImGUI.h"
 #include "XCellModuleThreads.h"
 #include "XCellModuleMemory.h"
@@ -26,45 +26,35 @@
 #include "XCellModulePackageAllocateLocation.h"
 #include "XCellModuleWarningCreateTexture2D.h"
 
+#define XCELL_IMGUI_INSTALL 0
+
 namespace XCell
 {
-	struct DirectXData
-	{
-		char pad00[0x48];
-		ID3D11Device* device;
-		ID3D11DeviceContext* context;
-		HWND window;
-		char pad58[0x10];
-		IDXGISwapChain* swap_chain;
-	};
-	static_assert(sizeof(DirectXData) == 0x78);
-
 	Context* gContext = nullptr;
 	HMODULE gModuleHandle = nullptr;
 	DirectXData* gDirectXData = nullptr;
 	UInt64 gOldDXGIPresentFunctions = 0;
+	UInt64 gOldInterface3D_Renderer_RenderPostAA = 0;
 
 	static void XCListenerDX11RenderEndFrame(IDXGISwapChain* This, UINT SyncInterval, UINT Flags)
 	{
 		if (gContext && (Flags != DXGI_PRESENT_TEST))
 			gContext->Listener(Event::EventRenderEndFrame);
 
-		XCFastCall<void>(gOldDXGIPresentFunctions, This, 0/*SyncInterval*/, 0/*Flags*/);
+		XCFastCall<void>(gOldDXGIPresentFunctions, This, SyncInterval, Flags);
 	}
 
-	static void XCListenerPrepareUIDrawCuled(void* Unknown)
+	static void XCListener_Interface3D_Renderer_RenderPostAA(UInt32 Unk01, bool Unk02)
 	{
 		if (gContext)
 		{
 			gContext->Listener(Event::EventPrepareUIDrawCuled);
-			gContext->RunPrepareUIDrawCuled(Unknown);
+			XCFastCall<void>(gOldInterface3D_Renderer_RenderPostAA, Unk01, Unk02);
 		}
 	}
 
 	static void XCListenerDX11()
 	{
-		// maybe NiRenderWindow
-		gDirectXData = (DirectXData*)REL::ID(10);
 		if (gContext && gDirectXData)
 		{
 			gContext->Listener(Event::EventInitializeDirectX, gDirectXData->window, gDirectXData->device, gDirectXData->context,
@@ -155,9 +145,15 @@ namespace XCell
 		_settings.Add(CVarOutputRTTI);
 		_settings.Add(CVarUseIORandomAccess);
 
+		// Graphics
+		_settings.Add(CVarDisplayScale);
+		_settings.Add(CVarNoUseTAA);
+
 		// Load settings
 		if (!_settings.LoadFromFile((_app_path + "Data\\F4SE\\Plugins\\x-cell.toml").c_str()))
 			return E_FAIL;
+
+		CVarDisplayScale->SetFloat(max(0.5f, min(1.0f, CVarDisplayScale->GetFloat())));
 
 		return S_OK;
 	}
@@ -224,10 +220,12 @@ namespace XCell
 
 	HRESULT Context::InitializeGraphicPending() noexcept(true)
 	{
+		// maybe NiRenderWindow
+		gDirectXData = (DirectXData*)REL::ID(10);
 		_graphics_listener.Install(REL::ID(0), (UInt64)XCListenerDX11);
-		_prepare_ui_listener.Install(REL::ID(21), (UInt64)XCListenerPrepareUIDrawCuled);
+		REL::Impl::DetourCall(REL::ID(22), (UInt64)XCListener_Interface3D_Renderer_RenderPostAA);
+		gOldInterface3D_Renderer_RenderPostAA = REL::ID(21);
 		if (FAILED(_graphics_listener.Enable())) return E_FAIL;
-		if (FAILED(_prepare_ui_listener.Enable())) return E_FAIL;
 		return S_OK;
 	}
 
@@ -314,55 +312,22 @@ namespace XCell
 
 	HRESULT Context::InitializeModules() noexcept(true)
 	{
-		/*if (SUCCEEDED(_modules.Add(make_shared<XCellModuleImGUI>(this))))
-		{
-			auto Mod = _modules.FindByName(XCellModuleImGUI::SourceName);
-			if (Mod)
-			{
-				_registered_initdx11_link.RegisterModule(Mod);
-				_registered_uidrawculed_link.RegisterModule(Mod);
-			}
-		}
-		else
-			return E_FAIL;*/
-
-		if (SUCCEEDED(_modules.Add(make_shared<XCellModuleFacegen>(this))))
-		{
-			auto Mod = _modules.FindByName(XCellModuleFacegen::SourceName);
-			if (Mod) _registered_dataready_link.RegisterModule(Mod);
-		}
-		else
-			return E_FAIL;
-
-		if (SUCCEEDED(_modules.Add(make_shared<XCellModuleUpscaler>(this))))
-		{
-			auto Mod = _modules.FindByName(XCellModuleUpscaler::SourceName);
-			if (Mod)
-			{
-				_registered_initdx11_link.RegisterModule(Mod);
-				//_registered_endframe_link.RegisterModule(Mod);
-				_registered_initvm_link.RegisterModule(Mod);
-			}
-		}
-		else
-			return E_FAIL;
-
-		if (FAILED(_modules.Add(make_shared<XCellModuleThreads>(this)))) return E_FAIL;
-		if (FAILED(_modules.Add(make_shared<XCellModuleMemory>(this)))) return E_FAIL;
-		if (FAILED(_modules.Add(make_shared<XCellModuleIO>(this)))) return E_FAIL;
-		if (FAILED(_modules.Add(make_shared<XCellModuleLibDeflate>(this)))) return E_FAIL;
-		if (FAILED(_modules.Add(make_shared<XCellModuleProfile>(this)))) return E_FAIL;
-		if (FAILED(_modules.Add(make_shared<XCellModuleLoadScreen>(this)))) return E_FAIL;
-		if (FAILED(_modules.Add(make_shared<XCellModuleGreyMovies>(this)))) return E_FAIL;
-		if (FAILED(_modules.Add(make_shared<XCellModulePackageAllocateLocation>(this)))) return E_FAIL;
-
-		if (SUCCEEDED(_modules.Add(make_shared<XCellModuleWarningCreateTexture2D>(this))))
-		{
-			auto Mod = _modules.FindByName(XCellModuleWarningCreateTexture2D::SourceName);
-			if (Mod) _registered_initdx11_link.RegisterModule(Mod);
-		}
-		else
-			return E_FAIL;
+		if (FAILED(_modules.Add(make_shared<ModuleControlSamples>(this)))) return E_FAIL;
+		if (FAILED(_modules.Add(make_shared<ModuleFacegen>(this)))) return E_FAIL;
+		if (FAILED(_modules.Add(make_shared<ModuleUpscaler>(this)))) return E_FAIL;
+		if (FAILED(_modules.Add(make_shared<ModuleThreads>(this)))) return E_FAIL;
+		if (FAILED(_modules.Add(make_shared<ModuleMemory>(this)))) return E_FAIL;
+		if (FAILED(_modules.Add(make_shared<ModuleIO>(this)))) return E_FAIL;
+		if (FAILED(_modules.Add(make_shared<ModuleLibDeflate>(this)))) return E_FAIL;
+		if (FAILED(_modules.Add(make_shared<ModuleProfile>(this)))) return E_FAIL;
+		if (FAILED(_modules.Add(make_shared<ModuleLoadScreen>(this)))) return E_FAIL;
+		if (FAILED(_modules.Add(make_shared<ModuleGreyMovies>(this)))) return E_FAIL;
+		if (FAILED(_modules.Add(make_shared<ModulePackageAllocateLocation>(this)))) return E_FAIL;
+		if (FAILED(_modules.Add(make_shared<ModuleWarningCreateTexture2D>(this)))) return E_FAIL;
+		// Required install after all modules
+#if XCELL_IMGUI_INSTALL
+		if (FAILED(_modules.Add(make_shared<ModuleImGUI>(this)))) return E_FAIL;
+#endif // XCELL_IMGUI_INSTALL
 
 		return S_OK;
 	}
@@ -405,12 +370,13 @@ namespace XCell
 		for (UInt64 Index = 0; Index < _modules.Size(); Index++)
 		{
 			auto Mod = _modules[Index];
-			if (FAILED(Mod->Install()))
+			auto hr = Mod->Install();
+			if (FAILED(hr))
 			{
 				_FATALERROR("Module \"%s\" initialization error, it is unsafe to continue.", Mod->Name.c_str());
 				return E_FAIL;
 			}
-			else
+			else if (hr == S_OK)
 				_MESSAGE("Module \"%s\" has been successfully initialized.", Mod->Name.c_str());
 		}
 
@@ -424,12 +390,13 @@ namespace XCell
 		for (UInt64 Index = 0; Index < _modules.Size(); Index++)
 		{
 			auto Mod = _modules[Index];
-			if (FAILED(Mod->Shutdown()))
+			auto hr = Mod->Shutdown();
+			if (FAILED(hr))
 			{
 				_FATALERROR("Module \"%s\" release error, it is unsafe to continue.", Mod->Name.c_str());
 				return E_FAIL;
 			}
-			else
+			else if (hr == S_OK)
 				_MESSAGE("Module \"%s\" has been successfully released.", Mod->Name.c_str());
 		}
 
@@ -553,6 +520,54 @@ namespace XCell
 			_registered_endframe_link.Listener();
 		else if (Type == Event::EventPrepareUIDrawCuled)
 			_registered_uidrawculed_link.Listener();	
+	}
+
+	void Context::RegisterListeners(Module* Module, UInt32 Listeners)
+	{
+		if (!Listeners || !Module)
+			return;
+
+		auto Mod = _modules.FindByName(Module->Name.c_str());
+		if (!Mod) return;
+
+		if ((Listeners & XCELL_MODULE_QUERY_DIRECTX_INIT) == XCELL_MODULE_QUERY_DIRECTX_INIT) 
+			_registered_initdx11_link.RegisterModule(Mod);
+		if ((Listeners & XCELL_MODULE_QUERY_PAPYRUS_INIT) == XCELL_MODULE_QUERY_PAPYRUS_INIT)
+			_registered_initvm_link.RegisterModule(Mod);
+		if ((Listeners & XCELL_MODULE_QUERY_DATA_READY) == XCELL_MODULE_QUERY_DATA_READY)
+			_registered_dataready_link.RegisterModule(Mod);
+		if ((Listeners & XCELL_MODULE_QUERY_GAME_LOADED) == XCELL_MODULE_QUERY_GAME_LOADED)
+			_registered_loaded_link.RegisterModule(Mod);
+		if ((Listeners & XCELL_MODULE_QUERY_NEW_GAME) == XCELL_MODULE_QUERY_NEW_GAME)
+			_registered_newgame_link.RegisterModule(Mod);
+		if ((Listeners & XCELL_MODULE_QUERY_END_FRAME) == XCELL_MODULE_QUERY_END_FRAME)
+			_registered_endframe_link.RegisterModule(Mod);
+		if ((Listeners & XCELL_MODULE_QUERY_PREPARE_UI_DRAW) == XCELL_MODULE_QUERY_PREPARE_UI_DRAW)
+			_registered_uidrawculed_link.RegisterModule(Mod);
+	}
+
+	void Context::UnregisterListeners(Module* Module, UInt32 Listeners)
+	{
+		if (!Listeners || !Module)
+			return;
+
+		auto Mod = _modules.FindByName(Module->Name.c_str());
+		if (!Mod) return;
+
+		if ((Listeners & XCELL_MODULE_QUERY_DIRECTX_INIT) == XCELL_MODULE_QUERY_DIRECTX_INIT)
+			_registered_initdx11_link.UnregisterModule(Mod);
+		if ((Listeners & XCELL_MODULE_QUERY_PAPYRUS_INIT) == XCELL_MODULE_QUERY_PAPYRUS_INIT)
+			_registered_initvm_link.UnregisterModule(Mod);
+		if ((Listeners & XCELL_MODULE_QUERY_DATA_READY) == XCELL_MODULE_QUERY_DATA_READY)
+			_registered_dataready_link.UnregisterModule(Mod);
+		if ((Listeners & XCELL_MODULE_QUERY_GAME_LOADED) == XCELL_MODULE_QUERY_GAME_LOADED)
+			_registered_loaded_link.UnregisterModule(Mod);
+		if ((Listeners & XCELL_MODULE_QUERY_NEW_GAME) == XCELL_MODULE_QUERY_NEW_GAME)
+			_registered_newgame_link.UnregisterModule(Mod);
+		if ((Listeners & XCELL_MODULE_QUERY_END_FRAME) == XCELL_MODULE_QUERY_END_FRAME)
+			_registered_endframe_link.UnregisterModule(Mod);
+		if ((Listeners & XCELL_MODULE_QUERY_PREPARE_UI_DRAW) == XCELL_MODULE_QUERY_PREPARE_UI_DRAW)
+			_registered_uidrawculed_link.UnregisterModule(Mod);
 	}
 
 	HRESULT CreateContextInstance(Context** pContext, const F4SEInterface* f4se) noexcept(true)

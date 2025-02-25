@@ -1,4 +1,4 @@
-// Copyright � 2024-2025 aka perchik71. All rights reserved.
+﻿// Copyright © 2024-2025 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -24,13 +24,14 @@ namespace XCell
 		return hr;
 	}
 
-	XCellModuleWarningCreateTexture2D::XCellModuleWarningCreateTexture2D(void* Context) :
-		Module(Context, SourceName, CVarWarningCreateTexture2D), _Device(nullptr)
+	ModuleWarningCreateTexture2D::ModuleWarningCreateTexture2D(void* Context) :
+		Module(Context, SourceName, CVarWarningCreateTexture2D, XCELL_MODULE_QUERY_DIRECTX_INIT),
+		_Device(nullptr)
 	{
-		InitializeDirectXLinker.OnListener = (EventInitializeDirectXSourceLink::EventFunctionType)(&XCellModuleWarningCreateTexture2D::DXListener);
+		InitializeDirectXLinker.OnListener = (EventInitializeDirectXSourceLink::EventFunctionType)(&ModuleWarningCreateTexture2D::DXListener);
 	}
 
-	HRESULT XCellModuleWarningCreateTexture2D::DXListener(HWND WindowHandle, ID3D11Device* Device, ID3D11DeviceContext* Context,
+	HRESULT ModuleWarningCreateTexture2D::DXListener(HWND WindowHandle, ID3D11Device* Device, ID3D11DeviceContext* Context,
 		IDXGISwapChain* SwapChain)
 	{
 		_Device = Device;
@@ -39,12 +40,12 @@ namespace XCell
 		return _OldCreateTexture2D ? S_OK : E_FAIL;
 	}
 
-	HRESULT XCellModuleWarningCreateTexture2D::InstallImpl()
+	HRESULT ModuleWarningCreateTexture2D::InstallImpl()
 	{
 		return S_OK;
 	}
 
-	HRESULT XCellModuleWarningCreateTexture2D::ShutdownImpl()
+	HRESULT ModuleWarningCreateTexture2D::ShutdownImpl()
 	{
 		if (_Device) REL::Impl::DetourVTable(*((UInt64*)_Device), _OldCreateTexture2D, 5);
 

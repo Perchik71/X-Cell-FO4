@@ -1,4 +1,4 @@
-// Copyright � 2024-2025 aka perchik71. All rights reserved.
+﻿// Copyright © 2024-2025 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -12,16 +12,16 @@
 
 namespace XCell
 {
-	class XCellModuleMemory : public Module
+	class ModuleMemory : public Module
 	{
 	public:
 		static constexpr auto SourceName = "Module Memory";
 
-		XCellModuleMemory(void* Context);
-		virtual ~XCellModuleMemory() = default;
+		ModuleMemory(void* Context);
+		virtual ~ModuleMemory() = default;
 
-		XCellModuleMemory(const XCellModuleMemory&) = delete;
-		XCellModuleMemory& operator=(const XCellModuleMemory&) = delete;
+		ModuleMemory(const ModuleMemory&) = delete;
+		ModuleMemory& operator=(const ModuleMemory&) = delete;
 	protected:
 		virtual HRESULT InstallImpl();
 		virtual HRESULT ShutdownImpl();

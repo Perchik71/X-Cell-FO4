@@ -1,4 +1,4 @@
-// Copyright � 2024-2025 aka perchik71. All rights reserved.
+﻿// Copyright © 2024-2025 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -58,7 +58,8 @@ namespace XCell
 			{ 0,		0x1D18A57 },
 			{ 10,		0x61E0910 },
 			{ 20,		0x1D4FE40 },
-			{ 21,		0x2043A80 },
+			{ 21,		0xAE6C70 },		// 0x2043A80
+			{ 22,		0x28571FC },
 
 			// MEMORY
 			{ 30,		0x1B0EFD0 },
@@ -91,16 +92,22 @@ namespace XCell
 			{ 225,		0x1C97190 },
 
 			// UPSCALER
-			//{ 230,		0x1D18A57 },
-			//{ 231,		0x1D4FE40 },
+			{ 230,		0x384FBF0 },	// Size W : Display
+			{ 231,		0x384FC08 },	// Size H : Display
+			{ 232,		0x384FC20 },	// Location X : Display
+			{ 233,		0x384FC38 },	// Location Y : Display
+			{ 240,		0x1B4EC90 },	// Before first use read ^ data
+			{ 245,		0x38C51B0 },	// TAA or FXAA
+
 			});
 
 		TableID K_984(RUNTIME_VERSION_1_10_984, {
 			// LISTENER DX11
-			{ 0,		0x16FB147 },
+			{ 0,		0x16FB147 }, 
 			{ 10,		0x3769610 },
 			{ 20,		0x1739EB0 },
-			{ 21,		0x1966EC0 },
+			{ 21,		0x9E7A20 }, // 9E8EF0 // 1966EC0 -- before cursor
+			{ 22,		0x209D130 },
 
 			// MEMORY
 			{ 30,		0x153D7D0 },
@@ -146,7 +153,8 @@ namespace XCell
 			{ 231,		0x2CDBDB8 },	// Size H : Display
 			{ 232,		0x2CDBDD0 },	// Location X : Display
 			{ 233,		0x2CDBDE8 },	// Location Y : Display
-			{ 240,		0x156C230 },	// First use read ^ data
+			{ 240,		0x156C230 },	// Before first use read ^ data
+			{ 245,		0x2D25AA0 },	// TAA or FXAA
 			
 			});
 	}

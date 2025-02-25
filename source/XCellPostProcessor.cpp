@@ -1,11 +1,28 @@
-// Copyright � 2024-2025 aka perchik71. All rights reserved.
+﻿// Copyright © 2024-2025 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
+#include "XCellCommonType.h"
 #include "XCellPostProcessor.h"
 #include "XCellRelocator.h"
 #include "XCellCVar.h"
 #include "XCellAssertion.h"
+#include "XCellResource.h"
+
+#include <comdef.h>
+#include <ScreenGrab11.h>
+
+#define XCELL_DBG_POSTEFFECT 0							// Only debug
+#define XCELL_TAA_NOSHARP 0
+#define XCELL_TAA_NOBLURHISTORY 0
+#define XCELL_USE_SMAA 1
+#define XCELL_NO_USE_POSTEFFECTS_IN_PAUSEMENU 0			// Causes an artifact in the pause menu
+
+#if XCELL_DBG_POSTEFFECT
+#define XCELL_POSTEFFECT_MUL_SIZE 0.10f
+#else
+#define XCELL_POSTEFFECT_MUL_SIZE 1.0f
+#endif // XCELL_DBG_POSTEFFECT
 
 #include <imgui.h>
 #include <backends/imgui_impl_win32.h>
@@ -15,177 +32,172 @@ namespace XCell
 {
 	PostProcessor* GlobalPostProcessor = nullptr;
 
-	static void __stdcall HKPSSetSamplers(ID3D11DeviceContext* This, UINT StartSlot, UINT NumSamplers, ID3D11SamplerState* const* Samplers)
+	///////////////////////////////////////////////////////////////////////////////
+
+	RenderFrame::RenderFrame(const char* Name, const PostProcessor* Core) :
+		Object(Name), _core(Core)
 	{
-		ID3D11SamplerState* samplers[D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT];
-		GlobalPostProcessor->PreXSSetSamplers(samplers, StartSlot, NumSamplers, Samplers);
-		GlobalPostProcessor->NativeCallXSSetSamplers(0, StartSlot, NumSamplers, samplers);
+		auto D3D11Device = Core->Device;
+		auto D3D11DeviceContext = Core->DeviceContext;
+
+		_colorBuffer	= make_unique<TextureShader>((this->Name + " frame color").c_str(), D3D11Device, D3D11DeviceContext);
+		_depthBuffer	= make_unique<TextureShader>((this->Name + " frame depth").c_str(), D3D11Device, D3D11DeviceContext);
+		_renderTarget	= make_unique<RenderTargetView>((this->Name + " frame color target").c_str(), D3D11Device, D3D11DeviceContext);
+		_colorView		= make_unique<ResourceView>((this->Name + " frame color resource").c_str(), D3D11Device, D3D11DeviceContext);
+		_depthView		= make_unique<ResourceView>((this->Name + " frame depth resource").c_str(), D3D11Device, D3D11DeviceContext);
 	}
 
-	static void __stdcall HKVSSetSamplers(ID3D11DeviceContext* This, UINT StartSlot, UINT NumSamplers, ID3D11SamplerState* const* Samplers)
+	bool RenderFrame::Initialize(const ID3D11Resource* Color, const ID3D11Resource* Depth) noexcept(true)
 	{
-		ID3D11SamplerState* samplers[D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT];
-		GlobalPostProcessor->PreXSSetSamplers(samplers, StartSlot, NumSamplers, Samplers);
-		GlobalPostProcessor->NativeCallXSSetSamplers(1, StartSlot, NumSamplers, samplers);
+		if (_colorBuffer->Create(Color, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE) && 
+			_depthBuffer->Create(Depth))
+		{
+			CD3D11_RENDER_TARGET_VIEW_DESC rtvDescColor(D3D11_RTV_DIMENSION_TEXTURE2D, _colorBuffer->GetDesc()->Format);
+			CD3D11_SHADER_RESOURCE_VIEW_DESC srvDescColor(D3D11_SRV_DIMENSION_TEXTURE2D, _colorBuffer->GetDesc()->Format);
+			CD3D11_SHADER_RESOURCE_VIEW_DESC srvDescDepth(D3D11_SRV_DIMENSION_TEXTURE2D, DXGI_FORMAT::DXGI_FORMAT_R24_UNORM_X8_TYPELESS);
+
+			return _renderTarget->Create(_colorBuffer->Get(), &rtvDescColor) &&
+				_colorView->Create(_colorBuffer->Get(), &srvDescColor) &&
+				_depthView->Create(_depthBuffer->Get(), &srvDescDepth);
+
+			return true;
+		}
+
+		return false;
 	}
 
-	static void __stdcall HKGSSetSamplers(ID3D11DeviceContext* This, UINT StartSlot, UINT NumSamplers, ID3D11SamplerState* const* Samplers)
+	bool RenderFrame::CopyFrame(const ID3D11Resource* Color, const ID3D11Resource* Depth) noexcept(true)
 	{
-		ID3D11SamplerState* samplers[D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT];
-		GlobalPostProcessor->PreXSSetSamplers(samplers, StartSlot, NumSamplers, Samplers);
-		GlobalPostProcessor->NativeCallXSSetSamplers(2, StartSlot, NumSamplers, samplers);
+		return _colorBuffer->CopyFrom(Color) && _depthBuffer->CopyFrom(Depth);
 	}
 
-	static void __stdcall HKHSSetSamplers(ID3D11DeviceContext* This, UINT StartSlot, UINT NumSamplers, ID3D11SamplerState* const* Samplers)
+	bool RenderFrame::CopyFrame(const RenderFrame* Frame) noexcept(true)
 	{
-		ID3D11SamplerState* samplers[D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT];
-		GlobalPostProcessor->PreXSSetSamplers(samplers, StartSlot, NumSamplers, Samplers);
-		GlobalPostProcessor->NativeCallXSSetSamplers(3, StartSlot, NumSamplers, samplers);
+		if (!Frame) return false;
+		return _colorBuffer->CopyFrom(Frame->GetColor()) && _depthBuffer->CopyFrom(Frame->GetDepth());
 	}
 
-	static void __stdcall HKDSSetSamplers(ID3D11DeviceContext* This, UINT StartSlot, UINT NumSamplers, ID3D11SamplerState* const* Samplers)
+	void RenderFrame::DebugSaveFrameToFiles() const noexcept(true)
 	{
-		ID3D11SamplerState* samplers[D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT];
-		GlobalPostProcessor->PreXSSetSamplers(samplers, StartSlot, NumSamplers, Samplers);
-		GlobalPostProcessor->NativeCallXSSetSamplers(4, StartSlot, NumSamplers, samplers);
+		_colorBuffer->SaveTextureToFileAsDDS("debug_xcell_frame_color.dds");
+		_depthBuffer->SaveTextureToFileAsDDS("debug_xcell_frame_depth.dds");
 	}
 
-	static void __stdcall HKCSSetSamplers(ID3D11DeviceContext* This, UINT StartSlot, UINT NumSamplers, ID3D11SamplerState* const* Samplers)
+	void RenderFrame::DebugInfo() const noexcept(true)
 	{
-		ID3D11SamplerState* samplers[D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT];
-		GlobalPostProcessor->PreXSSetSamplers(samplers, StartSlot, NumSamplers, Samplers);
-		GlobalPostProcessor->NativeCallXSSetSamplers(5, StartSlot, NumSamplers, samplers);
+		_colorBuffer->DebugInfo();
+		_depthBuffer->DebugInfo();
+		_colorView->DebugInfo();
+		_depthView->DebugInfo();
+	}
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	HistoryFrames::HistoryFrames(const char* Name, const PostProcessor* Core) :
+		Object(Name), _core(Core), _count(0)
+	{
+		_currFrame = make_unique<RenderFrame>("Current", Core);
+		_prevFrame = make_unique<RenderFrame>("Previous", Core);
+	}
+
+	void HistoryFrames::StoreFrame(const ID3D11Resource* Color, const ID3D11Resource* Depth) noexcept(true)
+	{
+		IScopedCriticalSection Lock(&_CriticalSection);
+
+		if (!_count)
+		{
+			if (!_currFrame->Initialize(Color, Depth) || !_prevFrame->Initialize(Color, Depth))
+				_ERROR("HistoryFrames: Error init frames");
+			else
+			{
+				_currFrame->DebugInfo();
+				_currFrame->CopyFrame(Color, Depth);
+			}
+		}
+		else
+		{
+			_prevFrame->CopyFrame(_currFrame.get());
+			_currFrame->CopyFrame(Color, Depth);
+		}
+
+		_count++;
+	}
+
+	void HistoryFrames::ClearHistory() noexcept(true)
+	{
+		IScopedCriticalSection Lock(&_CriticalSection);
+
+		_count = 0;
+	}
+
+	void HistoryFrames::DebugSaveCurrentFrameToFiles() const noexcept(true)
+	{
+		_currFrame->DebugSaveFrameToFiles();
 	}
 
 	PostProcessor::PostProcessor(ID3D11Device* D3D11Device, ID3D11DeviceContext* D3D11DeviceContext, IDXGISwapChain* DXGISwapChain,
 		HWND RenderWindow) :
 		_D3D11Device(D3D11Device), _D3D11DeviceContext(D3D11DeviceContext), _DXGISwapChain(DXGISwapChain), _RenderWindow(RenderWindow),
-		_Width(0), _Height(0), _StateStared(false), _Failed(false)
-	{}
-
-	void PostProcessor::PushState() noexcept(true)
+		_Width(0), _Height(0)
 	{
-		if (_StateStared) return;
+		// Warning: GetClientRect() changed
+		RECT rc;
+		GetClientRect(_RenderWindow, &rc);
+		auto SettingScale = CVarDisplayScale->GetFloat();
+		_Width = rc.right / SettingScale;
+		_Height = rc.bottom / SettingScale;
 
-		// https://github.com/fholger/vrperfkit/blob/a52f8a45d330d0b66206aee85165db715e4482cd/src/d3d11/d3d11_helper.h
+		_history = make_unique<HistoryFrames>("History", this);
+		_taa = make_unique<TAA>("TAA", this);
 
-		_D3D11DeviceContext->VSGetShader(_State.VertexShader.ReleaseAndGetAddressOf(), nullptr, nullptr);
-		_D3D11DeviceContext->PSGetShader(_State.PixelShader.ReleaseAndGetAddressOf(), nullptr, nullptr);
-		_D3D11DeviceContext->CSGetShader(_State.ComputeShader.ReleaseAndGetAddressOf(), nullptr, nullptr);
-		_D3D11DeviceContext->IAGetInputLayout(_State.InputLayout.ReleaseAndGetAddressOf());
-		_D3D11DeviceContext->IAGetPrimitiveTopology(&_State.Topology);
-		_D3D11DeviceContext->IAGetVertexBuffers(0, D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT, _State.VertexBuffers, _State.Strides, _State.Offsets);
-		_D3D11DeviceContext->IAGetIndexBuffer(_State.IndexBuffer.ReleaseAndGetAddressOf(), &_State.Format, &_State.Offset);
-		_D3D11DeviceContext->OMGetRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT, _State.RenderTargets, _State.DepthStencil.GetAddressOf());
-		_D3D11DeviceContext->RSGetState(_State.RasterizerState.ReleaseAndGetAddressOf());
-		_D3D11DeviceContext->OMGetDepthStencilState(_State.DepthStencilState.ReleaseAndGetAddressOf(), &_State.StencilRef);
-		_D3D11DeviceContext->RSGetViewports(&_State.NumViewports, nullptr);
-		_D3D11DeviceContext->RSGetViewports(&_State.NumViewports, _State.Viewports);
-		_D3D11DeviceContext->VSGetConstantBuffers(0, 1, _State.VSConstantBuffer.GetAddressOf());
-		_D3D11DeviceContext->PSGetConstantBuffers(0, 1, _State.PSConstantBuffer.GetAddressOf());
-		_D3D11DeviceContext->CSGetConstantBuffers(0, 1, _State.CSConstantBuffer.GetAddressOf());
-		_D3D11DeviceContext->CSGetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, _State.CSShaderResources);
-		_D3D11DeviceContext->CSGetUnorderedAccessViews(0, D3D11_1_UAV_SLOT_COUNT, _State.CSUavs);
+		D3D11_RASTERIZER_DESC desc;
+		ZeroMemory(&desc, sizeof(D3D11_RASTERIZER_DESC));
+
+		desc.FillMode = D3D11_FILL_SOLID;
+		_D3D11Device->CreateRasterizerState(&desc, _D3D11RasterizerState.GetAddressOf());
 	}
 
-	void PostProcessor::PopState() noexcept(true)
+	void PostProcessor::Processing(ID3D11RenderTargetView* pRenderTarget, ID3D11Resource* pBackBuffer, 
+		ID3D11Resource* pDepthStencilBuffer) noexcept(true)
 	{
-		if (!_StateStared) return;
+		// It should be skipped, since there is no depth buffer immediately.
+		if (!pRenderTarget || !pBackBuffer || !pDepthStencilBuffer)
+			return;
 
-		// https://github.com/fholger/vrperfkit/blob/a52f8a45d330d0b66206aee85165db715e4482cd/src/d3d11/d3d11_helper.h
+		// Setup viewport
+		D3D11_VIEWPORT vp;
+		ZeroMemory(&vp, sizeof(D3D11_VIEWPORT));
+		vp.Width = _Width;
+		vp.Height = _Height;
+		vp.MaxDepth = 1.0f;
+		_D3D11DeviceContext->RSSetViewports(1, &vp);
 
-		_D3D11DeviceContext->VSSetShader(_State.VertexShader.Get(), nullptr, 0);
-		_D3D11DeviceContext->PSSetShader(_State.PixelShader.Get(), nullptr, 0);
-		_D3D11DeviceContext->CSSetShader(_State.ComputeShader.Get(), nullptr, 0);
-		_D3D11DeviceContext->IASetInputLayout(_State.InputLayout.Get());
-		_D3D11DeviceContext->IASetPrimitiveTopology(_State.Topology);
-		_D3D11DeviceContext->IASetVertexBuffers(0, D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT, _State.VertexBuffers, _State.Strides, _State.Offsets);
+		// Setup shader and vertex buffers
+		_D3D11DeviceContext->GSSetShader(nullptr, nullptr, 0);
+		_D3D11DeviceContext->HSSetShader(nullptr, nullptr, 0);
+		_D3D11DeviceContext->DSSetShader(nullptr, nullptr, 0);
+		_D3D11DeviceContext->CSSetShader(nullptr, nullptr, 0);
 
-		for (int i = 0; i < D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT; ++i)
-			if (_State.VertexBuffers[i])
-				_State.VertexBuffers[i]->Release();
+		// Setup blend state
+		const float blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
+		_D3D11DeviceContext->OMSetBlendState(nullptr, blend_factor, 0xffffffff);
+		_D3D11DeviceContext->OMSetDepthStencilState(nullptr, 0);
+		_D3D11DeviceContext->RSSetState(_D3D11RasterizerState.Get());
+		_D3D11DeviceContext->RSSetScissorRects(0, nullptr);
 
-		_D3D11DeviceContext->IASetIndexBuffer(_State.IndexBuffer.Get(), _State.Format, _State.Offset);
-		_D3D11DeviceContext->OMSetRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT, _State.RenderTargets, _State.DepthStencil.Get());
-
-		for (int i = 0; i < D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)
-			if (_State.RenderTargets[i])
-				_State.RenderTargets[i]->Release();
-
-		_D3D11DeviceContext->RSSetState(_State.RasterizerState.Get());
-		_D3D11DeviceContext->OMSetDepthStencilState(_State.DepthStencilState.Get(), _State.StencilRef);
-		_D3D11DeviceContext->RSSetViewports(_State.NumViewports, _State.Viewports);
-		_D3D11DeviceContext->VSSetConstantBuffers(0, 1, _State.VSConstantBuffer.GetAddressOf());
-		_D3D11DeviceContext->PSSetConstantBuffers(0, 1, _State.PSConstantBuffer.GetAddressOf());
-		_D3D11DeviceContext->CSSetConstantBuffers(0, 1, _State.CSConstantBuffer.GetAddressOf());
-		_D3D11DeviceContext->CSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, _State.CSShaderResources);
-
-		for (int i = 0; i < D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT; ++i)
-			if (_State.CSShaderResources[i])
-				_State.CSShaderResources[i]->Release();
-
-		UINT initial = 0;
-		_D3D11DeviceContext->CSSetUnorderedAccessViews(0, D3D11_1_UAV_SLOT_COUNT, _State.CSUavs, &initial);
-
-		for (int i = 0; i < D3D11_1_UAV_SLOT_COUNT; ++i)
-			if (_State.CSUavs[i])
-				_State.CSUavs[i]->Release();
-	}
-
-	// Mostly from vrperfkit, thanks to fholger for showing how to do mip lod bias
-	// https://github.com/fholger/vrperfkit/blob/037c09f3168ac045b5775e8d1a0c8ac982b5854f/src/d3d11/d3d11_post_processor.cpp#L76
-	void PostProcessor::PreXSSetSamplers(ID3D11SamplerState** OutSamplers, UINT StartSlot, UINT NumSamplers,
-		ID3D11SamplerState* const* Samplers)
-	{
-		memcpy(OutSamplers, Samplers, NumSamplers * sizeof(ID3D11SamplerState*));
-		for (UINT i = 0; i < NumSamplers; ++i)
+#if XCELL_NO_USE_POSTEFFECTS_IN_PAUSEMENU
+		auto UIGame = *g_ui.GetPtr();
+		if (!UIGame->IsMenuOpen("PauseMenu"))
 		{
-			auto orig = OutSamplers[i];
-			if (orig == nullptr || PassThroughSamplers.find(orig) != PassThroughSamplers.end())
-				continue;
-
-			if (MappedSamplers.find(orig) == MappedSamplers.end())
-			{
-				D3D11_SAMPLER_DESC sd;
-				orig->GetDesc(&sd);
-
-				if (sd.MipLODBias)
-				{
-					// do not mess with samplers that already have a bias or are not doing anisotropic filtering.
-					// should hopefully reduce the chance of causing rendering errors.
-					PassThroughSamplers.insert(orig);
-					continue;
-				}
-
-				// _MESSAGE("Filter: %u, MipLODBias: %f, MaxAnisotropy: %u", (UInt32)sd.Filter, sd.MipLODBias, sd.MaxAnisotropy);
-
-				sd.MipLODBias = CVarLodMipBias->GetFloat();
-				sd.MaxAnisotropy = (sd.Filter == D3D11_FILTER_ANISOTROPIC) ? CVarMaxAnisotropy->GetUnsignedInt() : 0;
-				sd.MinLOD = 0;
-				sd.MaxLOD = D3D11_FLOAT32_MAX;
-
-				_D3D11Device->CreateSamplerState(&sd, MappedSamplers[orig].GetAddressOf());
-				PassThroughSamplers.insert(MappedSamplers[orig].Get());
-			}
-
-			OutSamplers[i] = MappedSamplers[orig].Get();
+			_history->StoreFrame(pBackBuffer, pDepthStencilBuffer);
+			_taa->Apply();
 		}
-	}
-
-	void PostProcessor::NativeCallXSSetSamplers(UInt8 Index, UINT StartSlot, UINT NumSamplers,
-		ID3D11SamplerState* const* Samplers)
-	{
-		XCFastCall<void>(_OldFunctions[Index], _D3D11DeviceContext, StartSlot, NumSamplers, Samplers);
-	}
-
-	void PostProcessor::NativeCallClearRenderTargetView(ID3D11RenderTargetView* RenderTargetView, const FLOAT* ColorRGBA)
-	{
-		XCFastCall<void>(_OldFunctions[7], _D3D11DeviceContext, RenderTargetView, ColorRGBA);
-	}
-
-	void PostProcessor::PrepareUpscaler() noexcept(true)
-	{
-
+		else if (_history->Count() > 0)
+			_history->ClearHistory();
+#else
+		_history->StoreFrame(pBackBuffer, pDepthStencilBuffer);
+		_taa->Apply();
+#endif // XCELL_NO_USE_POSTEFFECTS_IN_PAUSEMENU
 	}
 
 	void PostProcessor::Install()
@@ -199,30 +211,8 @@ namespace XCell
 				_Height = rc.bottom;
 			}
 		}
-
-		_OldFunctions[0] = REL::Impl::DetourVTable(*((UInt64*)_D3D11DeviceContext), (UInt64)&HKPSSetSamplers, 10);
-		_OldFunctions[1] = REL::Impl::DetourVTable(*((UInt64*)_D3D11DeviceContext), (UInt64)&HKVSSetSamplers, 26);
-		_OldFunctions[2] = REL::Impl::DetourVTable(*((UInt64*)_D3D11DeviceContext), (UInt64)&HKGSSetSamplers, 32);
-		_OldFunctions[3] = REL::Impl::DetourVTable(*((UInt64*)_D3D11DeviceContext), (UInt64)&HKHSSetSamplers, 61);
-		_OldFunctions[4] = REL::Impl::DetourVTable(*((UInt64*)_D3D11DeviceContext), (UInt64)&HKDSSetSamplers, 65);
-		_OldFunctions[5] = REL::Impl::DetourVTable(*((UInt64*)_D3D11DeviceContext), (UInt64)&HKCSSetSamplers, 70);
 	}
 
 	void PostProcessor::Shutdown()
-	{
-		REL::Impl::DetourVTable(*((UInt64*)_D3D11DeviceContext), _OldFunctions[0], 10);
-		REL::Impl::DetourVTable(*((UInt64*)_D3D11DeviceContext), _OldFunctions[1], 26);
-		REL::Impl::DetourVTable(*((UInt64*)_D3D11DeviceContext), _OldFunctions[2], 32);
-		REL::Impl::DetourVTable(*((UInt64*)_D3D11DeviceContext), _OldFunctions[3], 61);
-		REL::Impl::DetourVTable(*((UInt64*)_D3D11DeviceContext), _OldFunctions[4], 65);
-		REL::Impl::DetourVTable(*((UInt64*)_D3D11DeviceContext), _OldFunctions[5], 70);
-
-		Reset();
-	}
-
-	void PostProcessor::Reset()
-	{
-		PassThroughSamplers.clear();
-		MappedSamplers.clear();
-	}
+	{}
 }

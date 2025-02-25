@@ -1,4 +1,4 @@
-// Copyright � 2024-2025 aka perchik71. All rights reserved.
+﻿// Copyright © 2024-2025 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -57,7 +57,7 @@ namespace XCell
 		return -2;
 	}
 
-	XCellModuleLibDeflate::XCellModuleLibDeflate(void* Context) :
+	ModuleLibDeflate::ModuleLibDeflate(void* Context) :
 		Module(Context, SourceName, CVarLibDeflate)
 	{
 		//
@@ -69,7 +69,7 @@ namespace XCell
 		_functions[1].Install(REL::ID(165), (UInt64)&HKInflate);
 	}
 
-	HRESULT XCellModuleLibDeflate::InstallImpl()
+	HRESULT ModuleLibDeflate::InstallImpl()
 	{
 		//
 		// libdeflate optimizations:
@@ -82,7 +82,7 @@ namespace XCell
 		return S_OK;
 	}
 
-	HRESULT XCellModuleLibDeflate::ShutdownImpl()
+	HRESULT ModuleLibDeflate::ShutdownImpl()
 	{
 		// Returned
 

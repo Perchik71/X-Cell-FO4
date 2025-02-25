@@ -8,7 +8,7 @@ bIO=true						# Replacing file search functions with a newer one and use OS file
 bLibDeflate=true				# Replace old zlib decompression code with optimized libdeflate https://github.com/ebiggers/libdeflate.
 bProfile=true					# Replacing outdated functions WritePrivateProfileStringA, GetPrivateProfileStringA, GetPrivateProfileIntA. They read INI files. 
 bLoadScreen=false				# Black loading screen.
-bUpscaler=false					# Increase FPS due to scaling from DX11.2, requires Win 8.1 and later, and a graphics card with hardware scaling support, fix mipbias.
+bUpscaler=false					# Increase FPS due to scaling, requires Win 8.1 and newer, and a graphics card with hardware scaling support.
 
 [NGFixes]						# Only NG version game. Already present in Buffout 4, but are missing in Buffout 4 NG (at time 28.09.2024).
 bGreyMovies=true				# Fixes a bug where movies that don't define "BackgroundAlpha" on their movie root could load with a grey background.
@@ -20,4 +20,13 @@ uScaleformPageSize=256			# The page size (in KB), vanilla size is 64. More, bett
 uScaleformHeapSize=512			# The heap size (in MB), vanilla size is 128. This is all the available memory, out of memory = CTD. Limit 2Gb (2048), number must be a multiple of 8 (Need bMemory patch).
 bUseNewRedistributable=false	# Replaces the old redistributable with a new one. If option is enabled, reports will include X-Cell in case of errors related to copying or comparing memory (Need bMemory patch).
 bOutputRTTI=false				# Create file "<FALLOUT4_DIR>\\Data\\F4SE\\Plugins\\rtti-x-cell.txt" with rtti info.
-bUseIORandomAccess=false 		# Activate a prompt for the system that you need to use a cache with random access, otherwise it will be sequential (Need bIO patch). 
+bUseIORandomAccess=true 		# Activate a prompt for the system that you need to use a cache with random access, otherwise it will be sequential (Need bIO patch). 
+
+[PostProccessing]				# Need Upscaler patch
+bUsePostProcessing=false		# Enabling X-Cell post-processing.
+fDisplayScale=0.75				# Scaling in for the game screen. Range: [0.5, 1]
+bNoUseTAA=false					# Do not use the original TAA, which causes slight ripples.
+fEdgeThreshold=0.1				# Specifies the threshold or sensitivity to edges. Lowering this value you will be able to detect more edges at the expense of performance. Range: [0, 0.5].
+fEdgeLocalContrastFactor=0.5	# Specifies the threshold in local contrast adaptation. Range: [0, 1]
+fCornerAreaFactor=0.5			# Specifies how much sharp corners will be rounded. Range: [0, 1]
+uMaxSearchDistanceLen=8			# Max number of iterations in searching edge pattern. Range: [0, 128]

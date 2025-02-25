@@ -1,4 +1,4 @@
-// Copyright � 2024-2025 aka perchik71. All rights reserved.
+﻿// Copyright © 2024-2025 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -25,7 +25,7 @@ namespace XCell
 		XCThisVirtualCall<void>(0x108, self, alpha.GetNumber());
 	}
 
-	XCellModuleGreyMovies::XCellModuleGreyMovies(void* Context) :
+	ModuleGreyMovies::ModuleGreyMovies(void* Context) :
 		Module(Context, SourceName, CVarGreyMovies)
 	{
 		if (REL::Version() == RUNTIME_VERSION_1_10_984)
@@ -48,7 +48,7 @@ namespace XCell
 		}
 	}
 
-	HRESULT XCellModuleGreyMovies::InstallImpl()
+	HRESULT ModuleGreyMovies::InstallImpl()
 	{
 		_fixes.Enable();
 		_function.Enable();
@@ -56,7 +56,7 @@ namespace XCell
 		return S_OK;
 	}
 
-	HRESULT XCellModuleGreyMovies::ShutdownImpl()
+	HRESULT ModuleGreyMovies::ShutdownImpl()
 	{
 		// Returned
 		

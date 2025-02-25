@@ -1,4 +1,4 @@
-// Copyright � 2024-2025 aka perchik71. All rights reserved.
+﻿// Copyright © 2024-2025 aka perchik71. All rights reserved.
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -34,7 +34,6 @@ namespace XCell
 		EventRenderEndFrameLink _registered_endframe_link;
 		EventPrepareUIDrawCuledLink _registered_uidrawculed_link;
 		REL::DetourCall _graphics_listener;
-		REL::DetourJump _prepare_ui_listener;
 		msrtti::section _section[3];
 		UInt64 _base;
 
@@ -60,8 +59,8 @@ namespace XCell
 		HRESULT Shutdown() noexcept(true);
 
 		void Listener(Event::ListenerEventType Type, ...);
-
-		inline void RunPrepareUIDrawCuled(void* Unknown) const noexcept(true) { XCFastCall<void>(_prepare_ui_listener.GetOld(), Unknown); }
+		void RegisterListeners(Module* Module, UInt32 Listeners);
+		void UnregisterListeners(Module* Module, UInt32 Listeners);
 
 		inline virtual UInt64 GetProcessBase() const noexcept(true) { return _base; }
 		inline virtual msrtti::section GetPESectionText() const noexcept(true) { return _section[0]; }
