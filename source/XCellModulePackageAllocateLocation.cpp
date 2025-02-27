@@ -22,6 +22,9 @@ namespace XCell
 
 	HRESULT ModulePackageAllocateLocation::InstallImpl()
 	{
+		if (REL::Version() != RUNTIME_VERSION_1_10_984)
+			return S_FALSE;
+
 		_function.Enable();
 
 		return S_OK;

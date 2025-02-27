@@ -126,8 +126,8 @@ namespace XCell
 
 			gRndSourceWidth = nWidth;
 			gRndSourceHeight = nHeight;
-			UINT uWidth = nWidth / SettingScale;
-			UINT uHeight = nHeight / SettingScale;
+			UINT uWidth = (UINT)(nWidth / SettingScale + 0.5f);
+			UINT uHeight = (UINT)(nHeight / SettingScale + 0.5f);
 			gDirectXData->window = gOldCreateWindow(dwExStyle, lpClassName, lpWindowName, dwStyle,
 				X, Y, uWidth, uHeight, hWndParent, hMenu, hInstance, lpParam);
 			return gDirectXData->window;
@@ -226,7 +226,7 @@ namespace XCell
 
 		auto SettingScale = CVarDisplayScale->GetFloat();
 		_MESSAGE("Render Window: (0x%016llX) %ux%u", (UInt64)pSwapChainDesc->OutputWindow, 
-			(UINT)(gRndSourceWidth / SettingScale), (UINT)(gRndSourceHeight / SettingScale));
+			(UINT)((gRndSourceWidth / SettingScale + 0.5f)), (UINT)((gRndSourceHeight / SettingScale + 0.5f)));
 
 		hr = Factory->CreateSwapChain(gDirectXData->device, &scDesc, ppSwapChain);
 		if (FAILED(hr))

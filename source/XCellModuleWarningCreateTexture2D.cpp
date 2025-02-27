@@ -42,6 +42,9 @@ namespace XCell
 
 	HRESULT ModuleWarningCreateTexture2D::InstallImpl()
 	{
+		if (REL::Version() != RUNTIME_VERSION_1_10_984)
+			return S_FALSE;
+
 		return S_OK;
 	}
 

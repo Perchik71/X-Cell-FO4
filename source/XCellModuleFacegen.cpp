@@ -118,7 +118,14 @@ namespace XCell
 			return false;
 		// check exists diffuse texture.
 		char buf[MAX_PATH];
-		return BSTextureDB::FormatPath__And__ExistIn(NPC, buf, MAX_PATH, 0);
+		bool result = BSTextureDB::FormatPath__And__ExistIn(NPC, buf, MAX_PATH, 0);
+		if (!result)
+		{
+			auto editID = NPC->GetEditorID();
+			if (editID) _WARNING("NPC \"%s\" (%08X) don't have facegen", editID, NPC->formID);
+			else _WARNING("NPC (%08X) don't have facegen", NPC->formID);
+		}
+		return result;
 	}
 
 	ModuleFacegen::ModuleFacegen(void* Context) :

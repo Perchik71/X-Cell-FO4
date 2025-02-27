@@ -50,6 +50,9 @@ namespace XCell
 
 	HRESULT ModuleGreyMovies::InstallImpl()
 	{
+		if (REL::Version() != RUNTIME_VERSION_1_10_984)
+			return S_FALSE;
+
 		_fixes.Enable();
 		_function.Enable();
 

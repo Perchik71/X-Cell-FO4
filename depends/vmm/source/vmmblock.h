@@ -307,7 +307,7 @@ namespace voltek
 		}
 
 		// Возвращает номер блока в странице, если указанный в указателе он пуловский и правильный,
-		// иначе вернёт (uint16_t)-1.
+		// иначе вернёт (uint32_t)-1.
 		inline static uint32_t get_block_id_from_ptr(const void* ptr)
 		{
 			return get_block_id_from_block(get_block_handle_from_ptr(ptr));
@@ -335,7 +335,7 @@ namespace voltek
 		}
 
 		// Возвращает номер страницы, если указанный в указателе он пуловский и правильный,
-		// иначе вернёт (uint16_t)-1.
+		// иначе вернёт (uint32_t)-1.
 		inline static uint32_t get_page_id_from_ptr(const void* ptr)
 		{
 			return get_page_id_from_block(get_block_handle_from_ptr(ptr));
