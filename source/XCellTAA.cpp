@@ -31,7 +31,7 @@ namespace XCell
 		auto D3D11DeviceContext = _postProcessor->DeviceContext;
 
 		_outputMainRV = make_unique<ResourceView>((this->Name + ": main rv").c_str(), D3D11Device, D3D11DeviceContext);
-		//_outputSharpenerRV = make_unique<ResourceView>((this->Name + ": sharpener rv").c_str(), D3D11Device, D3D11DeviceContext);
+		_outputSharpenerRV = make_unique<ResourceView>((this->Name + ": sharpener rv").c_str(), D3D11Device, D3D11DeviceContext);
 		_mainCS = make_unique<ComputeShader>((this->Name + ": main shader").c_str(), D3D11Device, D3D11DeviceContext);
 		_sharpenerCS = make_unique<ComputeShader>((this->Name + ": sharpener shader").c_str(), D3D11Device, D3D11DeviceContext);
 		_pointSampler = make_unique<SamplerState>((this->Name + ": point sampler").c_str(), D3D11Device, D3D11DeviceContext);
@@ -73,7 +73,7 @@ namespace XCell
 
 		CD3D11_SHADER_RESOURCE_VIEW_DESC resourceDesc(D3D_SRV_DIMENSION_TEXTURE2D, DXGI_FORMAT_R8G8B8A8_UNORM);
 		_outputMainRV->Create(_outputMainTex->Get(), &resourceDesc);
-		//_outputSharpenerRV->Create(_outputSharpenerTex->Get(), &resourceDesc);
+		_outputSharpenerRV->Create(_outputSharpenerTex->Get(), &resourceDesc);
 
 		CD3D11_UNORDERED_ACCESS_VIEW_DESC uvDesc(D3D11_UAV_DIMENSION_TEXTURE2D, DXGI_FORMAT_R8G8B8A8_UNORM);
 		_outputMain->Create(_outputMainTex->Get(), &uvDesc);
@@ -124,6 +124,9 @@ namespace XCell
 		// TAA main blur
 
 		History->CurrentFrame()->InitColorPipeline(XCELL_COMPUTE_SHADER, 0);
+		History->CurrentFrame()->InitDepthPipeline(XCELL_COMPUTE_SHADER, 1);
+		History->PreviousFrame()->InitColorPipeline(XCELL_COMPUTE_SHADER, 2);
+		History->PreviousFrame()->InitDepthPipeline(XCELL_COMPUTE_SHADER, 3);
 			
 		_pointSampler->InitPipeline(XCELL_COMPUTE_SHADER, 0);
 		_outputMain->InitPipeline(XCELL_COMPUTE_SHADER, 0);
@@ -133,6 +136,7 @@ namespace XCell
 		_outputMain->ShutdownPipeline();
 
 		// TAA sharp
+#if 0
 
 		_outputSharpener->InitPipeline(XCELL_COMPUTE_SHADER, 0);
 		_outputMainRV->InitPipeline(XCELL_COMPUTE_SHADER, 0);
@@ -146,10 +150,15 @@ namespace XCell
 
 		// _outputSharpenerRV doesn't want to work
 		_outputMainTex->CopyFrom(_outputSharpenerTex->Get());
+		_outputMainRV->InitPipeline(XCELL_PIXEL_SHADER, 0);
+#else
+		_outputSharpenerTex->CopyFrom(_outputMainTex->Get());
+		_outputSharpenerRV->InitPipeline(XCELL_PIXEL_SHADER, 0);
+#endif
 
 		// Output
-
-		_outputMainRV->InitPipeline(XCELL_PIXEL_SHADER, 0);
+		//_outputMainTex->SaveTextureToFileAsDDS("test.dds");
+		
 		_linearSampler->InitPipeline(XCELL_PIXEL_SHADER, 0);
 
 		_mainVS->Bind();

@@ -129,6 +129,13 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release 10.984|x64'">5.0</ShaderModel>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release 10.984|x64'">main</EntryPointName>
     </FxCompile>
+    <FxCompile Include="shaders\TAAContrast.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release 10.984|x64'">Compute</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release 10.984|x64'">$(SolutionDir)res\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release 10.163|x64'">$(SolutionDir)res\%(Filename).cso</ObjectFileOutput>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release 10.163|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release 10.163|x64'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="shaders\TAASharpener.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release 10.984|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release 10.984|x64'">5.0</ShaderModel>
@@ -289,6 +296,7 @@
     </PreBuildEvent>
     <FxCompile>
       <ShaderModel>5.0</ShaderModel>
+      <ObjectFileOutput>$(SolutionDir)res\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release 10.163|x64'">
@@ -326,6 +334,10 @@
     <PreBuildEvent>
       <Command>powershell -ExecutionPolicy Bypass -File "$(SolutionDir)\version\scripts.ps1"</Command>
     </PreBuildEvent>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+      <ObjectFileOutput>$(SolutionDir)res\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -28,9 +28,10 @@ namespace XCell
 		HANDLE TemplateFile)
 	{
 		FlagsAndAttributes &= ~FILE_FLAG_NO_BUFFERING;	
-		if ((FlagsAndAttributes & FILE_FLAG_SEQUENTIAL_SCAN) == FILE_FLAG_SEQUENTIAL_SCAN)
+		if (((FlagsAndAttributes & FILE_FLAG_SEQUENTIAL_SCAN) == FILE_FLAG_SEQUENTIAL_SCAN) ||
+			((FlagsAndAttributes & FILE_FLAG_RANDOM_ACCESS) == FILE_FLAG_RANDOM_ACCESS))
 		{
-			FlagsAndAttributes &= ~FILE_FLAG_SEQUENTIAL_SCAN;
+			FlagsAndAttributes &= ~(FILE_FLAG_SEQUENTIAL_SCAN | FILE_FLAG_RANDOM_ACCESS);
 			FlagsAndAttributes |= gIOCacheFlag;
 		}
 
@@ -43,9 +44,10 @@ namespace XCell
 		HANDLE TemplateFile)
 	{
 		FlagsAndAttributes &= ~FILE_FLAG_NO_BUFFERING;
-		if ((FlagsAndAttributes & FILE_FLAG_SEQUENTIAL_SCAN) == FILE_FLAG_SEQUENTIAL_SCAN)
+		if (((FlagsAndAttributes & FILE_FLAG_SEQUENTIAL_SCAN) == FILE_FLAG_SEQUENTIAL_SCAN) ||
+			((FlagsAndAttributes & FILE_FLAG_RANDOM_ACCESS) == FILE_FLAG_RANDOM_ACCESS))
 		{
-			FlagsAndAttributes &= ~FILE_FLAG_SEQUENTIAL_SCAN;
+			FlagsAndAttributes &= ~(FILE_FLAG_SEQUENTIAL_SCAN | FILE_FLAG_RANDOM_ACCESS);
 			FlagsAndAttributes |= gIOCacheFlag;
 		}
 

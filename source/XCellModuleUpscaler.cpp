@@ -26,7 +26,7 @@ namespace XCell
 {
 	using namespace Microsoft::WRL;
 
-	static char sAntiAliasingDef[] = /*""*/"FXAA";
+	static char sAntiAliasingDef[] = "FXAA";
 	static char sAntiAliasingOrig[] = "TAA";
 	static const char DXErrorMessage[] = "Graphics card does not meet the minimum requirements. See log.";
 
@@ -386,9 +386,9 @@ namespace XCell
 		{
 			DXState->PushState();
 
-			ID3D11RenderTargetView* OldRenderTarget;
-			ID3D11DepthStencilView* OlgDepthStencil;
-			DeviceContext->OMGetRenderTargets(1, &OldRenderTarget, &OlgDepthStencil);
+			ComPtr<ID3D11RenderTargetView> OldRenderTarget;
+			ComPtr<ID3D11DepthStencilView> OlgDepthStencil;
+			DeviceContext->OMGetRenderTargets(1, OldRenderTarget.GetAddressOf(), OlgDepthStencil.GetAddressOf());
 			// disable any RTs in case our input texture is still bound; otherwise using it as a view will fail
 			DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
 
@@ -400,7 +400,7 @@ namespace XCell
 			}
 
 			DeviceContext->OMSetRenderTargets(1, &OldRenderTarget, nullptr);
-			GlobalPostProcessor->Processing(OldRenderTarget, _texture.Get(),
+			GlobalPostProcessor->Processing(OldRenderTarget.Get(), _texture.Get(),
 				!gDepthStencilResources.size() ? nullptr : gDepthStencilResources[0]);
 			DXState->PopState();
 		}

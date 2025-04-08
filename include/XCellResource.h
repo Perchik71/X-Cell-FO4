@@ -6,6 +6,7 @@
 #define IDR_VS_SHADER_COMMON			502
 #define IDR_CS_SHADER_TAA_MAIN			503
 #define IDR_CS_SHADER_TAA_SHARPENER		504
+#define IDR_CS_SHADER_TAA_CONTRAST		505
 
 // Next default values for new objects
 // 

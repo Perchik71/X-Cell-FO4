@@ -39,7 +39,7 @@ namespace XCell
 		unique_ptr<VertexShader> _mainVS;
 		unique_ptr<PixelShader> _mainPS;
 		unique_ptr<ResourceView> _outputMainRV;
-		//unique_ptr<ResourceView> _outputSharpenerRV;
+		unique_ptr<ResourceView> _outputSharpenerRV;
 		UINT ThreadX, ThreadY;
 	public:
 		TAA(const char* Name, PostProcessor* PostProcessor);
