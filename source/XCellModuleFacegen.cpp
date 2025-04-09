@@ -8,6 +8,7 @@
 #include <f4se/GameObjects.h>
 #include <f4se/GameForms.h>
 #include <f4se/GameData.h>
+#include <f4se/GameAPI.h>
 
 #include "XCellTableID.h"
 #include "XCellPlugin.h"
@@ -20,6 +21,11 @@ namespace XCell
 	enum TESActorFlags_XCELL
 	{
 		kFlagSimpleActor = 0x100000,
+	};
+
+	enum TESActorTemplateFlags_XCELL
+	{
+		kFlagTemplateTraits = 1 << 16,
 	};
 
 	static BGSKeyword** KeywordIsChildPlayer = nullptr;
@@ -98,9 +104,13 @@ namespace XCell
 	static bool __stdcall CanUsePreprocessingHead(TESNPC* NPC)
 	{
 		if (!NPC) return false;
-		// list them until find the main form.
-		while (NPC->templateNPC)
-			NPC = NPC->templateNPC;
+		// if the template is specified, take the face from the template
+		if (NPC->templateNPC && ((NPC->actorData.unk10 & TESActorTemplateFlags_XCELL::kFlagTemplateTraits) == TESActorTemplateFlags_XCELL::kFlagTemplateTraits))
+		{
+			// list them until find the main form.
+			while (NPC->templateNPC)
+				NPC = NPC->templateNPC;
+		}
 		// if the mod has set this option, i prohibit the use of preliminary data.
 		if ((NPC->actorData.flags & TESActorBaseData::kFlagIsPreset) ||
 			(NPC->actorData.flags & TESActorFlags_XCELL::kFlagSimpleActor))
@@ -121,9 +131,11 @@ namespace XCell
 		bool result = BSTextureDB::FormatPath__And__ExistIn(NPC, buf, MAX_PATH, 0);
 		if (!result)
 		{
-			auto editID = NPC->GetEditorID();
-			if (editID) _WARNING("NPC \"%s\" (%08X) don't have facegen", editID, NPC->formID);
-			else _WARNING("NPC (%08X) don't have facegen", NPC->formID);
+			auto fullName = NPC->GetFullName();
+			if (!fullName) fullName = "<Unknown>";
+
+			Console_Print("XCELL: NPC \"%s\" (%08X) don't have facegen", fullName, NPC->formID);
+			_MESSAGE("NPC \"%s\" (%08X) don't have facegen", fullName, NPC->formID);
 		}
 		return result;
 	}
