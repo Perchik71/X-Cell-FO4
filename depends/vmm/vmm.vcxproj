@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="iw\iw.cpp" />
     <ClCompile Include="source\valloc.cpp" />
     <ClCompile Include="source\vassert.cpp" />
     <ClCompile Include="source\vbase.cpp" />
@@ -25,6 +26,7 @@
   <ItemGroup>
     <ClInclude Include="include\Voltek.MemoryManager.h" />
     <ClInclude Include="include\vmmconfig.h" />
+    <ClInclude Include="iw\iw.h" />
     <ClInclude Include="source\valloc.h" />
     <ClInclude Include="source\vassert.h" />
     <ClInclude Include="source\vbase.h" />

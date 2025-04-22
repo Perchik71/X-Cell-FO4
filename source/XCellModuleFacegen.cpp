@@ -60,7 +60,7 @@ namespace XCell
 		static UInt64 CreateEntryID = 0;
 
 		static bool __stdcall FormatPath__And__ExistIn(TESNPC* NPC, const char* DestPath,
-			UInt32 Size, UInt32 TextureIndex)
+			UInt32 Size, UInt32 TextureIndex) noexcept(true)
 		{
 			EntryID ID;
 			XCFastCall<void>(FacegenPathPrintf, NPC, DestPath, Size, TextureIndex);
@@ -68,7 +68,7 @@ namespace XCell
 		}
 	}
 
-	static bool __stdcall GetLoadOrderByFormID(const string& PluginName, UInt32& FormID)
+	static bool __stdcall GetLoadOrderByFormID(const string& PluginName, UInt32& FormID) noexcept(true)
 	{
 		constexpr static UInt16 INVALID_INDEX = (UInt16)-1;
 
@@ -101,10 +101,10 @@ namespace XCell
 		}
 	}
 
-	static bool __stdcall CanUsePreprocessingHead(TESNPC* NPC)
+	static bool __stdcall CanUsePreprocessingHead(TESNPC* NPC) noexcept(true)
 	{
 		if (!NPC) return false;
-		// if the template is specified, take the face from the template
+		// if template is specified, take face from template
 		if (NPC->templateNPC && ((NPC->actorData.unk10 & TESActorTemplateFlags_XCELL::kFlagTemplateTraits) == TESActorTemplateFlags_XCELL::kFlagTemplateTraits))
 		{
 			// list them until find the main form.
@@ -122,7 +122,8 @@ namespace XCell
 				return false;
 		// optionally exclude some NPCs.
 		for (auto it_except : FacegenExceptionFormIDs)
-			if (NPC->formID == it_except) return false;
+			if (NPC->formID == it_except)
+				return false;
 		// player form can't have a facegen.
 		if (NPC->formID == 0x7)
 			return false;
@@ -135,7 +136,7 @@ namespace XCell
 			if (!fullName) fullName = "<Unknown>";
 
 			Console_Print("XCELL: NPC \"%s\" (%08X) don't have facegen", fullName, NPC->formID);
-			_MESSAGE("NPC \"%s\" (%08X) don't have facegen", fullName, NPC->formID);
+			_WARNING("NPC \"%s\" (%08X) don't have facegen", fullName, NPC->formID);
 		}
 		return result;
 	}
@@ -238,6 +239,8 @@ namespace XCell
 
 		// added for check player npc
 		KeywordIsChildPlayer = (BGSKeyword**)(REL::ID(210));
+		// Fixed bug no load tints
+		REL::Impl::Patch(REL::ID(208), { 0x75 });
 
 #if 0
 		REL::Impl::PatchNop(REL::ID(220), 0x27);

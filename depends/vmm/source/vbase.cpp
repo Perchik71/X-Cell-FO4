@@ -2,6 +2,7 @@
 // Contacts: <email:timencevaleksej@gmail.com>
 // License: https://www.gnu.org/licenses/lgpl-3.0.html
 
+#include "..\iw\iw.h"
 #include "vbase.h"
 #include "valloc.h"
 #include "vassert.h"
@@ -22,55 +23,17 @@ namespace voltek
 		// Кол-во логический ядер или просто ядер, если нет Hyper
 		unsigned char logical_cores = 0;
 
-		void get_cpu(std::string& output)
-		{
-			try
-			{
-				int CPUInfo[4] = { -1 };
-				__cpuid(CPUInfo, 0x80000000);
-				unsigned int nExIds = CPUInfo[0];
-
-				char CPUBrandString[0x40] = { 0 };
-				for (unsigned int i = 0x80000000; i <= nExIds; ++i)
-				{
-					__cpuid(CPUInfo, i);
-					if (i == 0x80000002)
-					{
-						memcpy(CPUBrandString,
-							CPUInfo,
-							sizeof(CPUInfo));
-					}
-					else if (i == 0x80000003)
-					{
-						memcpy(CPUBrandString + 16,
-							CPUInfo,
-							sizeof(CPUInfo));
-					}
-					else if (i == 0x80000004)
-					{
-						memcpy(CPUBrandString + 32, CPUInfo, sizeof(CPUInfo));
-					}
-				}
-
-				output = _strlwr(CPUBrandString);
-			}
-			catch (...) { return; }
-		}
-
 		void initialize()
 		{
 			if (initialize_success) return;
 
-			int info[4];
-			__cpuid(info, 7);
-
 			initialize_success = true;
-			avx2_supported = (info[1] & (1 << 5)) != 0;
 
-			__cpuid(info, 1);
-			sse41_supported = (info[2] & (1 << 19)) != 0;
-			hyper_threads = (info[3] & (1 << 28)) != 0;
-			logical_cores = (info[1] >> 16) & 0xff;
+			auto info = iw::cpu::cpu_info();
+			sse41_supported = iw::cpu::is_support_SSE41(&info);
+			avx2_supported = iw::cpu::is_support_AVX2(&info);
+			hyper_threads = iw::cpu::is_support_hyper(&info);
+			logical_cores = iw::cpu::number_of_procs(&info);
 
 			if (avx2_supported)
 			{
@@ -79,11 +42,8 @@ namespace voltek
 					avx2_supported = false;
 				else
 				{
-					std::string name;
-					get_cpu(name);
-
 					// Отключение использования AVX2 на процессорах Intel и других
-					if (name.find_first_of("amd ") == std::string::npos)
+					if (iw::cpu::is_intel(&info))
 						avx2_supported = false;
 				}
 			}

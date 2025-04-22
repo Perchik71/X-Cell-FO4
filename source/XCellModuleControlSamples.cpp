@@ -33,6 +33,22 @@ namespace XCell
 
 	///////////////////////////////////////////////////////////////////////////////
 
+	bool CheckAddrState(ID3D11SamplerState* Ptr)
+	{
+		__try
+		{
+			D3D11_SAMPLER_DESC sd;
+			Ptr->GetDesc(&sd);
+			return true;
+		}
+		__except(1)
+		{
+			return false;
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////
+
 	// Mostly from vrperfkit, thanks to fholger for showing how to do mip lod bias
 	// https://github.com/fholger/vrperfkit/blob/037c09f3168ac045b5775e8d1a0c8ac982b5854f/src/d3d11/d3d11_post_processor.cpp#L76
 	void ModuleControlSamples::PreXSSetSamplers(ID3D11SamplerState** OutSamplers, UINT StartSlot, UINT NumSamplers,
@@ -42,7 +58,7 @@ namespace XCell
 		for (UINT i = 0; i < NumSamplers; ++i)
 		{
 			auto orig = OutSamplers[i];
-			if (orig == nullptr || PassThroughSamplers.find(orig) != PassThroughSamplers.end())
+			if ((orig == nullptr) || (PassThroughSamplers.find(orig) != PassThroughSamplers.end()) || !CheckAddrState(orig))
 				continue;
 
 			if (MappedSamplers.find(orig) == MappedSamplers.end())
@@ -60,7 +76,9 @@ namespace XCell
 
 				// _MESSAGE("Filter: %u, MipLODBias: %f, MaxAnisotropy: %u", (UInt32)sd.Filter, sd.MipLODBias, sd.MaxAnisotropy);
 
-				sd.MipLODBias = CVarLodMipBias->GetFloat();
+				if (sd.Filter != D3D11_FILTER_ANISOTROPIC) 
+					sd.MipLODBias = CVarLodMipBias->GetFloat();
+
 				sd.MaxAnisotropy = (sd.Filter == D3D11_FILTER_ANISOTROPIC) ? CVarMaxAnisotropy->GetUnsignedInt() : 0;
 				sd.MinLOD = 0;
 				sd.MaxLOD = D3D11_FLOAT32_MAX;

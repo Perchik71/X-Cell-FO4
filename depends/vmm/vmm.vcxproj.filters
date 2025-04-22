@@ -11,6 +11,9 @@
     <ClCompile Include="source\vbase.cpp" />
     <ClCompile Include="source\vbits.cpp" />
     <ClCompile Include="source\vmapper.cpp" />
+    <ClCompile Include="iw\iw.cpp">
+      <Filter>iw</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\vintrin.h" />
@@ -34,10 +37,16 @@
       <Filter>version</Filter>
     </ClInclude>
     <ClInclude Include="source\vstack.h" />
+    <ClInclude Include="iw\iw.h">
+      <Filter>iw</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="version">
       <UniqueIdentifier>{5b1be333-3cf1-4fc3-bac4-d0a06804c8de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="iw">
+      <UniqueIdentifier>{4b0214a1-a109-461a-94e9-e387ca473577}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
