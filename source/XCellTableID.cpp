@@ -86,7 +86,6 @@ namespace XCell
 			// FACEGEN
 			{ 200,		0x5B57F0 },
 			{ 205,		0x679910 },
-			{ 208,		0x67B9D9 },
 			{ 210,		0x59DADD0 },
 			{ 215,		0x679B20 },
 			{ 220,		0x679BB2 },
@@ -100,6 +99,13 @@ namespace XCell
 			{ 240,		0x1B4EC90 },	// Before first use read ^ data
 			{ 245,		0x38C51B0 },	// TAA or FXAA
 
+			// INIT TINTS
+			{ 250,		0x5AF94D },
+			{ 251,		0x5AFB60 },
+			{ 252,		0x292BBE0 },
+			{ 253,		0x11E4F1 },
+			{ 254,		0x5BDC49 },
+			{ 255,		0x120504 },
 			});
 
 		TableID K_984(RUNTIME_VERSION_1_10_984, {
@@ -144,7 +150,6 @@ namespace XCell
 			// FACEGEN
 			{ 200,		0x601B50 },
 			{ 205,		0x68B6F3 },
-			{ 208,		0x68EB29 },
 			{ 210,		0x2F6ED50 },
 			{ 215,		0x68B900 },
 			{ 220,		0x68B994 },
@@ -158,6 +163,13 @@ namespace XCell
 			{ 240,		0x156C230 },	// Before first use read ^ data
 			{ 245,		0x2D25AA0 },	// TAA or FXAA
 			
+			// INIT TINTS
+			{ 250,		0x5FBDFB },
+			{ 251,		0x5FBBB4 },
+			{ 252,		0x2156D30 },
+			{ 253,		0x29B434 },
+			{ 254,		0x60A083 },
+
 			});
 	}
 }

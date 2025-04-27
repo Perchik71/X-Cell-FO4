@@ -10,6 +10,9 @@ bProfile=true					# Replacing outdated functions WritePrivateProfileStringA, Get
 bLoadScreen=false				# Black loading screen.
 bUpscaler=false					# [Experimental] Increase FPS due to scaling, requires Win 8.1 and newer, without conflict ENB (no dlss, no fsr).
 
+[Fixes]							# Common fixes
+bInitTints=true					# Removes the block on loading NPCs tints of the Fallout4.esm file, as well as for NPCs with set the IsChargenPresent flag.
+
 [NGFixes]						# Only NG version game. Already present in Buffout 4, but are missing in Buffout 4 NG (at time 28.09.2024).
 bGreyMovies=true				# Fixes a bug where movies that don't define "BackgroundAlpha" on their movie root could load with a grey background.
 bPackageAllocateLocation=true	# Fixes a crash when allocating the location for a package.

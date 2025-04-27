@@ -239,8 +239,6 @@ namespace XCell
 
 		// added for check player npc
 		KeywordIsChildPlayer = (BGSKeyword**)(REL::ID(210));
-		// Fixed bug no load tints
-		REL::Impl::Patch(REL::ID(208), { 0x75 });
 
 #if 0
 		REL::Impl::PatchNop(REL::ID(220), 0x27);

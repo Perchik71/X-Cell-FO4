@@ -144,6 +144,9 @@
     <ClCompile Include="source\XCellTAA.cpp">
       <Filter>Исходные файлы\D3D11</Filter>
     </ClCompile>
+    <ClCompile Include="source\XCellModuleInitTints.cpp">
+      <Filter>Исходные файлы\Modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\XCellCommon.h">
@@ -268,6 +271,9 @@
     </ClInclude>
     <ClInclude Include="include\XCellTAA.h">
       <Filter>Файлы заголовков\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellModuleInitTints.h">
+      <Filter>Файлы заголовков\Modules</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

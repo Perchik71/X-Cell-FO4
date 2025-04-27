@@ -42,7 +42,7 @@ namespace voltek
 					avx2_supported = false;
 				else
 				{
-					// Отключение использования AVX2 на процессорах Intel и других
+					// Отключение использования AVX2 на процессорах Intel
 					if (iw::cpu::is_intel(&info))
 						avx2_supported = false;
 				}

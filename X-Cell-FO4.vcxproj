@@ -29,6 +29,7 @@
     <ClCompile Include="source\XCellModuleFacegen.cpp" />
     <ClCompile Include="source\XCellModuleGreyMovies.cpp" />
     <ClCompile Include="source\XCellModuleImGUI.cpp" />
+    <ClCompile Include="source\XCellModuleInitTints.cpp" />
     <ClCompile Include="source\XCellModuleIO.cpp" />
     <ClCompile Include="source\XCellModuleLibDeflate.cpp" />
     <ClCompile Include="source\XCellModuleLoadScreen.cpp" />
@@ -68,6 +69,7 @@
     <ClInclude Include="include\XCellModuleFacegen.h" />
     <ClInclude Include="include\XCellModuleGreyMovies.h" />
     <ClInclude Include="include\XCellModuleImGUI.h" />
+    <ClInclude Include="include\XCellModuleInitTints.h" />
     <ClInclude Include="include\XCellModuleIO.h" />
     <ClInclude Include="include\XCellModuleLibDeflate.h" />
     <ClInclude Include="include\XCellModuleLoadScreen.h" />

@@ -63,6 +63,8 @@ namespace XCell
 	extern std::shared_ptr<Setting> CVarDisplayScale;
 	// Do not use the original TAA, which causes slight ripples.
 	extern std::shared_ptr<Setting> CVarNoUseTAA;
+	// Removes the block on loading NPCs tints of the Fallout4.esm file, as well as for NPCs with set the IsChargenPresent flag.
+	extern std::shared_ptr<Setting> CVarInitTints;
 
 	// ---
 
