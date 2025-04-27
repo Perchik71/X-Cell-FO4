@@ -14,15 +14,7 @@ namespace XCell
 	{
 		REL::PatchNop useless_code_remove[4];
 		REL::Patch check_function;
-		REL::Patch skips_remove_tints;
-
-		REL::PatchNop _fixes1;
-		REL::PatchNop _fixes2;
-		REL::PatchNop _fixes4;
-		REL::PatchNop _fixes5;
-		REL::PatchNop _fixes6;
-		REL::Patch _fixes7;
-		
+		REL::Patch skips_remove_tints;		
 	public:
 		static constexpr auto SourceName = "Module InitTints";
 
