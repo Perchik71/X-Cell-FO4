@@ -165,7 +165,7 @@ namespace XCell
 			SetMipLODBias(base, 0.0f);
 		}
 
-		static float GetMaxAnisotropy(StaticFunctionTag* base)
+		static long GetMaxAnisotropy(StaticFunctionTag* base)
 		{
 			return CVarMaxAnisotropy->GetUnsignedInt();
 		}
@@ -247,7 +247,7 @@ namespace XCell
 		VM->RegisterFunction(
 			new NativeFunction0<StaticFunctionTag, void>("SetDefaultMipLODBias", "XCELL", PVM::SetDefaultMipLODBias, VM));
 		VM->RegisterFunction(
-			new NativeFunction0<StaticFunctionTag, float>("GetMaxAnisotropy", "XCELL", PVM::GetMaxAnisotropy, VM));
+			new NativeFunction0<StaticFunctionTag, long>("GetMaxAnisotropy", "XCELL", PVM::GetMaxAnisotropy, VM));
 		VM->RegisterFunction(
 			new NativeFunction1<StaticFunctionTag, void, long>("SetMaxAnisotropy", "XCELL", PVM::SetMaxAnisotropy, VM));
 		VM->RegisterFunction(

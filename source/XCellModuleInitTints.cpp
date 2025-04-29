@@ -9,9 +9,6 @@
 #include "XCellCVar.h"
 #include "XCellAssertion.h"
 
-#include <f4se/GameForms.h>
-#include <f4se/GameObjects.h>
-
 namespace XCell
 {
 	ModuleInitTints::ModuleInitTints(void* Context) :
