@@ -130,7 +130,7 @@ namespace XCell
 		// check exists diffuse texture.
 		char buf[MAX_PATH];
 		bool result = BSTextureDB::FormatPath__And__ExistIn(NPC, buf, MAX_PATH, 0);
-		if (!result)
+		if (!result && CVarDbgFacegenOutput->GetBool())
 		{
 			auto fullName = NPC->GetFullName();
 			if (!fullName) fullName = "<Unknown>";

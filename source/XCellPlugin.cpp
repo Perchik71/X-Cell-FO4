@@ -135,6 +135,7 @@ namespace XCell
 		_settings.Add(CVarUpscaler);
 
 		// Fixes
+		_settings.Add(CVarInitTints);
 		_settings.Add(CVarGreyMovies);
 		_settings.Add(CVarPackageAllocateLocation);
 		_settings.Add(CVarWarningCreateTexture2D);
@@ -145,6 +146,7 @@ namespace XCell
 		_settings.Add(CVarUseNewRedistributable);
 		_settings.Add(CVarOutputRTTI);
 		_settings.Add(CVarUseIORandomAccess);
+		_settings.Add(CVarDbgFacegenOutput);
 
 		// Graphics
 		_settings.Add(CVarDisplayScale);

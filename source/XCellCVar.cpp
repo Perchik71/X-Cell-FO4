@@ -26,6 +26,7 @@ namespace XCell
 	std::shared_ptr<Setting> CVarUseNewRedistributable = std::make_shared<Setting>("bUseNewRedistributable:Additional", false);
 	std::shared_ptr<Setting> CVarOutputRTTI = std::make_shared<Setting>("bOutputRTTI:Additional", false);
 	std::shared_ptr<Setting> CVarUseIORandomAccess = std::make_shared<Setting>("bUseIORandomAccess:Additional", false);
+	std::shared_ptr<Setting> CVarDbgFacegenOutput = std::make_shared<Setting>("bDbgFacegenOutput:Additional", false);
 
 	std::shared_ptr<Setting> CVarLodMipBias = std::make_shared<Setting>("fLodMipBias:Graphics", 0.0f);
 	std::shared_ptr<Setting> CVarMaxAnisotropy = std::make_shared<Setting>("uMaxAnisotropy:Graphics", 0);

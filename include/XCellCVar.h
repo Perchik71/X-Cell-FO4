@@ -65,6 +65,8 @@ namespace XCell
 	extern std::shared_ptr<Setting> CVarNoUseTAA;
 	// Removes the block on loading NPCs tints of the Fallout4.esm file, as well as for NPCs with set the IsChargenPresent flag.
 	extern std::shared_ptr<Setting> CVarInitTints;
+	// Debugging messages about the presence of facegen in the NPC in console and log (Need bFacegen patch).
+	extern std::shared_ptr<Setting> CVarDbgFacegenOutput;	
 
 	// ---
 

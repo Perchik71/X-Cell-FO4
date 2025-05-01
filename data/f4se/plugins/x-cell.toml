@@ -24,7 +24,8 @@ uScaleformHeapSize=512			# The heap size (in MB), vanilla size is 128. This is a
 bUseNewRedistributable=false	# Replaces the old redistributable with a new one. If option is enabled, reports will include X-Cell in case of errors related to copying or comparing memory (Need bMemory patch).
 bOutputRTTI=false				# Create file "<FALLOUT4_DIR>\\Data\\F4SE\\Plugins\\rtti-x-cell.txt" with rtti info.
 bUseIORandomAccess=false 		# Activate a prompt for the system that you need to use a cache with random access, otherwise it will be sequential (Need bIO patch). 
+bDbgFacegenOutput=false 		# Debugging messages about the presence of facegen in the NPC in console and log (Need bFacegen patch).
 
 [PostProccessing]				# Need Upscaler patch
-fDisplayScale=0.75				# Scaling in for the game screen, 1.0 means native dimensions. Range: [0.5, 1]
+fDisplayScale=0.85				# Scaling in for the game screen, 1.0 means native dimensions. Range: [0.5, 1]
 bNoUseOriginalTAA=true			# Do not use Bethesda mix post effects with TAA, which causes slight ripples, will be used FXAA by Bethesda and TAA by AMD.
