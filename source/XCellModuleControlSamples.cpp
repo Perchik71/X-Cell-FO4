@@ -80,8 +80,9 @@ namespace XCell
 					sd.MipLODBias = CVarLodMipBias->GetFloat();
 
 				sd.MaxAnisotropy = (sd.Filter == D3D11_FILTER_ANISOTROPIC) ? CVarMaxAnisotropy->GetUnsignedInt() : 0;
-				sd.MinLOD = 0;
-				sd.MaxLOD = D3D11_FLOAT32_MAX;
+				// Fix getting this weird line with pipboy light. Maybe artifact flashlight texture.
+				//sd.MinLOD = 0;
+				//sd.MaxLOD = D3D11_FLOAT32_MAX;
 
 				Device->CreateSamplerState(&sd, MappedSamplers[orig].GetAddressOf());
 				PassThroughSamplers.insert(MappedSamplers[orig].Get());
