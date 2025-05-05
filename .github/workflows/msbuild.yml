@@ -59,6 +59,18 @@ jobs:
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: New-Item -ItemType Directory -Path "xcell-master-${{env.SHORT_SHA}}"
       
+    - name: Make Data Directory
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: New-Item -ItemType Directory -Path "xcell-master-${{env.SHORT_SHA}}\data"
+      
+    - name: Make Fomod Directory
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: New-Item -ItemType Directory -Path "xcell-master-${{env.SHORT_SHA}}\fomod"
+      
+    - name: Make Build Directory
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: New-Item -ItemType Directory -Path "xcell-master-${{env.SHORT_SHA}}\build"
+      
     - name: Copy Data X-CELL
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: Copy-Item -Path ".\data\*" -Destination "xcell-master-${{env.SHORT_SHA}}\data" -recurse -Force
@@ -66,10 +78,6 @@ jobs:
     - name: Copy Fomod X-CELL
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: Copy-Item -Path ".\fomod\*" -Destination "xcell-master-${{env.SHORT_SHA}}\fomod" -recurse -Force
-
-    - name: Make Bundle Directory
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: New-Item -ItemType Directory -Path "xcell-master-${{env.SHORT_SHA}}\build"
 
     - name: Copy Main X-CELL
       working-directory: ${{env.GITHUB_WORKSPACE}}
