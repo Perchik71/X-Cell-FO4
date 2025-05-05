@@ -21,8 +21,8 @@ env:
   # Configuration type to build.
   # You can convert this to a build matrix if you need coverage of multiple configuration types.
   # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-  OG_BUILD_CONFIGURATION: "Release 10.163"
-  NG_BUILD_CONFIGURATION: "Release 10.984"
+  OG_BUILD_CONFIGURATION: Release-10-163
+  NG_BUILD_CONFIGURATION: Release-10-984
 
 permissions:
   contents: read
