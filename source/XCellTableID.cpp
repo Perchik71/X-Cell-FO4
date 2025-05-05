@@ -20,14 +20,25 @@ namespace XCell
 
 		UInt32 TableID::At(UInt32 Index) const noexcept(true)
 		{
-			auto It = _items.lower_bound(Index);
-			return (It == _items.end() || abs((long long)It->first - Index) != 0) ? 0 : It->second;
+			auto It = _items.find(Index);
+			return It == _items.end() ? 0 : It->second;
 		}
 
 		UInt32 TableID::Nearest(UInt32 Index) const noexcept(true)
 		{
-			auto It = _items.lower_bound(Index);
-			return (It == _items.end() || abs((long long)It->first - Index) > 10) ? 0 : It->second;
+			if (!_items.size())
+				return 0;
+
+			auto NearestIt = _items.begin();
+			for (auto It = _items.begin(); It != _items.end(); It++)
+			{
+				if (It->first > Index)
+					NearestIt = It;
+				else
+					break;
+			}
+			
+			return (NearestIt == _items.end() || abs((long long)NearestIt->first - Index) > 10) ? 0 : NearestIt->second;
 		}
 
 		UInt64 TableID::ID(UInt32 Index) const noexcept(true)
