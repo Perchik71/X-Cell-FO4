@@ -61,11 +61,11 @@ jobs:
       
     - name: Copy Data X-CELL
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: Copy-Item -Path ".\data" "xcell-master-${{env.SHORT_SHA}}"
+      run: Copy-Item -Path ".\data\*" -Destination "xcell-master-${{env.SHORT_SHA}}\data" -recurse -Force
       
     - name: Copy Fomod X-CELL
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: Copy-Item -Path ".\fomod" "xcell-master-${{env.SHORT_SHA}}"
+      run: Copy-Item -Path ".\fomod\*" -Destination "xcell-master-${{env.SHORT_SHA}}\fomod" -recurse -Force
 
     - name: Make Bundle Directory
       working-directory: ${{env.GITHUB_WORKSPACE}}
