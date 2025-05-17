@@ -103,6 +103,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />
+    <None Include="version\fomod_info.tmp" />
     <None Include="version\resource_version.aps" />
     <None Include="version\resource_version2.tmp" />
     <None Include="version\scripts.ps1" />

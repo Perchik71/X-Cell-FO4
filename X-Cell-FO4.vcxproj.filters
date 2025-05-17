@@ -289,6 +289,9 @@
     <None Include="exports.def">
       <Filter>Файлы ресурсов</Filter>
     </None>
+    <None Include="version\fomod_info.tmp">
+      <Filter>version</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="version\resource_version.rc">

@@ -1,0 +1,18 @@
+<fomod> 
+	<Name>X-Cell</Name> 
+	<Author>perchik71</Author> 
+	<Version>2.1-b<BUILD></Version> 
+	<Website>https://www.nexusmods.com/fallout4/mods/84214</Website> 
+	<Description>This mod is a medicine for the game. To improve optimization and fix bugs.
+
+1) Improves threads.
+2) Memory manager replacement, memory leak has been eliminated.
+3) Working facegen, there are no more freezes related to faces, facegen generation is required for new characters, if the Is CharGen Face Present/Simple Actor flags is set or IsChildPlayer keyword, facegen load will be skipped and generated in runtime.
+4) Black loading screen.
+5) Small optimizations for working with files.
+6) New limit for archives by type GNRL.
+7) Some small patches that were not implemented in Buffout 4 NG, but there in Buffout 4.</Description> 
+	<Groups>
+		<element>Performance</element>
+	</Groups> 
+</fomod> 
