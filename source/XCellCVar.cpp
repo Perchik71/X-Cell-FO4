@@ -16,6 +16,7 @@ namespace XCell
 	std::shared_ptr<Setting> CVarUpscaler = std::make_shared<Setting>("bUpscaler:Patches", false);
 
 	std::shared_ptr<Setting> CVarInitTints = std::make_shared<Setting>("bInitTints:Fixes", true);
+	std::shared_ptr<Setting> CVarLODDistance = std::make_shared<Setting>("bLODDistance:Fixes", true);
 
 	std::shared_ptr<Setting> CVarGreyMovies = std::make_shared<Setting>("bGreyMovies:NGFixes", true);
 	std::shared_ptr<Setting> CVarPackageAllocateLocation = std::make_shared<Setting>("bPackageAllocateLocation:NGFixes", true);

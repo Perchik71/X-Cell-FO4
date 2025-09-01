@@ -33,6 +33,7 @@
     <ClCompile Include="source\XCellModuleIO.cpp" />
     <ClCompile Include="source\XCellModuleLibDeflate.cpp" />
     <ClCompile Include="source\XCellModuleLoadScreen.cpp" />
+    <ClCompile Include="source\XCellModuleLODDistanceFix.cpp" />
     <ClCompile Include="source\XCellModuleManager.cpp" />
     <ClCompile Include="source\XCellModuleMemory.cpp" />
     <ClCompile Include="source\XCellModulePackageAllocateLocation.cpp" />
@@ -73,6 +74,7 @@
     <ClInclude Include="include\XCellModuleIO.h" />
     <ClInclude Include="include\XCellModuleLibDeflate.h" />
     <ClInclude Include="include\XCellModuleLoadScreen.h" />
+    <ClInclude Include="include\XCellModuleLODDistanceFix.h" />
     <ClInclude Include="include\XCellModuleManager.h" />
     <ClInclude Include="include\XCellModuleMemory.h" />
     <ClInclude Include="include\XCellModulePackageAllocateLocation.h" />

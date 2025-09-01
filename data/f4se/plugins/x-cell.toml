@@ -12,6 +12,7 @@ bUpscaler=false					# [Experimental] Increase FPS due to scaling, requires Win 8
 
 [Fixes]							# Common fixes
 bInitTints=true					# Removes the block on loading NPCs tints of the Fallout4.esm file, as well as for NPCs with set the IsChargenPresent flag.
+bLODDistance=true				# Fixes bugs when toggling references with LOD causing LOD to briefly enable and disable by removing the "Has Distant LOD" and "Visible When Distant" flag checks: https://www.youtube.com/watch?v=hgMm9Z8lHfU.
 
 [NGFixes]						# Only NG version game. Already present in Buffout 4, but are missing in Buffout 4 NG (at time 28.09.2024).
 bGreyMovies=true				# Fixes a bug where movies that don't define "BackgroundAlpha" on their movie root could load with a grey background.

@@ -26,6 +26,7 @@
 #include "XCellModulePackageAllocateLocation.h"
 #include "XCellModuleWarningCreateTexture2D.h"
 #include "XCellModuleInitTints.h"
+#include "XCellModuleLODDistanceFix.h"
 
 #define XCELL_IMGUI_INSTALL 0
 
@@ -136,6 +137,7 @@ namespace XCell
 
 		// Fixes
 		_settings.Add(CVarInitTints);
+		_settings.Add(CVarLODDistance);
 		_settings.Add(CVarGreyMovies);
 		_settings.Add(CVarPackageAllocateLocation);
 		_settings.Add(CVarWarningCreateTexture2D);
@@ -328,6 +330,7 @@ namespace XCell
 		if (FAILED(_modules.Add(make_shared<ModulePackageAllocateLocation>(this)))) return E_FAIL;
 		if (FAILED(_modules.Add(make_shared<ModuleWarningCreateTexture2D>(this)))) return E_FAIL;
 		if (FAILED(_modules.Add(make_shared<ModuleInitTints>(this)))) return E_FAIL;
+		if (FAILED(_modules.Add(make_shared<ModuleLODDistanceFix>(this)))) return E_FAIL;
 		// Required install after all modules
 #if XCELL_IMGUI_INSTALL
 		if (FAILED(_modules.Add(make_shared<ModuleImGUI>(this)))) return E_FAIL;

@@ -65,6 +65,8 @@ namespace XCell
 	extern std::shared_ptr<Setting> CVarNoUseTAA;
 	// Removes the block on loading NPCs tints of the Fallout4.esm file, as well as for NPCs with set the IsChargenPresent flag.
 	extern std::shared_ptr<Setting> CVarInitTints;
+	// Fixes bugs when toggling references with LOD causing LOD to briefly enable and disable by removing the "Has Distant LOD" and "Visible When Distant" flag checks: https://www.youtube.com/watch?v=hgMm9Z8lHfU.
+	extern std::shared_ptr<Setting> CVarLODDistance;
 	// Debugging messages about the presence of facegen in the NPC in console and log (Need bFacegen patch).
 	extern std::shared_ptr<Setting> CVarDbgFacegenOutput;	
 

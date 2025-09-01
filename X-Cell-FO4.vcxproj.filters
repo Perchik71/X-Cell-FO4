@@ -147,6 +147,9 @@
     <ClCompile Include="source\XCellModuleInitTints.cpp">
       <Filter>Исходные файлы\Modules</Filter>
     </ClCompile>
+    <ClCompile Include="source\XCellModuleLODDistanceFix.cpp">
+      <Filter>Исходные файлы\Modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\XCellCommon.h">
@@ -273,6 +276,9 @@
       <Filter>Файлы заголовков\D3D11</Filter>
     </ClInclude>
     <ClInclude Include="include\XCellModuleInitTints.h">
+      <Filter>Файлы заголовков\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellModuleLODDistanceFix.h">
       <Filter>Файлы заголовков\Modules</Filter>
     </ClInclude>
   </ItemGroup>
