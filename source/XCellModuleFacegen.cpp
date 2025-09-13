@@ -101,15 +101,22 @@ namespace XCell
 		}
 	}
 
+	static bool __stdcall HasOwnFace(TESNPC* NPC) noexcept(true)
+	{
+		if (!((NPC->actorData.unk10 & TESActorTemplateFlags_XCELL::kFlagTemplateTraits) == 
+			TESActorTemplateFlags_XCELL::kFlagTemplateTraits))
+			return true;
+		return !NPC->templateNPC;
+	}
+
 	static bool __stdcall CanUsePreprocessingHead(TESNPC* NPC) noexcept(true)
 	{
 		if (!NPC) return false;
 		// if template is specified, take face from template
-		if (NPC->templateNPC/* && 
-			((NPC->actorData.unk10 & TESActorTemplateFlags_XCELL::kFlagTemplateTraits) == TESActorTemplateFlags_XCELL::kFlagTemplateTraits)*/)
+		if (!HasOwnFace(NPC))
 		{
 			// list them until find the main form.
-			while (NPC->templateNPC)
+			while (!HasOwnFace(NPC))
 				NPC = NPC->templateNPC;
 		}
 		// if the mod has set this option, i prohibit the use of preliminary data.
