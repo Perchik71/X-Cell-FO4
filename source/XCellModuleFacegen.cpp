@@ -105,7 +105,8 @@ namespace XCell
 	{
 		if (!NPC) return false;
 		// if template is specified, take face from template
-		if (NPC->templateNPC && ((NPC->actorData.unk10 & TESActorTemplateFlags_XCELL::kFlagTemplateTraits) == TESActorTemplateFlags_XCELL::kFlagTemplateTraits))
+		if (NPC->templateNPC/* && 
+			((NPC->actorData.unk10 & TESActorTemplateFlags_XCELL::kFlagTemplateTraits) == TESActorTemplateFlags_XCELL::kFlagTemplateTraits)*/)
 		{
 			// list them until find the main form.
 			while (NPC->templateNPC)

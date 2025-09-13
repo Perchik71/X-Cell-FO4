@@ -128,9 +128,7 @@ namespace XCell
 			{ 266,		0x7A859C },
 			{ 267,		0x52A80 },
 			// 2F3BE2	??? Keyword?
-
-
-			//42B380
+			// 42B380
 			});
 
 		TableID K_984(RUNTIME_VERSION_1_10_984, {
