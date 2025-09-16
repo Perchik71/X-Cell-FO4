@@ -19,6 +19,9 @@ bGreyMovies=true				# Fixes a bug where movies that don't define "BackgroundAlph
 bPackageAllocateLocation=true	# Fixes a crash when allocating the location for a package.
 bWarningCreateTexture2D=false	# Warns when a call to CreateTexture2D fails.
 
+[NGPatches]						# Only NG version game.								
+bDropItem=true					# Extends structure BSExtraCount from a 16-bit number to a 32-bit number. Allows you to throw things away up to 2.147.483.647.
+
 [Additional]
 uScaleformPageSize=256			# The page size (in KB), vanilla size is 64. More, better, but the higher the memory consumption. Limit 2Mb (2048), number must be a multiple of 8 (Need bMemory patch).
 uScaleformHeapSize=512			# The heap size (in MB), vanilla size is 128. This is all the available memory, out of memory = CTD. Limit 2Gb (2048), number must be a multiple of 8 (Need bMemory patch).

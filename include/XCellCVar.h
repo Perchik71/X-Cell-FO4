@@ -36,6 +36,9 @@ namespace XCell
 	extern std::shared_ptr<Setting> CVarUpscaler;
 	// Fixes a bug where movies that don't define "BackgroundAlpha" on their movie root could load with a grey background.
 	extern std::shared_ptr<Setting> CVarGreyMovies;
+
+
+	extern std::shared_ptr<Setting> CVarDropItem;
 	// Fixes a crash when allocating the location for a package.
 	extern std::shared_ptr<Setting> CVarPackageAllocateLocation;
 	// Warns when a call to CreateTexture2D fails.

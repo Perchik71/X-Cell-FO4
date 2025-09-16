@@ -26,6 +26,7 @@
     <ClCompile Include="source\XCellEvent.cpp" />
     <ClCompile Include="source\XCellModule.cpp" />
     <ClCompile Include="source\XCellModuleControlSamples.cpp" />
+    <ClCompile Include="source\XCellModuleDropItem.cpp" />
     <ClCompile Include="source\XCellModuleFacegen.cpp" />
     <ClCompile Include="source\XCellModuleGreyMovies.cpp" />
     <ClCompile Include="source\XCellModuleImGUI.cpp" />
@@ -67,6 +68,7 @@
     <ClInclude Include="include\XCellEvent.h" />
     <ClInclude Include="include\XCellModule.h" />
     <ClInclude Include="include\XCellModuleControlSamples.h" />
+    <ClInclude Include="include\XCellModuleDropItem.h" />
     <ClInclude Include="include\XCellModuleFacegen.h" />
     <ClInclude Include="include\XCellModuleGreyMovies.h" />
     <ClInclude Include="include\XCellModuleImGUI.h" />

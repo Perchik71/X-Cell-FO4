@@ -18,6 +18,8 @@ namespace XCell
 	std::shared_ptr<Setting> CVarInitTints = std::make_shared<Setting>("bInitTints:Fixes", true);
 	std::shared_ptr<Setting> CVarLODDistance = std::make_shared<Setting>("bLODDistance:Fixes", true);
 
+	std::shared_ptr<Setting> CVarDropItem = std::make_shared<Setting>("bDropItem:NGPatches", true);
+
 	std::shared_ptr<Setting> CVarGreyMovies = std::make_shared<Setting>("bGreyMovies:NGFixes", true);
 	std::shared_ptr<Setting> CVarPackageAllocateLocation = std::make_shared<Setting>("bPackageAllocateLocation:NGFixes", true);
 	std::shared_ptr<Setting> CVarWarningCreateTexture2D = std::make_shared<Setting>("bWarningCreateTexture2D:NGFixes", false);

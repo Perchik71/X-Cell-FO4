@@ -150,6 +150,9 @@
     <ClCompile Include="source\XCellModuleLODDistanceFix.cpp">
       <Filter>Исходные файлы\Modules</Filter>
     </ClCompile>
+    <ClCompile Include="source\XCellModuleDropItem.cpp">
+      <Filter>Исходные файлы\Modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\XCellCommon.h">
@@ -279,6 +282,9 @@
       <Filter>Файлы заголовков\Modules</Filter>
     </ClInclude>
     <ClInclude Include="include\XCellModuleLODDistanceFix.h">
+      <Filter>Файлы заголовков\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="include\XCellModuleDropItem.h">
       <Filter>Файлы заголовков\Modules</Filter>
     </ClInclude>
   </ItemGroup>
