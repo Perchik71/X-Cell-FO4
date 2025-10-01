@@ -80,8 +80,14 @@ namespace XCell
 	{
 		HRESULT hr = S_OK;
 
+		if (DestSize < 2)
+		{
+			ZeroMemory(DestString, DestSize);
+			return hr;
+		}
+
 		DWORD CopyBytes = SourceSize;
-		if (DestSize <= (SourceSize - 2))
+		if ((INT64)DestSize <= ((INT64)SourceSize - 2))
 		{
 			CopyBytes = DestSize - 2;
 			hr = ERROR_INSUFFICIENT_BUFFER;
@@ -121,7 +127,7 @@ namespace XCell
 			// There is no need to try to optimize or try parse itself
 			return GetPrivateProfileStringA(AppName, KeyName, DefaultValue, ReturnedString, Size, FileName);
 
-		DWORD Ret = 0;
+		DWORD Ret = 0, NeedSize = 0;
 		HRESULT hr = S_OK;
 
 		// Enum all keys in the section
@@ -130,7 +136,7 @@ namespace XCell
 			if (!Data->Contains(AppName))
 			{
 			ReturnedDefaultString:
-				Ret = strlen(DefaultValue);
+				Ret = NeedSize = strlen(DefaultValue);
 				hr = StringCopyBuffer(ReturnedString, Size, DefaultValue, Ret);
 				return Ret;
 			}
@@ -146,6 +152,7 @@ namespace XCell
 						s.push_back('\0');
 				}
 
+				NeedSize = s.size();
 				hr = StringCopyBuffer(ReturnedString, Size, s.c_str(), s.size() - 1);
 				Ret = s.size() - 1;
 			}
@@ -153,7 +160,8 @@ namespace XCell
 			if (hr == ERROR_INSUFFICIENT_BUFFER)
 			{
 				SetLastError(ERROR_INSUFFICIENT_BUFFER);
-				_WARNING("GetPrivateProfileStringA: \"%s\":\"%s\" Buffer overflow", KeyName, AppName);
+				_WARNING("GetPrivateProfileStringA: \"%s\":\"%s\" Buffer overflow. Returned size sets %u need %u", KeyName, AppName, 
+					Size, NeedSize);
 
 				Ret = Size - 1;
 			}
@@ -174,7 +182,8 @@ namespace XCell
 			if (hr == ERROR_INSUFFICIENT_BUFFER)
 			{
 				SetLastError(ERROR_INSUFFICIENT_BUFFER);
-				_WARNING("GetPrivateProfileStringA: \"%s\":\"%s\" Buffer overflow", KeyName, AppName);
+				_WARNING("GetPrivateProfileStringA: \"%s\":\"%s\" Buffer overflow. Returned size sets %u need %u", KeyName, AppName,
+					Size, Ret);
 
 				Ret = Size - 1;
 			}
