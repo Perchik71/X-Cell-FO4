@@ -20,6 +20,7 @@ namespace XCell
 
 #define FO4_163_VERSION 10163
 #define FO4_984_VERSION 10984
+#define FO4_137_VERSION 11137
 
 #ifdef FO4_V163
 #undef FO4_VER
@@ -30,3 +31,8 @@ namespace XCell
 #undef FO4_VER
 #define FO4_VER FO4_984_VERSION
 #endif // !FO4_V984
+
+#ifdef FO4_V137
+#undef FO4_VER
+#define FO4_VER FO4_137_VERSION
+#endif // !FO4_V137

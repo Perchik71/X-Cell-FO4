@@ -13,7 +13,7 @@ namespace XCell
 	ModulePackageAllocateLocation::ModulePackageAllocateLocation(void* Context) :
 		Module(Context, SourceName, CVarPackageAllocateLocation)
 	{
-		if (REL::Version() == RUNTIME_VERSION_1_10_984)
+		if ((REL::Version() == RUNTIME_VERSION_1_10_984) || (REL::Version() == RUNTIME_VERSION_1_11_137))
 		{
 			auto Sub = REL::ID(190);
 			_function.Install(REL::ID(191), Sub);
@@ -22,7 +22,7 @@ namespace XCell
 
 	HRESULT ModulePackageAllocateLocation::InstallImpl()
 	{
-		if (REL::Version() != RUNTIME_VERSION_1_10_984)
+		if ((REL::Version() != RUNTIME_VERSION_1_10_984) && (REL::Version() != RUNTIME_VERSION_1_11_137))
 			return S_FALSE;
 
 		_function.Enable();

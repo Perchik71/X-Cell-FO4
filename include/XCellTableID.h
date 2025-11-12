@@ -36,6 +36,7 @@ namespace XCell
 
 		extern TableID K_163;
 		extern TableID K_984;
+		extern TableID K_137;
 		extern TableID* K_CUR;
 	}
 }

@@ -36,7 +36,6 @@
     <ClCompile Include="f4se\f4se\PapyrusInstanceData.cpp" />
     <ClCompile Include="f4se\f4se\PapyrusInterfaces.cpp" />
     <ClCompile Include="f4se\f4se\PapyrusNativeFunctions.cpp" />
-    <ClCompile Include="f4se\f4se\PapyrusStruct.cpp" />
     <ClCompile Include="f4se\f4se\PapyrusUtilities.cpp" />
     <ClCompile Include="f4se\f4se\PapyrusUtility.cpp" />
     <ClCompile Include="f4se\f4se\PapyrusValue.cpp" />
@@ -47,6 +46,7 @@
     <ClCompile Include="f4se\f4se\GameMenus.cpp" />
     <ClCompile Include="f4se\f4se\ScaleformCallbacks.cpp" />
     <ClCompile Include="f4se\f4se\ScaleformAPI.cpp" />
+    <ClCompile Include="f4se\f4se\PapyrusStruct.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="f4se\f4se\GameAPI.h" />
@@ -85,7 +85,6 @@
     <ClInclude Include="f4se\f4se\PapyrusInstanceData.h" />
     <ClInclude Include="f4se\f4se\PapyrusInterfaces.h" />
     <ClInclude Include="f4se\f4se\PapyrusNativeFunctions.h" />
-    <ClInclude Include="f4se\f4se\PapyrusStruct.h" />
     <ClInclude Include="f4se\f4se\PapyrusUtilities.h" />
     <ClInclude Include="f4se\f4se\PapyrusUtility.h" />
     <ClInclude Include="f4se\f4se\PapyrusValue.h" />
@@ -96,6 +95,7 @@
     <ClInclude Include="f4se\f4se\GameMenus.h" />
     <ClInclude Include="f4se\f4se\ScaleformCallbacks.h" />
     <ClInclude Include="f4se\f4se\ScaleformAPI.h" />
+    <ClInclude Include="f4se\f4se\PapyrusStruct.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="f4se\f4se\GameRTTI.inl" />

@@ -23,6 +23,7 @@ env:
   # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
   OG_BUILD_CONFIGURATION: Release-10-163
   NG_BUILD_CONFIGURATION: Release-10-984
+  AE_BUILD_CONFIGURATION: Release-11-137
 
 permissions:
   contents: read
@@ -54,6 +55,12 @@ jobs:
       # Add additional options to the MSBuild command line here (like platform or verbosity level).
       # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
       run: msbuild /m /p:Configuration=${{env.NG_BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
+      
+    - name: AE-Build
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      # Add additional options to the MSBuild command line here (like platform or verbosity level).
+      # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
+      run: msbuild /m /p:Configuration=${{env.AE_BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
 
     - name: Make Bundle Directory
       working-directory: ${{env.GITHUB_WORKSPACE}}
@@ -81,7 +88,7 @@ jobs:
 
     - name: Copy Main X-CELL
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: Get-ChildItem -Recurse -Path ".\build" -Include "x-cell-og.dll", "x-cell-og.pdb", "x-cell-ng2.dll", "x-cell-ng2.pdb" | ForEach-Object { Copy-Item -Path $_.FullName -Destination (Join-Path "xcell-master-${{env.SHORT_SHA}}\build" $_.Name) -Force }
+      run: Get-ChildItem -Recurse -Path ".\build" -Include "x-cell-og.dll", "x-cell-og.pdb", "x-cell-ng2.dll", "x-cell-ng2.pdb", "x-cell-ae.dll", "x-cell-ae.pdb" | ForEach-Object { Copy-Item -Path $_.FullName -Destination (Join-Path "xcell-master-${{env.SHORT_SHA}}\build" $_.Name) -Force }
       
     - name: Upload X-CELL build artifacts
       uses: actions/upload-artifact@v4

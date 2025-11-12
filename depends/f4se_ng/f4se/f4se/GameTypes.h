@@ -10,7 +10,7 @@ class TESForm;
 struct BSIntrusiveRefCounted
 {
 public:
-	volatile SInt32	m_refCount;	// 00
+	volatile SInt32	refCount;	// 00
 };
 
 // 04
@@ -750,7 +750,7 @@ public:
 				pCur = pCur->Next();
 			else
 			{
-				bFound = op.Accept(pCur->Item());
+				bFound = const_cast<Op&>(op).Accept(pCur->Item());
 				if (!bFound)
 					pCur = pCur->Next();
 			}
@@ -838,7 +838,7 @@ public:
 	{
 		SInt32 idx = 0;
 		const _Node* pCur = Head();
-		while (pCur && pCur->Item() && !op.Accept(pCur->Item()))
+		while (pCur && pCur->Item() && !const_cast<Op&>(op).Accept(pCur->Item()))
 		{
 			idx++;
 			pCur = pCur->Next();
