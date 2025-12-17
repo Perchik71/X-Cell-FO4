@@ -36,7 +36,7 @@ extern "C"
 		0,
 		0,
 #if (FO4_VER != FO4_984_VERSION)
-		{ RUNTIME_VERSION_1_11_137, 0 },
+		{ RUNTIME_VERSION_1_11_191, 0 },
 #else
 		{ RUNTIME_VERSION_1_10_984, 0 },
 #endif // !FO4_V984

@@ -118,7 +118,7 @@
     <ProjectGuid>{E891BACC-9380-49D6-90E0-EBF4D5A6004C}</ProjectGuid>
     <RootNamespace>f4seng</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>f4se_v137</ProjectName>
+    <ProjectName>f4se_v191</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">

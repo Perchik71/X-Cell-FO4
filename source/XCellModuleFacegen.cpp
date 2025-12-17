@@ -225,7 +225,7 @@ namespace XCell
 			// call
 			REL::Impl::DetourCall(Offset + 0x4D, BSTextureDB::FacegenPathPrintf);
 		}
-		else if ((REL::Version() == RUNTIME_VERSION_1_10_984) || (REL::Version() == RUNTIME_VERSION_1_11_137))
+		else if ((REL::Version() == RUNTIME_VERSION_1_10_984) || (REL::Version() == RUNTIME_VERSION_1_11_191))
 		{
 			REL::Impl::PatchNop(Offset, 0x1C);
 			REL::Impl::PatchNop(Offset + 0x23, 0x36);

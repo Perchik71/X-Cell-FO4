@@ -14,12 +14,12 @@ bUpscaler=false					# [Experimental] Increase FPS due to scaling, requires Win 8
 bInitTints=true					# Removes the block on loading NPCs tints of the Fallout4.esm file, as well as for NPCs with set the IsChargenPresent flag.
 bLODDistance=true				# Fixes bugs when toggling references with LOD causing LOD to briefly enable and disable by removing the "Has Distant LOD" and "Visible When Distant" flag checks: https://www.youtube.com/watch?v=hgMm9Z8lHfU.
 
-[NGFixes]						# Only NG version game. Already present in Buffout 4, but are missing in Buffout 4 NG (at time 28.09.2024).
+[AE_NG_Fixes]					# Only NG-AE version game. Already present in Buffout 4, but are missing in Buffout 4 NG (at time 28.09.2024).
 bGreyMovies=true				# Fixes a bug where movies that don't define "BackgroundAlpha" on their movie root could load with a grey background.
 bPackageAllocateLocation=true	# Fixes a crash when allocating the location for a package.
 bWarningCreateTexture2D=false	# Warns when a call to CreateTexture2D fails.
 
-[NGPatches]						# Only NG version game.								
+[AE_NG_Patches]					# Only NG-AE version game.								
 bDropItem=true					# Extends structure BSExtraCount from a 16-bit number to a 32-bit number. Allows you to throw things away up to 2.147.483.647.
 
 [Additional]

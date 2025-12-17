@@ -20,7 +20,7 @@ namespace XCell
 
 	HRESULT ModuleDropItem::InstallImpl()
 	{
-		if ((REL::Version() != RUNTIME_VERSION_1_10_984) && (REL::Version() != RUNTIME_VERSION_1_11_137))
+		if ((REL::Version() != RUNTIME_VERSION_1_10_984) && (REL::Version() != RUNTIME_VERSION_1_11_191))
 			return S_FALSE;
 
 		// Extended sets new ammo value
@@ -50,7 +50,7 @@ namespace XCell
 		REL::Impl::Patch(REL::ID(287), { 0x41, 0x83, 0xF8, 0x01, 0x90 });
 		REL::Impl::Patch(REL::ID(288), { 0x41, 0x89, 0xC0, 0x90 });
 
-		if ((REL::Version() == RUNTIME_VERSION_1_11_137) || !GetModuleHandleA("MentatsF4SE.dll"))
+		if ((REL::Version() == RUNTIME_VERSION_1_11_191) || !GetModuleHandleA("MentatsF4SE.dll"))
 			// Many items fix
 			REL::Impl::Patch(REL::ID(289), { 0x44, 0x8B, 0x44, 0x24, 0x70, 0x90 });
 

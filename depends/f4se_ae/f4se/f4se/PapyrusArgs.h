@@ -29,8 +29,8 @@ class VMArgList
 {
 public:
 	MEMBER_FN_PREFIX(VMArgList);
-	DEFINE_MEMBER_FN(GetOffset, UInt32, 0x020ED3C0, VMState * state);
-	DEFINE_MEMBER_FN(Get, VMValue *, 0x020ED430, VMState * state, UInt32 idx, UInt32 offset);
+	DEFINE_MEMBER_FN(GetOffset, UInt32, 0x020F3210, VMState * state);
+	DEFINE_MEMBER_FN(Get, VMValue *, 0x020F3280, VMState * state, UInt32 idx, UInt32 offset);
 };
 
 template <typename T>
@@ -486,38 +486,39 @@ struct IsArrayType<VMArray<T>>
 	typedef T TypedArg;
 };
 
-template <typename T>
-UInt64 GetTypeID <T>(VirtualMachine * vm)
-{
-	// FUCK (no compile)
-
-	//UInt64		result;
-
-	//if(IsArrayType<T>::value)
-	//{
-	//	typedef IsArrayType<T>::TypedArg BaseType;
-	//	if(IsStructType<BaseType>::value)
-	//	{
-	//		result = GetTypeIDFromStructName(IsStructType<BaseType>::name(), vm) | VMValue::kType_Identifier;
-	//	}
-	//	else if(std::is_pointer<BaseType>::value)
-	//	{
-	//		typedef std::remove_pointer <BaseType>::type	ObjectType;
-	//		result = GetTypeIDFromFormTypeID(ObjectType::kTypeID, vm) | VMValue::kType_Identifier;
-	//	}
-	//}
-	//else if(IsStructType<T>::value)
-	//{
-	//	result = GetTypeIDFromStructName(IsStructType<T>::name(), vm);
-	//}
-	//else if(std::is_pointer<T>::value)
-	//{
-	//	typedef std::remove_pointer <T>::type	ObjectType;
-	//	result = GetTypeIDFromFormTypeID(ObjectType::kTypeID, vm);
-	//}
-
-	return 0;
-}
+// NO COMPILE
+// IsStructType no defined ???
+// 
+//template <typename T>
+//UInt64 GetTypeID <T>(VirtualMachine * vm)
+//{
+//	UInt64		result;
+//
+//	if(IsArrayType<T>::value)
+//	{
+//		typedef IsArrayType<T>::TypedArg BaseType;
+//		if(IsStructType<BaseType>::value)
+//		{
+//			result = GetTypeIDFromStructName(IsStructType<BaseType>::name(), vm) | VMValue::kType_Identifier;
+//		}
+//		else if(std::is_pointer<BaseType>::value)
+//		{
+//			typedef std::remove_pointer <BaseType>::type	ObjectType;
+//			result = GetTypeIDFromFormTypeID(ObjectType::kTypeID, vm) | VMValue::kType_Identifier;
+//		}
+//	}
+//	else if(IsStructType<T>::value)
+//	{
+//		result = GetTypeIDFromStructName(IsStructType<T>::name(), vm);
+//	}
+//	else if(std::is_pointer<T>::value)
+//	{
+//		typedef std::remove_pointer <T>::type	ObjectType;
+//		result = GetTypeIDFromFormTypeID(ObjectType::kTypeID, vm);
+//	}
+//
+//	return result;
+//}
 
 template <class T>
 struct IsStaticType

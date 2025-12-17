@@ -76,11 +76,11 @@ class BSReadWriteLock
 public:
 	BSReadWriteLock() : threadID(0), lockValue(0) {}
 
-	DEFINE_MEMBER_FN_0(LockForRead, void, 0x01653A70);
-	DEFINE_MEMBER_FN_0(LockForWrite, void, 0x01653AF0);
+	DEFINE_MEMBER_FN_0(LockForRead, void, 0x01658FE0);
+	DEFINE_MEMBER_FN_0(LockForWrite, void, 0x01659060);
 
-	DEFINE_MEMBER_FN_0(UnlockRead, void, 0x01653D40);
-	DEFINE_MEMBER_FN_0(UnlockWrite, void, 0x01653D50);
+	DEFINE_MEMBER_FN_0(UnlockRead, void, 0x016592B0);
+	DEFINE_MEMBER_FN_0(UnlockWrite, void, 0x016592C0);
 };
 STATIC_ASSERT(sizeof(BSReadWriteLock) == 0x8);
 
@@ -165,14 +165,14 @@ public:
 
 		MEMBER_FN_PREFIX(Ref);
 		// 
-		DEFINE_MEMBER_FN(ctor, Ref *, 0x01676850, const char * buf);
+		DEFINE_MEMBER_FN(ctor, Ref *, 0x0167BDC0, const char * buf);
 		// 
-		DEFINE_MEMBER_FN(ctor_w, Ref *, 0x01677720, const wchar_t * buf);
+		DEFINE_MEMBER_FN(ctor_w, Ref *, 0x0167CC90, const wchar_t * buf);
 		// 
-		DEFINE_MEMBER_FN(Set, Ref *, 0x01676990, const char * buf);
-		DEFINE_MEMBER_FN(Set_w, Ref *, 0x01678910, const wchar_t * buf);
+		DEFINE_MEMBER_FN(Set, Ref *, 0x0167BF00, const char * buf);
+		DEFINE_MEMBER_FN(Set_w, Ref *, 0x0167DE80, const wchar_t * buf);
 
-		DEFINE_MEMBER_FN(Release, void, 0x01677B10);
+		DEFINE_MEMBER_FN(Release, void, 0x0167D080);
 
 		Ref();
 		Ref(const char * buf);
@@ -761,7 +761,7 @@ public:
 	}
 
 	template <class Op>
-	T * Find(const Op& op) const
+	T * Find(Op& op) const
 	{
 		const _Node* pCur = Head(); 
 
@@ -772,7 +772,7 @@ public:
 				pCur = pCur->Next();
 			else
 			{
-				bFound = const_cast<Op&>(op).Accept(pCur->Item());
+				bFound = op.Accept(pCur->Item());
 				if (!bFound)
 					pCur = pCur->Next();
 			}
@@ -781,7 +781,7 @@ public:
 	}
 
 	template <class Op>
-	Iterator Find(const Op& op, Iterator prev) const
+	Iterator Find(Op& op, Iterator prev) const
 	{
 		Iterator curIt = (prev.End()) ? Begin() : ++prev;
 		bool bFound = false;
@@ -805,7 +805,7 @@ public:
 		const _Node* pCur = Head();
 		while (pCur)
 		{
-			if (pCur->Item() && const_cast<Op&>(op).Accept(pCur->Item()))
+			if (pCur->Item() && op.Accept(pCur->Item()))
 				count++;
 			pCur = pCur->Next();
 		}
@@ -856,11 +856,11 @@ public:
 	}
 
 	template <class Op>
-	SInt32 GetIndexOf(const Op& op)
+	SInt32 GetIndexOf(Op& op)
 	{
 		SInt32 idx = 0;
 		const _Node* pCur = Head();
-		while (pCur && pCur->Item() && !const_cast<Op&>(op).Accept(pCur->Item()))
+		while (pCur && pCur->Item() && !op.Accept(pCur->Item()))
 		{
 			idx++;
 			pCur = pCur->Next();

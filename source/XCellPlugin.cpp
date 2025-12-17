@@ -431,8 +431,8 @@ namespace XCell
 			REL::K_CUR = &REL::K_163;
 		else if (_f4se_interface->runtimeVersion == RUNTIME_VERSION_1_10_984)
 			REL::K_CUR = &REL::K_984;
-		else if (_f4se_interface->runtimeVersion == RUNTIME_VERSION_1_11_137)
-			REL::K_CUR = &REL::K_137;
+		else if (_f4se_interface->runtimeVersion == RUNTIME_VERSION_1_11_191)
+			REL::K_CUR = &REL::K_191;
 		else
 			return E_FAIL;
 

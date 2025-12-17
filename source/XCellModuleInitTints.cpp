@@ -17,7 +17,7 @@ namespace XCell
 		// Removing all checks that block the load for tints by 0x0 plugin and the IsChargenPresent flag.
 		useless_code_remove[0].Install(REL::ID(250), 0x35);
 		useless_code_remove[1].Install(REL::ID(251), 0x35);
-		if (REL::Version() != RUNTIME_VERSION_1_11_137)
+		if (REL::Version() != RUNTIME_VERSION_1_11_191)
 			useless_code_remove[2].Install(REL::ID(253), 0x19);
 		else
 			useless_code_remove[2].Install(REL::ID(253), 0x3B);
@@ -37,7 +37,7 @@ namespace XCell
 
 	HRESULT ModuleInitTints::InstallImpl()
 	{
-		if ((REL::Version() != RUNTIME_VERSION_1_11_137) && (REL::Version() != RUNTIME_VERSION_1_10_984) &&
+		if ((REL::Version() != RUNTIME_VERSION_1_11_191) && (REL::Version() != RUNTIME_VERSION_1_10_984) &&
 			(REL::Version() != RUNTIME_VERSION_1_10_163))
 			return S_FALSE;
 
