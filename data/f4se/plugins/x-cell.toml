@@ -8,6 +8,7 @@ bIO=true						# Replacing file search functions with a newer one and use OS file
 bLibDeflate=true				# Replace old zlib decompression code with optimized libdeflate https://github.com/ebiggers/libdeflate.
 bProfile=true					# Replacing outdated functions WritePrivateProfileStringA, GetPrivateProfileStringA, GetPrivateProfileIntA. They read INI files. 
 bLoadScreen=false				# Black loading screen.
+bDropItem=true					# Extends structure BSExtraCount from a 16-bit number to a 32-bit number. Allows you to throw things away up to 2.147.483.647.
 bUpscaler=false					# [Experimental] Increase FPS due to scaling, requires Win 8.1 and newer, without conflict ENB (no dlss, no fsr).
 
 [Fixes]							# Common fixes
@@ -18,9 +19,6 @@ bLODDistance=true				# Fixes bugs when toggling references with LOD causing LOD 
 bGreyMovies=true				# Fixes a bug where movies that don't define "BackgroundAlpha" on their movie root could load with a grey background.
 bPackageAllocateLocation=true	# Fixes a crash when allocating the location for a package.
 bWarningCreateTexture2D=false	# Warns when a call to CreateTexture2D fails.
-
-[AE_NG_Patches]					# Only NG-AE version game.								
-bDropItem=true					# Extends structure BSExtraCount from a 16-bit number to a 32-bit number. Allows you to throw things away up to 2.147.483.647.
 
 [Additional]
 uScaleformPageSize=256			# The page size (in KB), vanilla size is 64. More, better, but the higher the memory consumption. Limit 2Mb (2048), number must be a multiple of 8 (Need bMemory patch).

@@ -13,12 +13,11 @@ namespace XCell
 	std::shared_ptr<Setting> CVarLibDeflate = std::make_shared<Setting>("bLibDeflate:Patches", true);
 	std::shared_ptr<Setting> CVarProfile = std::make_shared<Setting>("bProfile:Patches", true);
 	std::shared_ptr<Setting> CVarLoadScreen = std::make_shared<Setting>("bLoadScreen:Patches", false);
+	std::shared_ptr<Setting> CVarDropItem = std::make_shared<Setting>("bDropItem:Patches", true);
 	std::shared_ptr<Setting> CVarUpscaler = std::make_shared<Setting>("bUpscaler:Patches", false);
 
 	std::shared_ptr<Setting> CVarInitTints = std::make_shared<Setting>("bInitTints:Fixes", true);
 	std::shared_ptr<Setting> CVarLODDistance = std::make_shared<Setting>("bLODDistance:Fixes", true);
-
-	std::shared_ptr<Setting> CVarDropItem = std::make_shared<Setting>("bDropItem:AE_NG_Patches", true);
 
 	std::shared_ptr<Setting> CVarGreyMovies = std::make_shared<Setting>("bGreyMovies:AE_NG_Fixes", true);
 	std::shared_ptr<Setting> CVarPackageAllocateLocation = std::make_shared<Setting>("bPackageAllocateLocation:AE_NG_Fixes", true);
