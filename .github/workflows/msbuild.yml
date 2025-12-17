@@ -23,7 +23,7 @@ env:
   # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
   OG_BUILD_CONFIGURATION: Release-10-163
   NG_BUILD_CONFIGURATION: Release-10-984
-  AE_BUILD_CONFIGURATION: Release-11-137
+  AE_BUILD_CONFIGURATION: Release-11-191
 
 permissions:
   contents: read
