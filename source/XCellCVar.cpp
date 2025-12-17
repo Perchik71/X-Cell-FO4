@@ -18,11 +18,11 @@ namespace XCell
 	std::shared_ptr<Setting> CVarInitTints = std::make_shared<Setting>("bInitTints:Fixes", true);
 	std::shared_ptr<Setting> CVarLODDistance = std::make_shared<Setting>("bLODDistance:Fixes", true);
 
-	std::shared_ptr<Setting> CVarDropItem = std::make_shared<Setting>("bDropItem:NGPatches", true);
+	std::shared_ptr<Setting> CVarDropItem = std::make_shared<Setting>("bDropItem:AE_NG_Patches", true);
 
-	std::shared_ptr<Setting> CVarGreyMovies = std::make_shared<Setting>("bGreyMovies:NGFixes", true);
-	std::shared_ptr<Setting> CVarPackageAllocateLocation = std::make_shared<Setting>("bPackageAllocateLocation:NGFixes", true);
-	std::shared_ptr<Setting> CVarWarningCreateTexture2D = std::make_shared<Setting>("bWarningCreateTexture2D:NGFixes", false);
+	std::shared_ptr<Setting> CVarGreyMovies = std::make_shared<Setting>("bGreyMovies:AE_NG_Fixes", true);
+	std::shared_ptr<Setting> CVarPackageAllocateLocation = std::make_shared<Setting>("bPackageAllocateLocation:AE_NG_Fixes", true);
+	std::shared_ptr<Setting> CVarWarningCreateTexture2D = std::make_shared<Setting>("bWarningCreateTexture2D:AE_NG_Fixes", false);
 
 	std::shared_ptr<Setting> CVarScaleformPageSize = std::make_shared<Setting>("uScaleformPageSize:Additional", (uint32_t)256ul);
 	std::shared_ptr<Setting> CVarScaleformHeapSize = std::make_shared<Setting>("uScaleformHeapSize:Additional", (uint32_t)512ul);
