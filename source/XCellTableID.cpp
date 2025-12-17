@@ -189,7 +189,7 @@ namespace XCell
 			// INIT TINTS
 			{ 250,		0x5FBDFB },
 			{ 251,		0x5FBBB4 },
-			{ 252,		0x2156D30 },
+			{ 252,		0x2156E00 },	// 2156D30 <-- incorrect ?
 			{ 253,		0x29B434 },
 			{ 254,		0x60A083 },
 
@@ -284,7 +284,7 @@ namespace XCell
 			// INIT TINTS
 			{ 250,		0x64F78B },
 			{ 251,		0x64F544 },
-			{ 252,		0x22ACD20 },
+			{ 252,		0x22ACE60 },
 			{ 253,		0x2EF647 },
 			{ 254,		0x65DA13 },
 
