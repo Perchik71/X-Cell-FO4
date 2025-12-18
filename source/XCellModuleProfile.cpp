@@ -12,6 +12,8 @@
 
 #include <memory>
 
+#include <f4se/GameSettings.h>
+
 namespace XCell
 {
 	std::map<UInt64, shared_ptr<ParseINI>> _cache_inifiles;
@@ -118,8 +120,8 @@ namespace XCell
 		if (!DefaultValue)
 			DefaultValue = "";
 
-		/*_MESSAGE("AppName: \"%s\", KeyName: \"%s\", DefaultValue: \"%s\", Size: \"%u\", FileName: \"%s\"", 
-			AppName, KeyName, DefaultValue, Size, FileName);*/
+		//_MESSAGE("AppName: \"%s\", KeyName: \"%s\", DefaultValue: \"%s\", Size: \"%u\", FileName: \"%s\"", 
+		//	AppName, KeyName, DefaultValue, Size, FileName);
 		
 		ParseINI* Data;
 		// Enum all sections or error parse file
@@ -210,8 +212,8 @@ namespace XCell
 
 		SetLastError(0);
 
-		/*_MESSAGE("AppName: \"%s\", KeyName: \"%s\", DefaultValue: \"%i\", FileName: \"%s\"",
-			AppName, KeyName, DefaultValue, FileName);*/
+		//_MESSAGE("AppName: \"%s\", KeyName: \"%s\", DefaultValue: \"%i\", FileName: \"%s\"",
+		//	AppName, KeyName, DefaultValue, FileName);
 
 		ParseINI* Data;
 		if (!ParseINIAndStoreCache(&Data, FileName))
@@ -285,6 +287,29 @@ namespace XCell
 		return TRUE;
 	}
 
+	static bool hk_subC30008()
+	{
+		auto iniDef = *(g_iniSettings.GetPtr());
+		auto iniPref = *(g_iniPrefSettings.GetPtr());
+
+		auto pSettingSrc = iniPref->data;
+
+		do
+		{
+			auto pSettingDst = iniDef->Get(pSettingSrc->data->name);
+			if (!pSettingDst)
+			{
+				auto pNewNode = new SettingCollectionList::Node;
+				pNewNode->next = iniDef->data;
+				pNewNode->data = pSettingSrc->data;
+				iniDef->data = pNewNode;
+			}
+			
+		} while (pSettingSrc = pSettingSrc->next);
+
+		return false;
+	}
+
 	ModuleProfile::ModuleProfile(void* Context) :
 		Module(Context, SourceName, CVarProfile)
 	{}
@@ -315,6 +340,9 @@ namespace XCell
 		REL::Impl::DetourIAT(base, "kernel32.dll", "GetPrivateProfileStringA", (uintptr_t)&HKGetPrivateProfileStringA);
 		REL::Impl::DetourIAT(base, "kernel32.dll", "GetPrivateProfileIntA", (uintptr_t)&HKGetPrivateProfileIntA);
 
+		// Add new settings for plugins .ini
+		REL::Impl::DetourCall(REL::ID(300), (UInt64)&hk_subC30008);
+		
 		return S_OK;
 	}
 

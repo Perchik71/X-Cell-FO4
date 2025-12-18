@@ -129,6 +129,9 @@ namespace XCell
 			{ 267,		0x52A80 },
 			// 2F3BE2	??? Keyword?
 			// 42B380
+
+			// PROFILE
+			{ 300,		0xD3645E },
 			});
 
 		TableID K_984(RUNTIME_VERSION_1_10_984, {
@@ -223,6 +226,9 @@ namespace XCell
 			{ 287,		0x3F18D1 },
 			{ 288,		0x3F18BB },
 			{ 289,		0x4AEF51 },
+
+			// PROFILE
+			{ 300,		0xBAA967 },
 
 			});
 
@@ -320,6 +326,9 @@ namespace XCell
 			{ 289,		0x502E71 },
 
 			// 29305E << new need test
+
+			// PROFILE
+			{ 300,		0xC30008 },
 			});
 	}
 }
