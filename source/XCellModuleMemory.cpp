@@ -10,297 +10,602 @@
 #include "XCellCVar.h"
 #include "XCellAssertion.h"
 
+#include <xbyak/xbyak.h>
+#include <common/ISingleton.h>
+#include <array>
+#include <tuple>
+
 namespace XCell
 {
 	constexpr auto MEM_GB = 1073741824;
 
-	class memory_manager
+	namespace detail
 	{
-	public:
-		memory_manager()
+		class ICheckerPointer
+		{
+			ICheckerPointer(const ICheckerPointer&) = delete;
+			ICheckerPointer(ICheckerPointer&&) = delete;
+			ICheckerPointer& operator=(const ICheckerPointer&) = delete;
+			ICheckerPointer& operator=(ICheckerPointer&&) = delete;
+		public:
+			ICheckerPointer() noexcept(true) = default;
+			~ICheckerPointer() noexcept(true) = default;
+
+			inline void* CheckPtr(void* lpBlock, std::size_t nSize) const noexcept(true)
+			{
+				if (!lpBlock)
+				{
+					static MEMORYSTATUSEX statex = { 0 };
+					statex.dwLength = sizeof(MEMORYSTATUSEX);
+					if (!GlobalMemoryStatusEx(&statex))
+						return lpBlock;
+
+					XCAssertWithFormattedMessage(lpBlock,
+						"A memory allocation failed.\n\nRequested chunk size: %llu bytes.\n\nAvail memory: %llu bytes, load (%u%%).",
+						nSize, statex.ullAvailPageFile, statex.dwMemoryLoad);
+				}
+
+				return lpBlock;
+			}
+		};
+
+		class ProxyHeap :
+			public ICheckerPointer,
+			public ISingleton<ProxyHeap>
+		{
+			ProxyHeap(const ProxyHeap&) = delete;
+			ProxyHeap(ProxyHeap&&) = delete;
+			ProxyHeap& operator=(const ProxyHeap&) = delete;
+			ProxyHeap& operator=(ProxyHeap&&) = delete;
+		public:
+			ProxyHeap() noexcept(true) = default;
+			~ProxyHeap() noexcept(true) = default;
+
+			[[nodiscard]] void* malloc(std::size_t nSize) const noexcept(true);
+			[[nodiscard]] void* aligned_malloc(std::size_t nSize, std::size_t nAlignment) const noexcept(true);
+
+			[[nodiscard]] void* realloc(void* lpBlock, std::size_t nNewSize) const noexcept(true);
+			[[nodiscard]] void* aligned_realloc(void* lpBlock, std::size_t nNewSize, std::size_t nAlignment) const noexcept(true);
+
+			void free(void* lpBlock) const noexcept(true);
+			void aligned_free(void* lpBlock) const noexcept(true);
+
+			[[nodiscard]] std::size_t msize(void* lpBlock) const noexcept(true);
+			[[nodiscard]] std::size_t aligned_msize(void* lpBlock, std::size_t nAlignment) const noexcept(true);
+		};
+
+		void* ProxyHeap::malloc(std::size_t nSize) const noexcept(true)
+		{
+			return CheckPtr(::malloc(nSize), nSize);
+		}
+
+		void* ProxyHeap::aligned_malloc(std::size_t nSize, std::size_t nAlignment) const noexcept(true)
+		{
+			return CheckPtr(_aligned_malloc(nSize, nAlignment), nSize);
+		}
+
+		void* ProxyHeap::realloc(void* lpBlock, std::size_t nNewSize) const noexcept(true)
+		{
+			return CheckPtr(lpBlock ? ::realloc(lpBlock, nNewSize) : ::malloc(nNewSize), nNewSize);
+		}
+
+		void* ProxyHeap::aligned_realloc(void* lpBlock, std::size_t nNewSize, std::size_t nAlignment) const noexcept(true)
+		{
+			return CheckPtr(lpBlock ? ::_aligned_realloc(lpBlock, nNewSize, nAlignment) : _aligned_malloc(nNewSize, nAlignment), nNewSize);
+		}
+
+		void ProxyHeap::free(void* lpBlock) const noexcept(true)
+		{
+			if (lpBlock)
+				::free(lpBlock);
+		}
+
+		void ProxyHeap::aligned_free(void* lpBlock) const noexcept(true)
+		{
+			if (lpBlock)
+				::_aligned_free(lpBlock);
+		}
+
+		std::size_t ProxyHeap::msize(void* lpBlock) const noexcept(true)
+		{
+			return lpBlock ? ::_msize(lpBlock) : 0;
+		}
+
+		std::size_t ProxyHeap::aligned_msize(void* lpBlock, std::size_t nAlignment) const noexcept(true)
+		{
+			return lpBlock ? ::_aligned_msize(lpBlock, nAlignment, 0) : 0;
+		}
+
+		class ProxyVoltekHeap :
+			public ICheckerPointer,
+			public ISingleton<ProxyVoltekHeap>
+		{
+			ProxyVoltekHeap(const ProxyVoltekHeap&) = delete;
+			ProxyVoltekHeap(ProxyVoltekHeap&&) = delete;
+			ProxyVoltekHeap& operator=(const ProxyVoltekHeap&) = delete;
+			ProxyVoltekHeap& operator=(ProxyVoltekHeap&&) = delete;
+		public:
+			ProxyVoltekHeap() noexcept(true);
+			~ProxyVoltekHeap() noexcept(true) = default;
+
+			[[nodiscard]] void* malloc(std::size_t nSize) const noexcept(true);
+			[[nodiscard]] void* aligned_malloc(std::size_t nSize, std::size_t nAlignment) const noexcept(true);
+
+			[[nodiscard]] void* realloc(void* lpBlock, std::size_t nNewSize) const noexcept(true);
+			[[nodiscard]] void* aligned_realloc(void* lpBlock, std::size_t nNewSize, std::size_t nAlignment) const noexcept(true);
+
+			void free(void* lpBlock) const noexcept(true);
+			void aligned_free(void* lpBlock) const noexcept(true);
+
+			[[nodiscard]] std::size_t msize(void* lpBlock) const noexcept(true);
+			[[nodiscard]] std::size_t aligned_msize(void* lpBlock, std::size_t nAlignment) const noexcept(true);
+		};
+
+		ProxyVoltekHeap::ProxyVoltekHeap() noexcept(true)
 		{
 			voltek::scalable_memory_manager_initialize();
 		}
-
-		memory_manager(const memory_manager&) = default;
-		memory_manager& operator=(const memory_manager&) = default;
-
-		static void* alloc(size_t size, size_t alignment, bool aligned = false, bool zeroed = true)
+		
+		void* ProxyVoltekHeap::malloc(std::size_t nSize) const noexcept(true)
 		{
-			if (!aligned)
-				alignment = 4;
-
-			if (!size)
-				return voltek::scalable_alloc(0);
-
-			// Reset last error
-			SetLastError(0);
-
-			XCAssertWithFormattedMessage((alignment != 0) && ((alignment % 2) == 0), "Alignment is fucked: %llu", alignment);
-
-			if ((alignment & (alignment - 1)) != 0)
-			{
-				alignment--;
-				alignment |= alignment >> 1;
-				alignment |= alignment >> 2;
-				alignment |= alignment >> 4;
-				alignment |= alignment >> 8;
-				alignment |= alignment >> 16;
-				alignment++;
-			}
-
-			if ((size % alignment) != 0)
-				size = ((size + alignment - 1) / alignment) * alignment;
-
-			void* ptr = voltek::scalable_alloc(size);
-			if (ptr && zeroed) memset(ptr, 0, size);
-
-
-			if (!ptr)
-			{
-				MEMORYSTATUSEX statex = { 0 };
-				statex.dwLength = sizeof(MEMORYSTATUSEX);
-				if (!GlobalMemoryStatusEx(&statex))
-					return ptr;
-
-				XCAssertWithFormattedMessage(ptr, 
-					"A memory allocation failed.\n\nRequested chunk size: %llu bytes.\n\nAvail memory: %llu bytes, load (%u%%).",
-					size, statex.ullAvailPageFile, statex.dwMemoryLoad);
-			}
-
-			return ptr;
+			return CheckPtr(voltek::scalable_alloc(nSize), nSize);
 		}
 
-		inline static void dealloc(void* block)
+		void* ProxyVoltekHeap::aligned_malloc(std::size_t nSize, std::size_t nAlignment) const noexcept(true)
 		{
-			voltek::scalable_free(block);
+			UNREFERENCED_PARAMETER(nAlignment);
+
+			return CheckPtr(voltek::scalable_alloc(nSize), nSize);
 		}
 
-		inline static size_t msize(void* block)
+		void* ProxyVoltekHeap::realloc(void* lpBlock, std::size_t nNewSize) const noexcept(true)
 		{
-			return voltek::scalable_msize(block);
+			return CheckPtr(voltek::scalable_realloc(lpBlock, nNewSize), nNewSize);
+		}
+
+		void* ProxyVoltekHeap::aligned_realloc(void* lpBlock, std::size_t nNewSize, std::size_t nAlignment) const noexcept(true)
+		{
+			UNREFERENCED_PARAMETER(nAlignment);
+
+			return CheckPtr(voltek::scalable_realloc(lpBlock, nNewSize), nNewSize);
+		}
+
+		void ProxyVoltekHeap::free(void* lpBlock) const noexcept(true)
+		{
+			voltek::scalable_free(lpBlock);
+		}
+
+		void ProxyVoltekHeap::aligned_free(void* lpBlock) const noexcept(true)
+		{
+			voltek::scalable_free(lpBlock);
+		}
+
+		std::size_t ProxyVoltekHeap::msize(void* lpBlock) const noexcept(true)
+		{
+			return voltek::scalable_msize(lpBlock);
+		}
+
+		std::size_t ProxyVoltekHeap::aligned_msize(void* lpBlock, std::size_t nAlignment) const noexcept(true)
+		{
+			return voltek::scalable_msize(lpBlock);
+		}
+
+		template<typename Heap = detail::ProxyHeap>
+		struct StdStuff
+		{
+			[[nodiscard]] static void* calloc(std::size_t nCount, std::size_t nSize) noexcept(true)
+			{
+				auto totalSize = nCount * nSize;
+				auto ptr = Heap::GetSingletonPtr()->malloc(totalSize);
+				if (ptr) memset(ptr, 0, totalSize);
+				return ptr;
+			}
+
+			[[nodiscard]] static void* malloc(std::size_t nSize) noexcept(true)
+			{
+				return Heap::GetSingletonPtr()->malloc(nSize);
+			}
+
+			[[nodiscard]] static void* aligned_malloc(std::size_t nSize, size_t alignment) noexcept(true)
+			{
+				return Heap::GetSingletonPtr()->aligned_malloc(nSize, alignment);
+			}
+
+			[[nodiscard]] static void* realloc(void* lpBlock, std::size_t nNewSize) noexcept(true)
+			{
+				return Heap::GetSingletonPtr()->realloc(lpBlock, nNewSize);
+			}
+
+			static void free(void* block) noexcept(true)
+			{
+				Heap::GetSingletonPtr()->free(block);
+			}
+
+			static void aligned_free(void* block) noexcept(true)
+			{
+				Heap::GetSingletonPtr()->aligned_free(block);
+			}
+
+			[[nodiscard]] static size_t msize(void* block) noexcept(true)
+			{
+				return Heap::GetSingletonPtr()->msize(block);
+			}
+		};
+	}
+
+	template<typename Heap = detail::ProxyHeap>
+	class MemoryManager
+	{
+		MemoryManager(const MemoryManager&) = delete;
+		MemoryManager(MemoryManager&&) = delete;
+		MemoryManager& operator=(const MemoryManager&) = delete;
+		MemoryManager& operator=(MemoryManager&&) = delete;
+
+		MemoryManager() = default;
+		~MemoryManager() = default;
+	public:
+		inline static const std::uint64_t EMPTY_POINTER{ 0 };
+
+		[[nodiscard]] static void* Alloc(MemoryManager* lpSelf, std::size_t nSize, std::uint32_t nAlignment, bool bAligned) noexcept(true)
+		{
+			UNREFERENCED_PARAMETER(lpSelf);
+
+			if (!nSize)
+				return (void*)(&EMPTY_POINTER);
+
+			return bAligned ? 
+				Heap::GetSingletonPtr()->aligned_malloc(nSize, nAlignment) :
+				Heap::GetSingletonPtr()->malloc(nSize);
+		}
+
+		[[nodiscard]] static void* Realloc(MemoryManager* lpSelf, void* lpBlock, std::size_t nSize, std::uint32_t nAlignment, bool bAligned) noexcept(true)
+		{
+			UNREFERENCED_PARAMETER(lpSelf);
+
+			if (lpBlock == (const void*)(&EMPTY_POINTER))
+				return Alloc(lpSelf, nSize, nAlignment, bAligned);
+
+			return bAligned ?
+				Heap::GetSingletonPtr()->aligned_realloc(lpBlock, nSize, nAlignment) :
+				Heap::GetSingletonPtr()->realloc(lpBlock, nSize);
+		}
+
+		static void Dealloc(MemoryManager* lpSelf, void* lpBlock, bool bAligned) noexcept(true)
+		{
+			UNREFERENCED_PARAMETER(lpSelf);
+
+			if (lpBlock == (const void*)(&EMPTY_POINTER))
+				return;
+
+			if (bAligned)
+				Heap::GetSingletonPtr()->aligned_free(lpBlock);		
+			else
+				Heap::GetSingletonPtr()->free(lpBlock);
+		}
+
+		[[nodiscard]] static std::size_t Size(MemoryManager* lpSelf, void* lpBlock) noexcept(true)
+		{
+			UNREFERENCED_PARAMETER(lpSelf);
+
+			if (lpBlock == (const void*)(&EMPTY_POINTER))
+				return 0;
+
+			return Heap::GetSingletonPtr()->msize(lpBlock);
+		}
+
+		static void StubInit(XCell::Context* Context)
+		{
+			auto base = Context->ProcessBase;
+
+			//
+			// Remove the thousands of [code below] since they're useless checks:
+			//
+			// if ( dword_142E62E00 != 2 ) // MemoryManager initialized flag
+			//     sub_14153DDA0((__int64)&unk_142E62980, &dword_142E62E00);
+			//
+			{
+				auto Section = Context->GetPESectionText();
+				auto Matches = REL::Impl::FindPatterns(Section.base, Section.end - Section.base,
+					"83 3D ? ? ? ? 02 74 13 48 8D 15 ? ? ? ? 48 8D 0D ? ? ? ? E8");
+
+				REL::ScopeLock Lock(Section.base, Section.end - Section.base);
+				for (UInt64 match : Matches)
+					memcpy((void*)match, "\xEB\x1A", 2);
+
+				_MESSAGE("memory: remove useless checks %llu", Matches.size());
+			}
+
+			REL::Impl::Patch(REL::ID(151), { 0xC3, 0x90 });
+			*(std::uint32_t*)REL::ID(152) = 2;
+		}
+
+		static void Install()
+		{
+			using tuple_t = std::tuple<UInt32, void*>;
+			const std::array MMPatch
+			{
+				tuple_t{ 30, &Alloc },
+				tuple_t{ 40, &Dealloc },
+				tuple_t{ 41, &Realloc },
+				tuple_t{ 50, &Size },
+			};
+
+			for (const auto& [id, func] : MMPatch)
+				REL::Impl::DetourJump(REL::ID(id), (UInt64)func);
 		}
 	};
 
-	memory_manager g_memory_mgr;
-
-	namespace detail
+	class AutoScrapHeap
 	{
-		class BGSMemoryManager
+		AutoScrapHeap(const AutoScrapHeap&) = delete;
+		AutoScrapHeap(AutoScrapHeap&&) = delete;
+		AutoScrapHeap& operator=(const AutoScrapHeap&) = delete;
+		AutoScrapHeap& operator=(AutoScrapHeap&&) = delete;
+
+		AutoScrapHeap() = default;
+		~AutoScrapHeap() = default;
+
+		inline static void CtorLong()
 		{
-		public:
-			static void* alloc(BGSMemoryManager* self, size_t size, uint32_t alignment, bool aligned)
-			{
-				return memory_manager::alloc(size, alignment, aligned, true);
-			}
-
-			static void dealloc(BGSMemoryManager* self, void* block, bool aligned)
-			{
-				memory_manager::dealloc(block);
-			}
-
-			static void* realloc(BGSMemoryManager* self, void* old_block, size_t size, uint32_t alignment, bool aligned)
-			{
-				auto new_ptr = memory_manager::alloc(size, alignment, aligned, true);
-				if (!new_ptr) return nullptr;
-
-				if (old_block)
-				{
-					auto old_size = memory_manager::msize(old_block);
-					memcpy(new_ptr, old_block, min(old_size, size));
-					memory_manager::dealloc(old_block);
-				}
-
-				return new_ptr;
-			}
-
-			static size_t msize(BGSMemoryManager* self, void* memory)
-			{
-				return memory_manager::msize(memory);
-			}
-		};
-
-		class BSSmallBlockAllocator
-		{
-		public:
-			static void* alloc(size_t size, uint32_t alignment, bool aligned)
-			{
-				return memory_manager::alloc(size, alignment, aligned, false);
-			}
-			static void sub_nullopt() { return; }
-			static int32_t sub08() { return 0; }
-			static void* alloc_block(size_t size, uint32_t alignment) { return alloc(size, alignment, true); }
-			static void dealloc_block(void* block) { memory_manager::dealloc(block); }
-			static void* alloc_block_noalign(size_t size) { return alloc(size, 0, false); }
-		};
-
-		class BGSScrapHeap
-		{
-		public:
-			static void* alloc(BGSScrapHeap* manager, size_t size, uint32_t alignment)
-			{
-				return memory_manager::alloc(size, alignment, alignment != 0);
-			}
-
-			static void dealloc(BGSScrapHeap* manager, void* memory)
-			{
-				memory_manager::dealloc(memory);
-			}
-		};
-
-		class bhkThreadMemorySource
-		{
-		private:
-			char _pad0[0x8];
-			CRITICAL_SECTION m_CritSec;
-		public:
-			XC_DECLARE_CONSTRUCTOR_HOOK(bhkThreadMemorySource);
-
-			bhkThreadMemorySource()
-			{
-				InitializeCriticalSection(&m_CritSec);
-			}
-
-			virtual ~bhkThreadMemorySource()
-			{
-				DeleteCriticalSection(&m_CritSec);
-			}
-
-			virtual void* blockAlloc(size_t numBytes)
-			{
-				return memory_manager::alloc(numBytes, 16, true);
-			}
-
-			virtual void blockFree(void* p, size_t numBytes)
-			{
-				memory_manager::dealloc(p);
-			}
-
-			virtual void* bufAlloc(size_t& reqNumBytesInOut)
-			{
-				return blockAlloc(reqNumBytesInOut);
-			}
-
-			virtual void bufFree(void* p, size_t numBytes)
-			{
-				return blockFree(p, numBytes);
-			}
-
-			virtual void* bufRealloc(void* pold, size_t oldNumBytes, size_t& reqNumBytesInOut)
-			{
-				void* p = blockAlloc(reqNumBytesInOut);
-				memcpy(p, pold, oldNumBytes);
-				blockFree(pold, oldNumBytes);
-				return p;
-			}
-
-			virtual void blockAllocBatch(void** ptrsOut, size_t numPtrs, size_t blockSize)
-			{
-				for (long i = 0; i < numPtrs; i++)
-					ptrsOut[i] = blockAlloc(blockSize);
-			}
-
-			virtual void blockFreeBatch(void** ptrsIn, size_t numPtrs, size_t blockSize)
-			{
-				for (long i = 0; i < numPtrs; i++)
-					blockFree(ptrsIn[i], blockSize);
-			}
-
-			virtual void getMemoryStatistics(class MemoryStatistics& u)
-			{}
-
-			virtual size_t getAllocatedSize(const void* obj, size_t nbytes)
-			{
-				return 0;
-			}
-
-			virtual void resetPeakMemoryStatistics()
-			{}
-
-			virtual void* getExtendedInterface()
-			{
-				return nullptr;
-			}
-		};
-
-		class BSScaleformSysMemMapper
-		{
-		public:
-			inline static UInt32 PAGE_SIZE;
-			inline static UInt32 HEAP_SIZE;
-
-			static uint32_t get_page_size(BSScaleformSysMemMapper* _this)
-			{
-				return (uint32_t)PAGE_SIZE;
-			}
-
-			static void* init(BSScaleformSysMemMapper* _this, size_t size)
-			{
-				return VirtualAlloc(NULL, (SIZE_T)size, MEM_RESERVE, PAGE_READWRITE);
-			}
-
-			static bool release(BSScaleformSysMemMapper* _this, void* address)
-			{
-				return VirtualFree((LPVOID)address, (SIZE_T)HEAP_SIZE, MEM_RELEASE);
-			}
-
-			static void* alloc(BSScaleformSysMemMapper* _this, void* address, size_t size)
-			{
-				return VirtualAlloc((LPVOID)address, (SIZE_T)size, MEM_COMMIT, PAGE_READWRITE);
-			}
-
-			static bool free(BSScaleformSysMemMapper* _this, void* address, size_t size)
-			{
-				return VirtualFree((LPVOID)address, (SIZE_T)size, MEM_DECOMMIT);
-			}
-		};
-	}
-
-	static void* impl_calloc(size_t count, size_t size)
-	{
-		return memory_manager::alloc(count * size, 0);
-	}
-
-	static void* impl_malloc(size_t size)
-	{
-		return memory_manager::alloc(size, 0);
-	}
-
-	static void* impl_aligned_malloc(size_t size, size_t alignment)
-	{
-		return memory_manager::alloc(size, alignment, true);
-	}
-
-	static void* impl_realloc(void* memory, size_t size)
-	{
-		void* newMemory = nullptr;
-
-		if (size > 0)
-		{
-			newMemory = memory_manager::alloc(size, 0, false);
-
-			if (memory)
-				memcpy(newMemory, memory, min(size, voltek::scalable_msize(memory)));
+			REL::Impl::PatchNop(REL::ID(51) + 0x1D, 0x15);
 		}
 
-		memory_manager::dealloc(memory);
-		return newMemory;
-	}
+		static void CtorShort()
+		{
+			struct Patch :
+				Xbyak::CodeGenerator
+			{
+				Patch()
+				{
+					mov(qword[rcx], 0);
+					mov(rax, rcx);
+					ret();
+				}
+			} p;
 
-	static void impl_free(void* block)
-	{
-		memory_manager::dealloc(block);
-	}
+			auto Off = REL::ID(52);
 
-	static void impl_aligned_free(void* block)
-	{
-		memory_manager::dealloc(block);
-	}
+			p.ready();
+			XCAssert(p.getSize() <= 0x1C);
 
-	static size_t impl_msize(void* block)
+			REL::Impl::PatchNop(Off, 0x1C);
+			REL::Impl::Patch(Off, p.getCode<UInt8*>(), p.getSize());
+		}
+
+		static void Dtor()
+		{
+			struct Patch :
+				Xbyak::CodeGenerator
+			{
+				Patch()
+				{
+					xor_(rax, rax);
+					cmp(rbx, rax);
+				}
+			} p;
+
+			auto Off = REL::ID(53);
+			p.ready();
+			XCAssert(p.getSize() <= 0x1D);
+
+			REL::Impl::PatchNop(Off + 0x9, 0x1D);
+			REL::Impl::Patch(Off + 0x9, p.getCode<UInt8*>(), p.getSize());
+			REL::Impl::Patch(Off + 0x26, { 0x74 }); // jnz -> jz
+		}
+	public:
+		static void Install()
+		{
+			REL::Impl::Patch(REL::ID(120), { 0xC3, 0x90, 0x90, 0x90 });
+
+			CtorLong();
+			CtorShort();
+			Dtor();
+		}
+	};
+
+	template<typename Heap = detail::ProxyHeap>
+	class ScrapHeap
 	{
-		return memory_manager::msize(block);
-	}
+		ScrapHeap(const ScrapHeap&) = delete;
+		ScrapHeap(ScrapHeap&&) = delete;
+		ScrapHeap& operator=(const ScrapHeap&) = delete;
+		ScrapHeap& operator=(ScrapHeap&&) = delete;
+
+		ScrapHeap() = default;
+		~ScrapHeap() = default;
+
+		static void WriteStubs()
+		{
+			// Remove stuff
+
+			REL::Impl::Patch(REL::ID(140), { 0xC3, 0x90, 0x90, 0x90 });	// Clean
+			REL::Impl::Patch(REL::ID(62), { 0xC3, 0x90, 0x90, 0x90 });	// ClearKeepPages
+			REL::Impl::Patch(REL::ID(63), { 0xC3, 0x90, 0x90, 0x90 });	// InsertFreeBlock
+			REL::Impl::Patch(REL::ID(64), { 0xC3, 0x90, 0x90, 0x90 });	// RemoveFreeBlock
+			REL::Impl::Patch(REL::ID(65), { 0xC3, 0x90, 0x90, 0x90 });	// SetKeepPages
+			REL::Impl::Patch(REL::ID(66), { 0xC3, 0x90, 0x90, 0x90 });	// dtor
+			REL::Impl::Patch(REL::ID(130), { 0xC3, 0x90, 0x90, 0x90 });	// ctor
+		}
+
+		static void WriteHooks()
+		{
+			using tuple_t = std::tuple<std::uint64_t, void*>;
+			const std::array MMPatch
+			{
+				tuple_t{ 60, &Allocate },
+				tuple_t{ 70, &Deallocate },
+			};
+
+			for (const auto& [id, func] : MMPatch)
+				REL::Impl::DetourJump(REL::ID(id), (UInt64)func);
+		}
+	public:
+		inline static const std::uint64_t EMPTY_POINTER{ 0 };
+
+		[[nodiscard]] inline static void* Allocate(ScrapHeap* lpSelf, std::size_t nSize, std::size_t nAlignment) noexcept(true)
+		{
+			UNREFERENCED_PARAMETER(lpSelf);
+
+			if (!nSize)
+				return (void*)(&EMPTY_POINTER);
+
+			return Heap::GetSingletonPtr()->aligned_malloc(nSize, nAlignment);
+		}
+
+		inline static void Deallocate(ScrapHeap* lpSelf, void* lpBlock) noexcept(true)
+		{
+			UNREFERENCED_PARAMETER(lpSelf);
+
+			if (lpBlock == (const void*)(&EMPTY_POINTER))
+				return;
+
+			Heap::GetSingletonPtr()->aligned_free(lpBlock);
+		}
+
+		static void Install()
+		{
+			WriteStubs();
+			WriteHooks();
+		}
+	};
+
+	template<typename Heap = detail::ProxyHeap>
+	class bhkThreadMemorySource
+	{
+	private:
+		char _pad0[0x8];
+		CRITICAL_SECTION m_CritSec;
+	public:
+		XC_DECLARE_CONSTRUCTOR_HOOK(bhkThreadMemorySource);
+
+		bhkThreadMemorySource()
+		{
+			InitializeCriticalSection(&m_CritSec);
+		}
+
+		virtual ~bhkThreadMemorySource()
+		{
+			DeleteCriticalSection(&m_CritSec);
+		}
+
+		[[nodiscard]] virtual void* blockAlloc(std::size_t numBytes)
+		{
+			return Heap::GetSingletonPtr()->aligned_malloc(numBytes, 16);
+		}
+
+		virtual void blockFree(void* p, std::size_t numBytes)
+		{
+			Heap::GetSingletonPtr()->aligned_free(p);
+		}
+
+		[[nodiscard]] virtual void* bufAlloc(std::size_t& reqNumBytesInOut)
+		{
+			return blockAlloc(reqNumBytesInOut);
+		}
+
+		virtual void bufFree(void* p, std::size_t numBytes)
+		{
+			return blockFree(p, numBytes);
+		}
+
+		[[nodiscard]] virtual void* bufRealloc(void* pold, std::size_t oldNumBytes, std::size_t& reqNumBytesInOut)
+		{
+			void* p = blockAlloc(reqNumBytesInOut);
+			memcpy(p, pold, oldNumBytes);
+			blockFree(pold, oldNumBytes);
+			return p;
+		}
+
+		virtual void blockAllocBatch(void** ptrsOut, std::size_t numPtrs, std::size_t blockSize)
+		{
+			for (long i = 0; i < numPtrs; i++)
+				ptrsOut[i] = blockAlloc(blockSize);
+		}
+
+		virtual void blockFreeBatch(void** ptrsIn, std::size_t numPtrs, std::size_t blockSize)
+		{
+			for (long i = 0; i < numPtrs; i++)
+				blockFree(ptrsIn[i], blockSize);
+		}
+
+		virtual void getMemoryStatistics(class MemoryStatistics& u)
+		{}
+
+		virtual std::size_t getAllocatedSize(const void* obj, std::size_t nbytes)
+		{
+			return 0;
+		}
+
+		virtual void resetPeakMemoryStatistics()
+		{}
+
+		[[nodiscard]] virtual void* getExtendedInterface()
+		{
+			return nullptr;
+		}
+	};
+
+	template<typename Heap = detail::ProxyHeap>
+	class BSSmallBlockAllocator
+	{
+		BSSmallBlockAllocator(const BSSmallBlockAllocator&) = delete;
+		BSSmallBlockAllocator(BSSmallBlockAllocator&&) = delete;
+		BSSmallBlockAllocator& operator=(const BSSmallBlockAllocator&) = delete;
+		BSSmallBlockAllocator& operator=(BSSmallBlockAllocator&&) = delete;
+
+		BSSmallBlockAllocator() = default;
+		~BSSmallBlockAllocator() = default;
+	public:
+		//[[nodiscard]] inline static void* Allocate(std::size_t nSize)
+		//{
+		//	return Heap::GetSingletonPtr()->aligned_malloc(nSize, 16);
+		//}
+
+		//inline static void Deallocate(void* lpBlock)
+		//{
+		//	Heap::GetSingletonPtr()->aligned_free(lpBlock);
+		//}
+
+		static void Install()
+		{
+			if (REL::Version() == RUNTIME_VERSION_1_10_163)
+				REL::Impl::PatchNop(REL::ID(141), 5);
+			else
+				REL::Impl::Patch(REL::ID(141), { 0xEB });
+		}
+	};
+
+	class BSScaleformSysMemMapper
+	{
+	public:
+		inline static UInt32 PAGE_SIZE;
+		inline static UInt32 HEAP_SIZE;
+
+		static uint32_t get_page_size(BSScaleformSysMemMapper* _this)
+		{
+			return (uint32_t)PAGE_SIZE;
+		}
+
+		static void* init(BSScaleformSysMemMapper* _this, size_t size)
+		{
+			return VirtualAlloc(NULL, (SIZE_T)size, MEM_RESERVE, PAGE_READWRITE);
+		}
+
+		static bool release(BSScaleformSysMemMapper* _this, void* address)
+		{
+			return VirtualFree((LPVOID)address, (SIZE_T)HEAP_SIZE, MEM_RELEASE);
+		}
+
+		static void* alloc(BSScaleformSysMemMapper* _this, void* address, size_t size)
+		{
+			return VirtualAlloc((LPVOID)address, (SIZE_T)size, MEM_COMMIT, PAGE_READWRITE);
+		}
+
+		static bool free(BSScaleformSysMemMapper* _this, void* address, size_t size)
+		{
+			return VirtualFree((LPVOID)address, (SIZE_T)size, MEM_DECOMMIT);
+		}
+	};
 
 	ModuleMemory::ModuleMemory(void* Context) :
 		Module(Context, SourceName, CVarMemory)
@@ -308,13 +613,6 @@ namespace XCell
 
 	HRESULT ModuleMemory::InstallImpl()
 	{
-		if (GetModuleHandleA("BakaScrapHeap.dll"))
-		{
-			MessageBoxA(0, "Mod \"Baka ScrapHeap\" has been detected. X-Cell "
-				"patch \"memory\" is incompatible and will not be enabled.", "Warning", MB_OK | MB_ICONWARNING);
-			return S_FALSE;
-		}
-
 		MEMORYSTATUSEX statex = { 0 };
 		statex.dwLength = sizeof(MEMORYSTATUSEX);
 		if (!GlobalMemoryStatusEx(&statex))
@@ -323,34 +621,47 @@ namespace XCell
 		_MESSAGE("Memory (Total: %.2f Gb, Available: %.2f Gb)",
 			((double)statex.ullTotalPageFile / MEM_GB), ((double)statex.ullAvailPageFile / MEM_GB));
 
-		detail::BSScaleformSysMemMapper::PAGE_SIZE = CVarScaleformPageSize->GetUnsignedInt();
-		detail::BSScaleformSysMemMapper::HEAP_SIZE = CVarScaleformHeapSize->GetUnsignedInt();
+		/////////////////////////////////////////////////////////////////////
+		// Replacement of all functions of the standard allocator
+		/////////////////////////////////////////////////////////////////////
 
-		detail::BSScaleformSysMemMapper::PAGE_SIZE = min(detail::BSScaleformSysMemMapper::PAGE_SIZE, (UInt32)2 * 1024);
-		detail::BSScaleformSysMemMapper::PAGE_SIZE = (detail::BSScaleformSysMemMapper::PAGE_SIZE + 7) & ~7;
-		detail::BSScaleformSysMemMapper::HEAP_SIZE = min(detail::BSScaleformSysMemMapper::HEAP_SIZE, (UInt32)2 * 1024);
-		detail::BSScaleformSysMemMapper::HEAP_SIZE = (detail::BSScaleformSysMemMapper::HEAP_SIZE + 7) & ~7;
-
-		_MESSAGE("BSScaleformSysMemMapper (Page: %u Kb, Heap: %u Mb)",
-			detail::BSScaleformSysMemMapper::PAGE_SIZE, detail::BSScaleformSysMemMapper::HEAP_SIZE);
-
-		detail::BSScaleformSysMemMapper::PAGE_SIZE *= 1024;
-		detail::BSScaleformSysMemMapper::HEAP_SIZE *= 1024 * 1024;
-
+		auto base = Context->ProcessBase;
 		auto gContext = (XCell::Context*)Context;
-		auto base = gContext->ProcessBase;
 
-		// Replacement of all functions of the standard allocator.
+		// Init vmm
+		detail::ProxyVoltekHeap heap;
 
-		REL::Impl::DetourIAT(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "realloc", (UInt64)&impl_realloc);
-		REL::Impl::DetourIAT(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "calloc", (UInt64)&impl_calloc);
-		REL::Impl::DetourIAT(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_malloc", (UInt64)&impl_aligned_malloc);
-		REL::Impl::DetourIAT(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "malloc", (UInt64)&impl_malloc);
-		REL::Impl::DetourIAT(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_free", (UInt64)&impl_aligned_free);
-		REL::Impl::DetourIAT(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "free", (UInt64)&impl_free);
-		REL::Impl::DetourIAT(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_msize", (UInt64)&impl_msize);
+		REL::Impl::DetourIAT(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "realloc", (UInt64)&detail::StdStuff<detail::ProxyVoltekHeap>::realloc);
+		REL::Impl::DetourIAT(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "calloc", (UInt64)&detail::StdStuff<detail::ProxyVoltekHeap>::calloc);
+		REL::Impl::DetourIAT(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_malloc", (UInt64)&detail::StdStuff<detail::ProxyVoltekHeap>::aligned_malloc);
+		REL::Impl::DetourIAT(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "malloc", (UInt64)&detail::StdStuff<detail::ProxyVoltekHeap>::malloc);
+		REL::Impl::DetourIAT(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_free", (UInt64)&detail::StdStuff<detail::ProxyVoltekHeap>::aligned_free);
+		REL::Impl::DetourIAT(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "free", (UInt64)&detail::StdStuff<detail::ProxyVoltekHeap>::free);
+		REL::Impl::DetourIAT(base, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_msize", (UInt64)&detail::StdStuff<detail::ProxyVoltekHeap>::msize);
+		
+		/////////////////////////////////////////////////////////////////////
+		// MemoryManager
+		/////////////////////////////////////////////////////////////////////
 
-		// replacing memory manipulation functions with newer and more productive ones.
+		MemoryManager<detail::ProxyVoltekHeap>::StubInit(gContext);
+		MemoryManager<detail::ProxyVoltekHeap>::Install();
+
+		/////////////////////////////////////////////////////////////////////
+		// AutoScrapHeap & ScrapHeap
+		/////////////////////////////////////////////////////////////////////
+
+		AutoScrapHeap::Install();
+		ScrapHeap<detail::ProxyVoltekHeap>::Install();
+
+		/////////////////////////////////////////////////////////////////////
+		// bhkThreadMemorySource
+		/////////////////////////////////////////////////////////////////////
+
+		REL::Impl::DetourJump(REL::ID(80), (UInt64)&bhkThreadMemorySource<detail::ProxyVoltekHeap>::__ctor__);
+
+		/////////////////////////////////////////////////////////////////////
+		// Replacing memory manipulation functions with newer and more productive ones
+		/////////////////////////////////////////////////////////////////////
 
 		if (CVarUseNewRedistributable->GetBool())
 		{
@@ -366,62 +677,49 @@ namespace XCell
 			}
 		}
 
-		// detail::BGSMemoryManager::alloc pattern 48895C24??48896C24??48897424??5741544155415641574883EC??65488B0425
-		// detail::BGSMemoryManager::dealloc pattern 4885D20F84????????48895C24??48895424??574883EC??8039??410FB6F8488BD975??488BCAE9????????488B89????????4885C974??483B51??72??
-		// 
-		// detail::bhkThreadMemorySource::__ctor__ pattern 488B4F??BA0000040041B90400000041B800100000FF15????????4885C074??
+		/////////////////////////////////////////////////////////////////////
+		// Default/Static/File heaps
+		/////////////////////////////////////////////////////////////////////
 
-		REL::Impl::DetourJump(REL::ID(30), (UInt64)&detail::BGSMemoryManager::alloc);
-		REL::Impl::DetourJump(REL::ID(40), (UInt64)&detail::BGSMemoryManager::dealloc);
-		REL::Impl::DetourJump(REL::ID(41), (UInt64)&detail::BGSMemoryManager::realloc);			// NG ONLY
-		REL::Impl::DetourJump(REL::ID(50), (UInt64)&detail::BGSMemoryManager::msize);
-		REL::Impl::DetourJump(REL::ID(60), (UInt64)&detail::BGSScrapHeap::alloc);
-		REL::Impl::DetourJump(REL::ID(70), (UInt64)&detail::BGSScrapHeap::dealloc);
-		REL::Impl::DetourJump(REL::ID(80), (UInt64)&detail::bhkThreadMemorySource::__ctor__);	// bhkThreadMemorySource init
+		REL::Impl::Patch(REL::ID(110), { 0xC3, 0x90 });	
+		
+		/////////////////////////////////////////////////////////////////////
+		// BSSmallBlockAllocator
+		/////////////////////////////////////////////////////////////////////
 
+		BSSmallBlockAllocator<detail::ProxyVoltekHeap>::Install();
+
+		/////////////////////////////////////////////////////////////////////
 		// BSScaleformSysMemMapper
+		/////////////////////////////////////////////////////////////////////
+
+		BSScaleformSysMemMapper::PAGE_SIZE = CVarScaleformPageSize->GetUnsignedInt();
+		BSScaleformSysMemMapper::HEAP_SIZE = CVarScaleformHeapSize->GetUnsignedInt();
+
+		BSScaleformSysMemMapper::PAGE_SIZE = std::min(BSScaleformSysMemMapper::PAGE_SIZE, (UInt32)2 * 1024);
+		BSScaleformSysMemMapper::PAGE_SIZE = (BSScaleformSysMemMapper::PAGE_SIZE + 7) & ~7;
+		BSScaleformSysMemMapper::HEAP_SIZE = std::min(BSScaleformSysMemMapper::HEAP_SIZE, (UInt32)2 * 1024);
+		BSScaleformSysMemMapper::HEAP_SIZE = (BSScaleformSysMemMapper::HEAP_SIZE + 7) & ~7;
+
+		_MESSAGE("BSScaleformSysMemMapper (Page: %u Kb, Heap: %u Mb)",
+			BSScaleformSysMemMapper::PAGE_SIZE, BSScaleformSysMemMapper::HEAP_SIZE);
+
+		BSScaleformSysMemMapper::PAGE_SIZE *= 1024;
+		BSScaleformSysMemMapper::HEAP_SIZE *= 1024 * 1024;
+
 		auto vtable = (uintptr_t*)REL::ID(150);
 		if (!vtable)
 			return E_FAIL;
 
 		REL::ScopeLock lock((LPVOID)vtable, 0x40);
-		vtable[0] = (uintptr_t)detail::BSScaleformSysMemMapper::get_page_size;
-		vtable[1] = (uintptr_t)detail::BSScaleformSysMemMapper::init;
-		vtable[2] = (uintptr_t)detail::BSScaleformSysMemMapper::release;
-		vtable[3] = (uintptr_t)detail::BSScaleformSysMemMapper::alloc;
-		vtable[4] = (uintptr_t)detail::BSScaleformSysMemMapper::free;
+		vtable[0] = (std::uintptr_t)BSScaleformSysMemMapper::get_page_size;
+		vtable[1] = (std::uintptr_t)BSScaleformSysMemMapper::init;
+		vtable[2] = (std::uintptr_t)BSScaleformSysMemMapper::release;
+		vtable[3] = (std::uintptr_t)BSScaleformSysMemMapper::alloc;
+		vtable[4] = (std::uintptr_t)BSScaleformSysMemMapper::free;
 
-		REL::Impl::Patch(REL::ID(90), (UInt8*)&detail::BSScaleformSysMemMapper::PAGE_SIZE, 4);
-		REL::Impl::Patch(REL::ID(100), (UInt8*)&detail::BSScaleformSysMemMapper::HEAP_SIZE, 4);
-
-		REL::Impl::Patch(REL::ID(110), { 0xC3, 0x90 });	// MemoryManager - Default/Static/File heaps init
-		REL::Impl::Patch(REL::ID(120), { 0xC3, 0x90 });	// BSSmallBlockAllocator init
-		REL::Impl::Patch(REL::ID(130), { 0xC3, 0x90 });	// ScrapHeap init
-		REL::Impl::Patch(REL::ID(140), { 0xC3, 0x90 });	// ScrapHeap deinit
-
-		// Remove BSSmallBlockAllocator
-		//
-		{
-			//
-			// Remove the thousands of [code below] since they're useless checks:
-			//
-			// if ( dword_142E62E00 != 2 ) // MemoryManager initialized flag
-			//     sub_14153DDA0((__int64)&unk_142E62980, &dword_142E62E00);
-			//
-			{
-				auto Section = gContext->GetPESectionText();
-				auto Matches = REL::Impl::FindPatterns(Section.base, Section.end - Section.base,
-					"83 3D ? ? ? ? 02 74 13 48 8D 15 ? ? ? ? 48 8D 0D ? ? ? ? E8");
-
-				REL::ScopeLock Lock(Section.base, Section.end - Section.base);
-				for (UInt64 match : Matches)
-					memcpy((void*)match, "\xEB\x1A", 2);
-
-				_MESSAGE("memory: remove useless checks %llu", Matches.size());
-			}
-
-			REL::Impl::Patch(REL::ID(151), { 0xC3, 0x90 }); // NG ONLY / OG CRASHES
-		}
+		REL::Impl::Patch(REL::ID(90), (UInt8*)&BSScaleformSysMemMapper::PAGE_SIZE, 4);
+		REL::Impl::Patch(REL::ID(100), (UInt8*)&BSScaleformSysMemMapper::HEAP_SIZE, 4);
 
 		return S_OK;
 	}
@@ -433,3 +731,136 @@ namespace XCell
 		return S_FALSE;
 	}
 }
+
+
+
+
+//class memory_manager
+//{
+//public:
+//	memory_manager()
+//	{
+//		voltek::scalable_memory_manager_initialize();
+//	}
+
+//	memory_manager(const memory_manager&) = default;
+//	memory_manager& operator=(const memory_manager&) = default;
+
+//	static void* alloc(size_t size, size_t alignment, bool aligned = false, bool zeroed = true)
+//	{
+//		if (!aligned)
+//			alignment = 4;
+
+//		if (!size)
+//			return voltek::scalable_alloc(0);
+
+//		// Reset last error
+//		SetLastError(0);
+
+//		XCAssertWithFormattedMessage((alignment != 0) && ((alignment % 2) == 0), "Alignment is fucked: %llu", alignment);
+
+//		if ((alignment & (alignment - 1)) != 0)
+//		{
+//			alignment--;
+//			alignment |= alignment >> 1;
+//			alignment |= alignment >> 2;
+//			alignment |= alignment >> 4;
+//			alignment |= alignment >> 8;
+//			alignment |= alignment >> 16;
+//			alignment++;
+//		}
+
+//		if ((size % alignment) != 0)
+//			size = ((size + alignment - 1) / alignment) * alignment;
+
+//		void* ptr = _aligned_malloc(size, 16);//voltek::scalable_alloc(size);
+//		if (ptr && zeroed) memset(ptr, 0, size);
+
+
+
+
+//		return ptr;
+//	}
+
+//	inline static void dealloc(void* block)
+//	{
+//		if (block)
+//			_aligned_free(block);
+//		//voltek::scalable_free(block);
+//	}
+
+//	inline static size_t msize(void* block)
+//	{
+//		return block ? _aligned_msize(block, 16, 0) : 0;
+//		//return voltek::scalable_msize(block);
+//	}
+//};
+
+//memory_manager g_memory_mgr;
+
+//namespace detail
+//{
+//	class BGSMemoryManager
+//	{
+//	public:
+//		static void* alloc(BGSMemoryManager* self, size_t size, uint32_t alignment, bool aligned)
+//		{
+//			return memory_manager::alloc(size, alignment, aligned, true);
+//		}
+
+//		static void dealloc(BGSMemoryManager* self, void* block, bool aligned)
+//		{
+//			memory_manager::dealloc(block);
+//		}
+
+//		static void* realloc(BGSMemoryManager* self, void* old_block, size_t size, uint32_t alignment, bool aligned)
+//		{
+//			auto new_ptr = memory_manager::alloc(size, alignment, aligned, true);
+//			if (!new_ptr) return nullptr;
+
+//			if (old_block)
+//			{
+//				auto old_size = memory_manager::msize(old_block);
+//				memcpy(new_ptr, old_block, min(old_size, size));
+//				memory_manager::dealloc(old_block);
+//			}
+
+//			return new_ptr;
+//		}
+
+//		static size_t msize(BGSMemoryManager* self, void* memory)
+//		{
+//			return memory_manager::msize(memory);
+//		}
+//	};
+
+//	class BSSmallBlockAllocator
+//	{
+//	public:
+//		static void* alloc(size_t size, uint32_t alignment, bool aligned)
+//		{
+//			return memory_manager::alloc(size, alignment, aligned, false);
+//		}
+//		static void sub_nullopt() { return; }
+//		static int32_t sub08() { return 0; }
+//		static void* alloc_block(size_t size, uint32_t alignment) { return alloc(size, alignment, true); }
+//		static void dealloc_block(void* block) { memory_manager::dealloc(block); }
+//		static void* alloc_block_noalign(size_t size) { return alloc(size, 0, false); }
+//	};
+
+//	class BGSScrapHeap
+//	{
+//	public:
+//		static void* alloc(BGSScrapHeap* manager, size_t size, uint32_t alignment)
+//		{
+//			return memory_manager::alloc(size, alignment, alignment != 0);
+//		}
+
+//		static void dealloc(BGSScrapHeap* manager, void* memory)
+//		{
+//			memory_manager::dealloc(memory);
+//		}
+//	};
+
+
+//}

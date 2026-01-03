@@ -259,7 +259,8 @@ namespace XCell
 				return FALSE;
 
 			Data->At(AppName).Clear();
-			WriteINIToFile(Data, FileName);
+			WritePrivateProfileStringA(AppName, KeyName, String, FileName);
+			//WriteINIToFile(Data, FileName);
 			//Data->SetChanged(true);
 
 			return TRUE;
@@ -274,14 +275,16 @@ namespace XCell
 				return FALSE;
 
 			Data->At(AppName).Remove(KeyName);
-			WriteINIToFile(Data, FileName);
+			WritePrivateProfileStringA(AppName, KeyName, String, FileName);
+			//WriteINIToFile(Data, FileName);
 			//Data->SetChanged(true);
 
 			return TRUE;
 		}
 
 		Data->At(AppName)[KeyName].SetString(String);
-		WriteINIToFile(Data, FileName);
+		WritePrivateProfileStringA(AppName, KeyName, String, FileName);
+		//WriteINIToFile(Data, FileName);
 		//Data->SetChanged(true);
 
 		return TRUE;

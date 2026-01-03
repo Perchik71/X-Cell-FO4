@@ -13,6 +13,8 @@
 #include <string.h>
 #include <windows.h>
 
+#define USE_MULTITHREADS 1
+
 //#pragma warning(disable : 4996)
 //#include <stdio.h>
 
@@ -120,6 +122,7 @@ namespace voltek
 				pools[POOL_64] = new pool64_t(POOL_SIZE);
 			}
 
+#if USE_MULTITHREADS
 			thread = new std::thread([](HANDLE* ev_close, HANDLE* ev_close_w, void** pools, 
 				voltek::core::_internal::simple_lock* lock) {
 				while (1)
@@ -157,10 +160,12 @@ namespace voltek
 			SetThreadPriority(thread->native_handle(), THREAD_PRIORITY_HIGHEST);
 			_vassert(!SetThreadAffinityMask(thread->native_handle(), 1llu << (thread->hardware_concurrency() - 1)));
 			thread->detach();
+#endif
 		}
 
 		memory_manager::~memory_manager()
 		{
+#if USE_MULTITHREADS
 			if (thread)
 			{
 				SetEvent((HANDLE)event_close);
@@ -190,6 +195,7 @@ namespace voltek
 				delete thread;
 				thread = nullptr;
 			}
+#endif
 		}
 
 		void* memory_manager::alloc(size_t size)
@@ -230,8 +236,11 @@ namespace voltek
 			}
 
 			void* new_ptr = nullptr;
+
+#if USE_MULTITHREADS
 			// Блокируем. Снятие блокировки будет заботить компилятор.
 			voltek::core::_internal::simple_scope_lock scope_lock(lock);
+#endif
 	
 			if (size > 65536)
 			{
@@ -487,8 +496,11 @@ namespace voltek
 				return nullptr;
 
 			void* new_ptr = nullptr;	
+
+#if USE_MULTITHREADS
 			// Блокируем. Снятие блокировки будет заботить компилятор.
 			voltek::core::_internal::simple_scope_lock scope_lock(lock);
+#endif
 
 			// Если память выделена ранее как обычный, то тут выделение новой памяти неизбежно.
 			if (is_used_default_ptr(ptr))
@@ -659,8 +671,11 @@ namespace voltek
 				return false;
 
 			bool ret = true;
+
+#if USE_MULTITHREADS
 			// Блокируем. Снятие блокировки будет заботить компилятор.
 			voltek::core::_internal::simple_scope_lock scope_lock(lock);
+#endif
 			//_fsniff("The beginning of memory release: %p", ptr);
 
 			if (is_used_default_ptr(ptr))
@@ -803,8 +818,10 @@ namespace voltek
 			if ((POOL_MAX >= pool_id) || !filename)
 				return;
 
+#if USE_MULTITHREADS
 			// Блокируем. Снятие блокировки будет заботить компилятор.
 			voltek::core::_internal::simple_scope_lock scope_lock(lock);
+#endif
 
 			switch (pool_id)
 			{
@@ -902,8 +919,10 @@ namespace voltek
 			if ((POOL_MAX >= pool_id) || !filename)
 				return;
 
+#if USE_MULTITHREADS
 			// Блокируем. Снятие блокировки будет заботить компилятор.
 			voltek::core::_internal::simple_scope_lock scope_lock(lock);
+#endif
 
 			switch (pool_id)
 			{
