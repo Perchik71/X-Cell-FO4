@@ -109,12 +109,15 @@ namespace XCell
 			SetLastError(ERROR_FILE_NOT_FOUND);
 			return 0;
 		}
+
+		//_MESSAGE("%s:%s (%u)", AppName, KeyName, Size);
+
 		if (!ReturnedString || Size < 2)
 		{
 			SetLastError(ERROR_INSUFFICIENT_BUFFER);
 			return 0;
 		}
-		
+
 		SetLastError(0);
 
 		if (!DefaultValue)

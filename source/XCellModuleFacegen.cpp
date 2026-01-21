@@ -103,9 +103,11 @@ namespace XCell
 
 	static bool __stdcall HasOwnFace(TESNPC* NPC) noexcept(true)
 	{
+#if 0
 		if (!((NPC->actorData.unk10 & TESActorTemplateFlags_XCELL::kFlagTemplateTraits) == 
 			TESActorTemplateFlags_XCELL::kFlagTemplateTraits))
 			return true;
+#endif
 		return !NPC->templateNPC;
 	}
 
