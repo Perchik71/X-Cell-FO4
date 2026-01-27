@@ -32,11 +32,12 @@ namespace XCell
 	extern std::shared_ptr<Setting> CVarProfile;
 	// Black loading screen.
 	extern std::shared_ptr<Setting> CVarLoadScreen;
-	// Increase FPS due to scaling, requires Win 8.1 and newer, and a graphics card with hardware scaling support.
+	// [Experimental] Increase FPS due to scaling, requires Win 8.1 and newer, and a graphics card with hardware scaling support.
 	extern std::shared_ptr<Setting> CVarUpscaler;
+	// [Experimental] Increases the allowed number of archives from 255 GNRL and from 254 DX10 to 65355.
+	extern std::shared_ptr<Setting> CVarArchiveLimits;
 	// Fixes a bug where movies that don't define "BackgroundAlpha" on their movie root could load with a grey background.
 	extern std::shared_ptr<Setting> CVarGreyMovies;
-
 
 	extern std::shared_ptr<Setting> CVarDropItem;
 	// Fixes a crash when allocating the location for a package.

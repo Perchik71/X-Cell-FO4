@@ -1,0 +1,1 @@
+Copy-Item -Path ".\build\x-cell-ae.dll" -Destination "D:\SteamLibrary\steamapps\common\Fallout 4\Data\F4SE\Plugins\"

@@ -28,6 +28,7 @@
 #include "XCellModuleInitTints.h"
 #include "XCellModuleLODDistanceFix.h"
 #include "XCellModuleDropItem.h"
+#include "XCellModuleArchiveLimits.h"
 
 #define XCELL_IMGUI_INSTALL 0
 
@@ -135,6 +136,7 @@ namespace XCell
 		_settings.Add(CVarProfile);
 		_settings.Add(CVarLoadScreen);
 		_settings.Add(CVarUpscaler);
+		_settings.Add(CVarArchiveLimits);
 
 		// Fixes
 		_settings.Add(CVarInitTints);
@@ -334,8 +336,10 @@ namespace XCell
 		if (FAILED(_modules.Add(make_shared<ModuleInitTints>(this)))) return E_FAIL;
 		if (FAILED(_modules.Add(make_shared<ModuleLODDistanceFix>(this)))) return E_FAIL;
 		if (FAILED(_modules.Add(make_shared<ModuleDropItem>(this)))) return E_FAIL;		
-		// Required install after all modules
+		if (FAILED(_modules.Add(make_shared<ModuleArchiveLimits>(this)))) return E_FAIL;
+		
 #if XCELL_IMGUI_INSTALL
+		// Required install after all modules
 		if (FAILED(_modules.Add(make_shared<ModuleImGUI>(this)))) return E_FAIL;
 #endif // XCELL_IMGUI_INSTALL
 
