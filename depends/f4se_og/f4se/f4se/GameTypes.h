@@ -13,6 +13,28 @@ public:
 	volatile SInt32	m_refCount;	// 00
 };
 
+// Not actually implemented, just a wrapper
+template <typename T>
+class BSTSmartPointer
+{
+public:
+	operator bool() const noexcept { return static_cast<bool>(_ptr); }
+
+	T* get() const noexcept { return _ptr; }
+
+	T& operator*() const
+	{
+		return *_ptr;
+	}
+
+	T* operator->() const
+	{
+		return _ptr;
+	}
+
+	T* _ptr;
+};
+
 // 04
 struct BSNonReentrantSpinLock
 {
