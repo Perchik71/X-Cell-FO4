@@ -1001,8 +1001,6 @@ namespace XCell
 			BSScaleformImageLoader::Hook_Init();
 			BSTextureIndex::Hook_Init();
 			BSTextureStreamer::Manager::Hook_Init();
-
-			MessageBoxA(0, "Breakpoint message", "Debug", 0);
 		}
 		
 		return S_OK;
