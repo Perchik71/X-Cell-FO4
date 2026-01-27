@@ -15,7 +15,7 @@ namespace XCell
 	std::shared_ptr<Setting> CVarLoadScreen = std::make_shared<Setting>("bLoadScreen:Patches", false);
 	std::shared_ptr<Setting> CVarDropItem = std::make_shared<Setting>("bDropItem:Patches", true);
 	std::shared_ptr<Setting> CVarUpscaler = std::make_shared<Setting>("bUpscaler:Patches", false);
-	std::shared_ptr<Setting> CVarArchiveLimits = std::make_shared<Setting>("bArchiveLimits:Patches", true);
+	std::shared_ptr<Setting> CVarArchiveLimits = std::make_shared<Setting>("bArchiveLimits:Patches", false);
 
 	std::shared_ptr<Setting> CVarInitTints = std::make_shared<Setting>("bInitTints:Fixes", true);
 	std::shared_ptr<Setting> CVarLODDistance = std::make_shared<Setting>("bLODDistance:Fixes", true);

@@ -10,6 +10,7 @@ bProfile=true						# Replacing outdated functions WritePrivateProfileStringA, Ge
 bLoadScreen=false					# Black loading screen.
 bDropItem=true						# Extends structure BSExtraCount from a 16-bit number to a 32-bit number. Allows you to throw things away up to 2.147.483.647.
 bUpscaler=false						# [Experimental] Increase FPS due to scaling, requires Win 8.1 and newer, without conflict ENB (no dlss, no fsr).
+bArchiveLimits=false				# [Experimental] Increases the allowed number of archives from 255 GNRL and from 254 DX10 to 65355. (Only AE)
 
 [Fixes]								# Common fixes
 bInitTints=true						# Removes the block on loading NPCs tints of the Fallout4.esm file, as well as for NPCs with set the IsChargenPresent flag.
